@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import MenuSection from '../components/MenuSection.astro';
+import { getMenuWithItems } from '../lib/menus.js';
+
+const menu = getMenuWithItems('dinner');
+---
+
+<BaseLayout title="Dinner Menu | Field & Tides">
+  <Hero
+    title="Dinner Menu"
+    subtitle={menu?.description || 'Evening selections featuring seasonal ingredients'}
+    image="/images/hero-dinner.jpg"
+    height="small"
+  />
+
+  <section class="section">
+    <div class="container-custom max-w-5xl">
+      {menu ? (
+        Object.entries(menu.sections).map(([sectionTitle, items]) => (
+          <MenuSection title={sectionTitle} items={items} columns={1} />
+        ))
+      ) : (
+        <div class="text-center py-12">
+          <p class="text-xl text-midnight/70">Menu coming soon...</p>
+        </div>
+      )}
+
+      <div class="mt-16 p-8 bg-field-shell rounded-2xl text-center">
+        <p class="text-midnight/70 mb-4">
+          <strong>Available:</strong> Tuesday - Sunday, 5pm - 10pm
+        </p>
+        <p class="text-sm text-midnight/60">
+          Menu items and prices subject to change based on seasonal availability.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

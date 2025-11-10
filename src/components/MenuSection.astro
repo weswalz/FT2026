@@ -1,0 +1,86 @@
+---
+interface MenuItem {
+  id: number;
+  name: string;
+  description?: string;
+  price?: string;
+  tags?: string[];
+  dietary_info?: string[];
+}
+
+interface Props {
+  title?: string;
+  items: MenuItem[];
+  columns?: 1 | 2;
+}
+
+const { title, items, columns = 1 } = Astro.props;
+---
+
+<div class="menu-section mb-12">
+  {title && (
+    <h3 class="text-2xl md:text-3xl font-heading font-semibold text-field-navy mb-8 pb-3 border-b-2 border-champagne/50">
+      {title}
+    </h3>
+  )}
+
+  <div class={columns === 2 ? 'grid md:grid-cols-2 gap-x-12 gap-y-8' : 'space-y-8'}>
+    {items.map(item => (
+      <div class="menu-item group">
+        <div class="flex justify-between items-baseline mb-2">
+          <h4 class="text-lg font-medium text-midnight group-hover:text-field-navy transition-colors flex-1">
+            {item.name}
+            {item.dietary_info && item.dietary_info.length > 0 && (
+              <span class="ml-2 text-xs text-field-copper">
+                {item.dietary_info.map(info => (
+                  <span class="inline-flex items-center" title={info}>
+                    {info === 'vegan' && '🌱'}
+                    {info === 'vegetarian' && '🥬'}
+                    {info === 'gluten-free' && 'GF'}
+                    {info === 'dairy-free' && 'DF'}
+                  </span>
+                ))}
+              </span>
+            )}
+          </h4>
+          {item.price && (
+            <span class="text-field-navy font-medium ml-4 whitespace-nowrap">
+              {item.price}
+            </span>
+          )}
+        </div>
+
+        {item.description && (
+          <p class="text-midnight/70 text-sm leading-relaxed mb-2">
+            {item.description}
+          </p>
+        )}
+
+        {item.tags && item.tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 mt-3">
+            {item.tags.map(tag => (
+              <span class="inline-block px-2 py-1 text-xs bg-field-shell text-midnight/60 rounded-md">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  /* Decorative dot leader for menu items (optional) */
+  .menu-item-dot-leader {
+    position: relative;
+  }
+
+  .menu-item-dot-leader::after {
+    content: '';
+    position: absolute;
+    bottom: 0.5em;
+    width: 100%;
+    border-bottom: 2px dotted rgba(17, 76, 135, 0.2);
+  }
+</style>

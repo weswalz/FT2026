@@ -1,0 +1,79 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+---
+
+<BaseLayout
+  title="Our Story | Field & Tides"
+  description="Learn about the story behind Field & Tides Restaurant & Bar and Chef Travis Lenig."
+>
+  <Hero
+    title="Our Story"
+    subtitle="A passion for coastal cuisine in the heart of Houston"
+    image="/images/hero-story.jpg"
+    height="medium"
+  />
+
+  <section class="section">
+    <div class="container-custom max-w-4xl">
+      <div class="prose prose-lg mx-auto">
+        <p class="lead text-xl">
+          Field & Tides opened in Houston's historic Heights neighborhood with a vision to bring
+          coastal-inspired dining to the heart of the city.
+        </p>
+
+        <h2>The Vision</h2>
+        <p>
+          Our name reflects our philosophy: "Field" represents locally sourced vegetables, pork,
+          poultry, beef, and game, while "Tides" celebrates seafood that is locally sourced from
+          the Gulf. This dual focus allows us to honor both land and sea, creating a menu that's
+          as diverse as it is delicious.
+        </p>
+
+        <h2>Chef Travis Lenig</h2>
+        <p>
+          Executive Chef Travis Lenig's culinary journey has taken him through some of the finest
+          kitchens in the country. His roots stem from his love for many different types of cuisine
+          including Southern, Italian, French, and Asian influences. This diverse background creates
+          an "open canvas" menu that evolves with the seasons and showcases the best of what's available.
+        </p>
+
+        <h2>Our Philosophy</h2>
+        <p>
+          At Field & Tides, we believe in:
+        </p>
+        <ul>
+          <li><strong>Seasonal Excellence:</strong> Our menus change with the seasons, ensuring the freshest ingredients</li>
+          <li><strong>Local Partnerships:</strong> We work closely with local farmers and fishermen</li>
+          <li><strong>Sustainable Practices:</strong> We're committed to responsible sourcing and minimal waste</li>
+          <li><strong>Culinary Creativity:</strong> Every dish tells a story of land and sea</li>
+        </ul>
+
+        <h2>The Space</h2>
+        <p>
+          Our restaurant embodies the upscale coastal aesthetic—warm, bright interiors with
+          natural light, polished restraint, and an atmosphere that's both refined and welcoming.
+          Whether you're joining us for brunch, lunch, or dinner, you'll find a space that celebrates
+          both the elegance and comfort of coastal dining.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-sm bg-gradient-to-br from-field-navy to-midnight text-white">
+    <div class="container-custom text-center">
+      <h2 class="text-white mb-4">Join Us</h2>
+      <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+        Experience the flavors of field and tide. We look forward to welcoming you.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="/menu" class="btn btn-secondary">
+          View Our Menus
+        </a>
+        <a href="/contact" class="btn btn-outline !text-white !border-white hover:!bg-white hover:!text-field-navy">
+          Contact Us
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

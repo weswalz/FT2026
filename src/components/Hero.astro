@@ -1,0 +1,119 @@
+---
+interface Props {
+  title: string;
+  subtitle?: string;
+  image?: string;
+  height?: 'small' | 'medium' | 'large' | 'full';
+  overlay?: 'light' | 'medium' | 'dark';
+  cta?: {
+    text: string;
+    href: string;
+    variant?: 'primary' | 'secondary';
+  };
+  centered?: boolean;
+}
+
+const {
+  title,
+  subtitle,
+  image = '/images/hero-default.jpg',
+  height = 'medium',
+  overlay = 'medium',
+  cta,
+  centered = true
+} = Astro.props;
+
+const heightClasses = {
+  small: 'h-[40vh] min-h-[300px]',
+  medium: 'h-[60vh] min-h-[400px]',
+  large: 'h-[80vh] min-h-[500px]',
+  full: 'h-screen'
+};
+
+const overlayClasses = {
+  light: 'bg-gradient-to-b from-midnight/30 via-midnight/20 to-midnight/40',
+  medium: 'bg-gradient-to-b from-midnight/50 via-midnight/30 to-midnight/60',
+  dark: 'bg-gradient-to-b from-midnight/70 via-midnight/50 to-midnight/80'
+};
+---
+
+<div class={`relative ${heightClasses[height]} overflow-hidden`}>
+  <!-- Background Image -->
+  <div class="absolute inset-0">
+    <img
+      src={image}
+      alt={title}
+      class="w-full h-full object-cover"
+      loading="eager"
+    />
+  </div>
+
+  <!-- Overlay -->
+  <div class={`absolute inset-0 ${overlayClasses[overlay]}`}></div>
+
+  <!-- Content -->
+  <div class="relative h-full flex items-center">
+    <div class="container-custom w-full">
+      <div class={centered ? 'text-center max-w-4xl mx-auto' : 'max-w-2xl'}>
+        <h1 class="text-white font-heading font-bold mb-4 fade-in text-balance">
+          {title}
+        </h1>
+
+        {subtitle && (
+          <p class="text-white/90 text-xl md:text-2xl mb-8 fade-in leading-relaxed" style="animation-delay: 0.1s;">
+            {subtitle}
+          </p>
+        )}
+
+        {cta && (
+          <div class="fade-in" style="animation-delay: 0.2s;">
+            <a
+              href={cta.href}
+              class={cta.variant === 'secondary' ? 'btn btn-secondary' : 'btn btn-primary'}
+            >
+              {cta.text}
+            </a>
+          </div>
+        )}
+
+        <slot />
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll Indicator -->
+  <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+    <svg class="w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+    </svg>
+  </div>
+</div>
+
+<style>
+  /* Subtle parallax effect */
+  @media (prefers-reduced-motion: no-preference) {
+    .parallax-bg {
+      transform: translateZ(0);
+      will-change: transform;
+    }
+  }
+</style>
+
+<script>
+  // Optional: Add parallax effect
+  function initParallax() {
+    const hero = document.querySelector('[data-parallax]');
+    if (!hero) return;
+
+    const img = hero.querySelector('img');
+    if (!img) return;
+
+    window.addEventListener('scroll', () => {
+      const scrolled = window.pageYOffset;
+      const rate = scrolled * 0.5;
+      img.style.transform = `translate3d(0, ${rate}px, 0)`;
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initParallax);
+</script>

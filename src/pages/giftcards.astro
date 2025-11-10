@@ -1,0 +1,118 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+---
+
+<BaseLayout
+  title="Gift Cards | Field & Tides"
+  description="Give the gift of exceptional dining at Field & Tides."
+>
+  <Hero
+    title="Gift Cards"
+    subtitle="Share the experience of Field & Tides"
+    image="/images/hero-giftcards.jpg"
+    height="medium"
+  />
+
+  <section class="section">
+    <div class="container-custom max-w-4xl">
+      <div class="text-center mb-12">
+        <p class="text-xl text-midnight/80 leading-relaxed max-w-2xl mx-auto">
+          Field & Tides gift cards are the perfect way to share an unforgettable dining experience
+          with friends, family, or colleagues.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8 mb-16">
+        {[
+          {
+            title: 'Any Amount',
+            description: 'Choose any dollar amount that suits your needs',
+            icon: '💰'
+          },
+          {
+            title: 'Never Expires',
+            description: 'Our gift cards never expire and have no fees',
+            icon: '♾️'
+          },
+          {
+            title: 'Easy to Use',
+            description: 'Redeemable for dine-in or private events',
+            icon: '✨'
+          }
+        ].map(feature => (
+          <div class="card text-center">
+            <div class="card-body">
+              <div class="text-5xl mb-4">{feature.icon}</div>
+              <h3 class="text-xl font-heading font-semibold mb-3 text-field-navy">
+                {feature.title}
+              </h3>
+              <p class="text-midnight/70">
+                {feature.description}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="card bg-gradient-to-br from-field-shell to-white">
+        <div class="card-body text-center">
+          <h2 class="text-3xl font-heading font-semibold mb-6">Purchase a Gift Card</h2>
+
+          <div class="max-w-md mx-auto space-y-6">
+            <p class="text-midnight/70">
+              Gift cards can be purchased in-person at the restaurant or by calling us directly.
+            </p>
+
+            <div class="space-y-4">
+              <a href="tel:+15551234567" class="btn btn-primary w-full">
+                Call (555) 123-4567
+              </a>
+              <a href="/contact" class="btn btn-outline w-full">
+                Contact Us
+              </a>
+            </div>
+
+            <div class="pt-6 border-t border-midnight/10">
+              <h4 class="font-semibold text-field-navy mb-3">Popular Amounts</h4>
+              <div class="grid grid-cols-3 gap-3">
+                {['$50', '$100', '$250'].map(amount => (
+                  <div class="p-4 border-2 border-field-navy/20 rounded-lg hover:border-field-navy hover:bg-field-shell transition-colors cursor-pointer">
+                    <div class="text-2xl font-bold text-field-navy">{amount}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-12">
+        <div class="card">
+          <div class="card-body">
+            <h3 class="text-2xl font-heading font-semibold text-field-navy mb-4">Gift Card Terms</h3>
+            <ul class="space-y-2 text-midnight/70">
+              <li>• Gift cards never expire and have no dormancy fees</li>
+              <li>• Gift cards are non-refundable and cannot be exchanged for cash</li>
+              <li>• Lost or stolen gift cards cannot be replaced</li>
+              <li>• Valid for dine-in and private events only</li>
+              <li>• Cannot be used to purchase additional gift cards</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-sm bg-field-navy text-white">
+    <div class="container-custom text-center">
+      <h2 class="text-white mb-4">Corporate Gifting</h2>
+      <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+        Looking to purchase gift cards in bulk for your business? Contact our events team for special corporate rates.
+      </p>
+      <a href="/private-events" class="btn btn-secondary">
+        Corporate Inquiries
+      </a>
+    </div>
+  </section>
+</BaseLayout>

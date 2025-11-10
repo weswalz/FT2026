@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import MenuSection from '../components/MenuSection.astro';
+import { getMenuWithItems } from '../lib/menus.js';
+
+const menu = getMenuWithItems('dessert-cocktails-ports');
+---
+
+<BaseLayout title="Dessert Cocktails & Ports | Field & Tides">
+  <Hero
+    title="Dessert Cocktails & Ports"
+    subtitle="After-dinner drinks and dessert pairings"
+    image="/images/hero-dessert-drinks.jpg"
+    height="small"
+  />
+
+  <section class="section">
+    <div class="container-custom max-w-5xl">
+      {menu ? (
+        Object.entries(menu.sections).map(([sectionTitle, items]) => (
+          <MenuSection title={sectionTitle} items={items} columns={2} />
+        ))
+      ) : (
+        <div class="text-center py-12">
+          <p class="text-xl text-midnight/70">Menu coming soon...</p>
+        </div>
+      )}
+    </div>
+  </section>
+</BaseLayout>

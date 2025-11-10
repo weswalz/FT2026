@@ -1,0 +1,149 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+
+const menuCategories = [
+  {
+    title: 'Dinner Menu',
+    slug: 'menu-dinner',
+    description: 'Evening selections featuring seasonal ingredients and fresh Gulf seafood',
+    image: '/images/menu-dinner.jpg',
+    available: 'Tuesday - Sunday, 5pm - 10pm'
+  },
+  {
+    title: 'Lunch Menu',
+    slug: 'menu-lunch',
+    description: 'Light, fresh options perfect for your midday meal',
+    image: '/images/menu-lunch.jpg',
+    available: 'Wednesday - Sunday, 11am - 3pm'
+  },
+  {
+    title: 'Brunch Menu',
+    slug: 'menu-brunch',
+    description: 'Weekend brunch favorites with coastal flair',
+    image: '/images/menu-brunch.jpg',
+    available: 'Saturday - Sunday, 10am - 3pm'
+  },
+  {
+    title: 'Happy Hour',
+    slug: 'menu-happy-hour',
+    description: 'Special pricing on select appetizers and drinks',
+    image: '/images/menu-happy-hour.jpg',
+    available: 'Tuesday - Friday, 4pm - 6pm'
+  },
+  {
+    title: 'Wine List',
+    slug: 'menu-wine',
+    description: 'Curated selection of wines from around the world',
+    image: '/images/menu-wine.jpg',
+    available: 'All service times'
+  },
+  {
+    title: 'Cocktails & Beer',
+    slug: 'menu-cocktails-beer',
+    description: 'Craft cocktails and local brews',
+    image: '/images/menu-cocktails.jpg',
+    available: 'All service times'
+  },
+  {
+    title: 'Kids Menu',
+    slug: 'menu-kids',
+    description: 'Kid-friendly favorites',
+    image: '/images/menu-kids.jpg',
+    available: 'All service times'
+  },
+  {
+    title: 'Dessert',
+    slug: 'dessert',
+    description: 'House-made sweet endings',
+    image: '/images/menu-dessert.jpg',
+    available: 'All service times'
+  },
+  {
+    title: 'Dessert Cocktails & Ports',
+    slug: 'dessert-cocktails-ports',
+    description: 'After-dinner drinks and dessert pairings',
+    image: '/images/menu-dessert-drinks.jpg',
+    available: 'All service times'
+  }
+];
+---
+
+<BaseLayout
+  title="Menus | Field & Tides"
+  description="Explore our seasonal menus featuring locally sourced ingredients and Gulf seafood."
+>
+  <Hero
+    title="Our Menus"
+    subtitle="Seasonal flavors celebrating land and sea"
+    image="/images/hero-menu.jpg"
+    height="medium"
+    overlay="dark"
+  />
+
+  <section class="section">
+    <div class="container-custom">
+      <div class="max-w-3xl mx-auto text-center mb-16">
+        <p class="text-xl text-midnight/80 leading-relaxed">
+          Our menus reflect Chef Travis Lenig's commitment to seasonal, locally sourced ingredients.
+          Each dish celebrates the bounty of the field and the freshness of the tides.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {menuCategories.map(category => (
+          <a href={`/${category.slug}`} class="card group hover:shadow-xl transition-all duration-300">
+            <div class="aspect-[4/3] overflow-hidden">
+              <img
+                src={category.image}
+                alt={category.title}
+                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              />
+            </div>
+            <div class="card-body">
+              <h3 class="text-2xl font-heading font-semibold text-field-navy group-hover:text-field-copper transition-colors mb-2">
+                {category.title}
+              </h3>
+              <p class="text-midnight/70 mb-3 leading-relaxed">
+                {category.description}
+              </p>
+              <div class="text-sm text-field-navy/70 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {category.available}
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Dietary Info Section -->
+  <section class="section-sm bg-field-shell">
+    <div class="container-custom">
+      <div class="max-w-2xl mx-auto text-center">
+        <h3 class="text-2xl font-heading font-semibold mb-4">Dietary Accommodations</h3>
+        <p class="text-midnight/70 mb-6">
+          We're happy to accommodate dietary restrictions and allergies. Please inform your server of any
+          special requirements, and our chef will work with you to ensure a memorable dining experience.
+        </p>
+        <div class="flex justify-center gap-6 text-sm text-midnight/60">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">🌱</span>
+            <span>Vegan Options</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-lg">🥬</span>
+            <span>Vegetarian</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-semibold">GF</span>
+            <span>Gluten-Free</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

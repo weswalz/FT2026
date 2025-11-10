@@ -1,0 +1,85 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import SEO from '../components/SEO.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  keywords?: string;
+  image?: string;
+}
+
+const { title, description, keywords, image } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <SEO
+    title={title}
+    description={description}
+    keywords={keywords}
+    image={image}
+  />
+</head>
+<body class="min-h-screen flex flex-col">
+  <Header />
+
+  <main class="flex-grow pt-20 md:pt-24">
+    <slot />
+  </main>
+
+  <Footer />
+
+  <!-- Scroll to Top Button -->
+  <button
+    id="scroll-to-top"
+    class="fixed bottom-8 right-8 w-12 h-12 bg-field-navy text-white rounded-full shadow-lg opacity-0 invisible transition-all duration-300 hover:bg-field-navy/90 hover:scale-110 z-40 no-print"
+    aria-label="Scroll to top"
+  >
+    <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+    </svg>
+  </button>
+
+  <script>
+    // Scroll to top functionality
+    function initScrollToTop() {
+      const scrollBtn = document.getElementById('scroll-to-top');
+
+      if (!scrollBtn) return;
+
+      window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+          scrollBtn.classList.remove('opacity-0', 'invisible');
+          scrollBtn.classList.add('opacity-100', 'visible');
+        } else {
+          scrollBtn.classList.add('opacity-0', 'invisible');
+          scrollBtn.classList.remove('opacity-100', 'visible');
+        }
+      });
+
+      scrollBtn.addEventListener('click', () => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', initScrollToTop);
+
+    // Re-initialize on navigation
+    document.addEventListener('astro:page-load', initScrollToTop);
+  </script>
+</body>
+</html>

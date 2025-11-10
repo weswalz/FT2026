@@ -1,0 +1,103 @@
+---
+import { getSession } from '../../lib/auth.js';
+
+export const prerender = false;
+
+// Check authentication
+const sessionId = Astro.cookies.get('session_id')?.value;
+const session = sessionId ? getSession(sessionId) : null;
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | Field & Tides</title>
+  <link rel="stylesheet" href="/src/styles/global.css" />
+</head>
+<body class="bg-slate-100">
+  <div class="min-h-screen">
+    <!-- Admin Header -->
+    <header class="bg-field-navy text-white shadow-lg">
+      <div class="container-custom">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center gap-8">
+            <h1 class="text-xl font-heading font-bold">Field & Tides Admin</h1>
+            <nav class="hidden md:flex gap-6">
+              <a href="/admin" class="text-white/90 hover:text-white transition-colors">Dashboard</a>
+              <a href="/admin/menus" class="text-white/70 hover:text-white transition-colors">Menus</a>
+              <a href="/admin/forms" class="text-white/70 hover:text-white transition-colors">Forms</a>
+              <a href="/admin/pages" class="text-white/70 hover:text-white transition-colors">Pages</a>
+            </nav>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-sm text-white/80">Welcome, {session.username}</span>
+            <form action="/admin/logout" method="post">
+              <button type="submit" class="btn btn-secondary !py-2 !px-4 !text-sm">
+                Logout
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container-custom py-8">
+      <h2 class="text-3xl font-heading font-semibold mb-8">Dashboard</h2>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {[
+          { title: 'Total Menus', value: '10', icon: '📋' },
+          { title: 'Menu Items', value: '85', icon: '🍽️' },
+          { title: 'Form Submissions', value: '12', icon: '✉️' },
+          { title: 'Pages', value: '8', icon: '📄' }
+        ].map(stat => (
+          <div class="card">
+            <div class="card-body">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-midnight/60 mb-1">{stat.title}</p>
+                  <p class="text-3xl font-bold text-field-navy">{stat.value}</p>
+                </div>
+                <div class="text-4xl">{stat.icon}</div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-6">
+        <div class="card">
+          <div class="card-body">
+            <h3 class="text-xl font-heading font-semibold mb-4">Quick Actions</h3>
+            <div class="space-y-3">
+              <a href="/admin/menus/new" class="block p-3 bg-field-shell rounded-lg hover:bg-field-navy/5 transition-colors">
+                + Add New Menu
+              </a>
+              <a href="/admin/menu-items/new" class="block p-3 bg-field-shell rounded-lg hover:bg-field-navy/5 transition-colors">
+                + Add Menu Item
+              </a>
+              <a href="/admin/pages/new" class="block p-3 bg-field-shell rounded-lg hover:bg-field-navy/5 transition-colors">
+                + Create Page
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <h3 class="text-xl font-heading font-semibold mb-4">Recent Activity</h3>
+            <p class="text-midnight/60 text-sm">No recent activity</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
