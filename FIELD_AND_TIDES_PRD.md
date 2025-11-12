@@ -2,7 +2,7 @@
 
 ## 1. Executive Summary
 - **Client:** Field & Tides (upscale coastal-inspired restaurant)
-- **Deliverable:** Fully content-populated marketing website plus headless-style admin panel modeled after BiYu Boxing’s Astro-based CMS.
+- **Deliverable:** Fully content-populated marketing website plus the Field & Tides-branded REAKT PANEL admin experience.
 - **Primary Goals:**
   - Modernize Field & Tides’ web presence with a fast, on-brand SSR site.
   - Give restaurant staff a secure, easy admin to maintain menus, media, and landing pages.
@@ -26,7 +26,7 @@
 ## 4. Scope
 ### 4.1 In-Scope
 - Astro SSR site with the 18 specified routes, each wired to CMS content types.
-- Admin panel cloned from BiYu reference (theme updated to Field & Tides palette).
+- REAKT PANEL deployed for Field & Tides (theme updated to Field & Tides palette).
 - SQLite content database (menus, pages, media, forms) + migrations script.
 - REST-style API routes for forms (contact, private dining, image upload stub).
 - n8n webhook integration from private dining form submission pipeline.
@@ -80,12 +80,13 @@
 ## 7. User Experience & Design
 - **Look & Feel:** Coastal sophisticated; palette anchored by `#114C87` (navy), `#F4E297` (champagne gold), `#FEFDFC` (soft white), `#081928` (deep navy). Accent suggestions: warm copper `#C07A3A` or muted teal `#3D6C72`.
 - **Typography:** Elegant serif for headings (e.g., Playfair Display) + clean sans for body (Inter/Source Sans). Configure via CSS variables to stay themeable.
-- **Layouts:** Reuse admin panel structure but update branding, plus front-end layouts using shared components (hero, menu sections, galleries, CTA banners).
+- **No WordPress Dependencies:** Rebuild typography, spacing, and interactions inside Astro/Tailwind components; do not ship or depend on exported `wp-content` bundles (Automatic CSS, Bricks, Fluent Forms, etc.). The new system must stand alone.
+- **Layouts:** Reuse REAKT PANEL structure but update branding, plus front-end layouts using shared components (hero, menu sections, galleries, CTA banners).
 - **Accessibility:** WCAG 2.2 AA contrast, focus states, keyboard nav. All forms ARIA-labeled.
 - **Responsive:** Mobile-first; ensure menus collapse into accordions on phones.
 
 ## 8. Admin Panel UX (Field & Tides Edition)
-- Reuse BiYu Astro admin scaffolding.
+- Build on the REAKT PANEL Astro scaffolding.
 - Update branding (logo, palette) and section labels (Menus, Galleries, Forms, Pages, Media).
 - Modules:
   1. **Dashboard:** KPIs (active menus, upcoming events, pending leads).

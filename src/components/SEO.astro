@@ -46,13 +46,13 @@ const siteTitle = title.includes('Field & Tides') ? title : `${title} | Field & 
 <meta property="twitter:image" content={image} />
 
 <!-- Structured Data -->
-<script type="application/ld+json" set:html={JSON.stringify({
+<script type="application/ld+json" is:inline set:html={JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Restaurant",
   "name": "Field & Tides Restaurant & Bar",
   "description": description,
   "url": "https://fieldandtides.com",
-  "logo": "https://fieldandtides.com/images/logo.png",
+  "logo": "https://fieldandtides.com/images/ft2023.svg",
   "image": image,
   "address": {
     "@type": "PostalAddress",

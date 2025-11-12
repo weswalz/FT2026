@@ -1,0 +1,139 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getSession } from '../../lib/auth.js';
+
+export const prerender = false;
+
+const sessionId = Astro.cookies.get('session_id')?.value;
+const session = sessionId ? getSession(sessionId) : null;
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+const activityFeed = [
+  { time: '2 mins ago', actor: 'Taylor Morgan', action: 'Updated Dinner Menu pricing', status: 'Published' },
+  { time: '45 mins ago', actor: 'Events Desk', action: 'Tagged photos for Private Events page', status: 'Draft' },
+  { time: 'Yesterday', actor: 'Chef Lenig', action: 'Added fall brunch items', status: 'Pending review' },
+  { time: '2 days ago', actor: 'System', action: 'n8n webhook retry succeeded', status: 'Synced' }
+];
+
+const alerts = [
+  { title: 'Login attempt blocked', detail: '3 failed logins from 45.23.19.44', level: 'warning' },
+  { title: 'Backup created', detail: 'Nightly content snapshot saved to S3', level: 'info' }
+];
+---
+
+<AdminLayout title="Activity Log" section="activity" session={session}>
+  <Fragment slot="actions">
+    <button class="px-4 py-2 rounded-lg bg-field-navy text-white font-semibold text-sm hover:bg-field-navy/90 transition-colors shadow-sm">
+      Export Log
+    </button>
+    <button class="px-4 py-2 rounded-lg bg-slate-100 text-midnight font-semibold text-sm hover:bg-slate-200 transition-colors border border-slate-200">
+      Clear Filters
+    </button>
+  </Fragment>
+
+  <section class="grid grid-cols-1 gap-6 xl:grid-cols-3 mb-8">
+    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm xl:col-span-2">
+      <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
+        <div>
+          <h2 class="text-lg font-semibold text-midnight">Recent Activity</h2>
+          <p class="text-sm text-midnight/60">Audit log for menus, media, and submissions.</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button class="px-4 py-2 rounded-lg bg-field-navy text-white text-sm font-semibold">All</button>
+          <button class="px-4 py-2 rounded-lg bg-slate-100 text-midnight text-sm font-semibold border border-slate-200">Content</button>
+          <button class="px-4 py-2 rounded-lg bg-slate-100 text-midnight text-sm font-semibold border border-slate-200">Media</button>
+          <button class="px-4 py-2 rounded-lg bg-slate-100 text-midnight text-sm font-semibold border border-slate-200">System</button>
+        </div>
+      </div>
+      <ul class="space-y-4">
+        {activityFeed.map((entry) => (
+          <li class="flex flex-col gap-2 border border-slate-200 rounded-xl p-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p class="text-sm text-midnight/60">{entry.time}</p>
+              <p class="text-midnight font-semibold">{entry.actor}</p>
+              <p class="text-sm text-midnight/70">{entry.action}</p>
+            </div>
+            <span class={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${
+              entry.status === 'Published'
+                ? 'bg-green-100 text-green-700 border border-green-200'
+                : entry.status === 'Synced'
+                  ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                  : 'bg-orange-100 text-orange-700 border border-orange-200'
+            }`}>
+              {entry.status}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="space-y-6">
+      <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+        <h2 class="text-lg font-semibold text-midnight mb-4">Security</h2>
+        <div class="flex items-center gap-4">
+          <div class="w-16 h-16 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-heading text-xl">
+            98
+          </div>
+          <div>
+            <p class="text-sm text-midnight/60">Score</p>
+            <p class="text-midnight font-semibold">Healthy</p>
+          </div>
+        </div>
+        <ul class="mt-4 space-y-3">
+          <li class="text-sm text-midnight/70">✓ Sessions auto-expire after 24h</li>
+          <li class="text-sm text-midnight/70">✓ Argon2 password hashing enabled</li>
+          <li class="text-sm text-midnight/70">✓ Login rate limiting active</li>
+        </ul>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+        <h2 class="text-lg font-semibold text-midnight mb-4">Alerts</h2>
+        <ul class="space-y-4">
+          {alerts.map((alert) => (
+            <li class={`rounded-xl border p-4 ${
+              alert.level === 'warning'
+                ? 'border-orange-200 bg-orange-50'
+                : 'border-slate-200 bg-slate-50'
+            }`}>
+              <p class="text-sm font-semibold text-midnight">{alert.title}</p>
+              <p class="text-sm text-midnight/70 mt-1">{alert.detail}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h2 class="text-lg font-semibold text-midnight">Automation Queue</h2>
+        <p class="text-sm text-midnight/60">n8n + email pipeline health.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button class="px-4 py-2 rounded-lg bg-field-navy text-white text-sm font-semibold">Retry Failed</button>
+        <button class="px-4 py-2 rounded-lg bg-slate-100 text-midnight text-sm font-semibold border border-slate-200">View Logs</button>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-3 mt-6">
+      <div class="border border-slate-200 rounded-lg p-4">
+        <p class="text-xs text-midnight/60 uppercase font-semibold">Queue</p>
+        <p class="text-2xl font-bold text-midnight mt-1">0</p>
+        <p class="text-xs text-midnight/50 mt-1">Pending jobs</p>
+      </div>
+      <div class="border border-slate-200 rounded-lg p-4">
+        <p class="text-xs text-midnight/60 uppercase font-semibold">Last Success</p>
+        <p class="text-2xl font-bold text-midnight mt-1">1m ago</p>
+        <p class="text-xs text-midnight/50 mt-1">Private dining webhook</p>
+      </div>
+      <div class="border border-slate-200 rounded-lg p-4">
+        <p class="text-xs text-midnight/60 uppercase font-semibold">Email</p>
+        <p class="text-2xl font-bold text-midnight mt-1">Operational</p>
+        <p class="text-xs text-midnight/50 mt-1">SMTP queue &lt; 200ms</p>
+      </div>
+    </div>
+  </section>
+</AdminLayout>

@@ -1,0 +1,145 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getSession } from '../../lib/auth.js';
+
+export const prerender = false;
+
+const sessionId = Astro.cookies.get('session_id')?.value;
+const session = sessionId ? getSession(sessionId) : null;
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+const collections = [
+  { title: 'Interior & Dining Room', count: 32, accent: 'from-field-navy/50 via-field-navy/30 to-field-navy/10' },
+  { title: 'Plated Dishes', count: 58, accent: 'from-champagne/70 via-champagne/40 to-field-copper/10' },
+  { title: 'Cocktails & Bar', count: 21, accent: 'from-orange-200 via-orange-100 to-field-copper/20' },
+  { title: 'Team & Portraits', count: 14, accent: 'from-slate-900/80 via-slate-800/60 to-slate-700/40' }
+];
+
+const uploads = [
+  { name: 'heirloom-tomato.jpg', size: '1.8 MB', status: 'Optimized' },
+  { name: 'chef-taylor-press.jpg', size: '2.1 MB', status: 'Pending Tags' },
+  { name: 'wine-cellar-hero.png', size: '1.2 MB', status: 'Optimized' },
+  { name: 'private-dining-table.jpg', size: '2.4 MB', status: 'Needs Crop' }
+];
+---
+
+<AdminLayout title="Media Library" section="media" session={session}>
+  <Fragment slot="actions">
+    <button class="px-4 py-2 rounded-lg bg-field-navy text-white font-semibold text-sm hover:bg-field-navy/90 transition-colors shadow-sm">
+      Upload Media
+    </button>
+    <button class="px-4 py-2 rounded-lg bg-slate-100 text-midnight font-semibold text-sm hover:bg-slate-200 transition-colors border border-slate-200">
+      Open Uploader
+    </button>
+  </Fragment>
+
+  <section class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4 mb-8">
+    {collections.map((collection) => (
+      <div class={`rounded-2xl p-5 text-white shadow-lg bg-gradient-to-br ${collection.accent}`}>
+        <div class="flex items-center justify-between">
+          <p class="text-sm uppercase tracking-wide text-white/80">Collection</p>
+          <span class="text-xs px-3 py-1 rounded-full bg-white/20 border border-white/30">{collection.count} assets</span>
+        </div>
+        <p class="text-lg font-semibold mt-3">{collection.title}</p>
+      </div>
+    ))}
+  </section>
+
+  <section class="grid grid-cols-1 gap-6 xl:grid-cols-3 mb-8">
+    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm xl:col-span-2">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-6">
+        <div>
+          <h2 class="text-lg font-semibold text-midnight">Gallery Overview</h2>
+          <p class="text-sm text-midnight/60">Last sync was 2 hours ago</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button class="px-4 py-2 rounded-lg bg-field-navy text-white text-sm font-semibold">All</button>
+          <button class="px-4 py-2 rounded-lg bg-slate-100 text-midnight text-sm font-semibold border border-slate-200">Hero</button>
+          <button class="px-4 py-2 rounded-lg bg-slate-100 text-midnight text-sm font-semibold border border-slate-200">Menu</button>
+          <button class="px-4 py-2 rounded-lg bg-slate-100 text-midnight text-sm font-semibold border border-slate-200">Events</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+          <div class="h-40 bg-[url('/images/FT-1024x683.jpg')] bg-cover bg-center" />
+          <div class="p-4">
+            <p class="font-semibold text-midnight">Seasonal Dessert</p>
+            <p class="text-sm text-midnight/60 mt-1">Linked to: Homepage hero, Dessert Menu</p>
+          </div>
+        </div>
+        <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+          <div class="h-40 bg-[url('/images/pdr1.jpg')] bg-cover bg-center" />
+          <div class="p-4">
+            <p class="font-semibold text-midnight">Private Dining</p>
+            <p class="text-sm text-midnight/60 mt-1">Linked to: Private Events, Gallery</p>
+          </div>
+        </div>
+        <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+          <div class="h-40 bg-[url('/images/ftfront1.jpg')] bg-cover bg-center" />
+          <div class="p-4">
+            <p class="font-semibold text-midnight">Location Exterior</p>
+            <p class="text-sm text-midnight/60 mt-1">Linked to: Location page</p>
+          </div>
+        </div>
+        <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+          <div class="h-40 bg-[url('/images/wWpsSgZA.jpg')] bg-cover bg-center" />
+          <div class="p-4">
+            <p class="font-semibold text-midnight">Dining Room Evening</p>
+            <p class="text-sm text-midnight/60 mt-1">Linked to: Homepage hero</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+      <h2 class="text-lg font-semibold text-midnight mb-4">Recent Uploads</h2>
+      <ul class="space-y-4">
+        {uploads.map((file) => (
+          <li class="border border-slate-200 rounded-xl p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-midnight font-semibold text-sm">{file.name}</p>
+                <p class="text-xs text-midnight/60">{file.size}</p>
+              </div>
+              <span class={`text-xs font-semibold px-3 py-1 rounded-full ${
+                file.status === 'Optimized'
+                  ? 'bg-green-100 text-green-700 border border-green-200'
+                  : file.status === 'Pending Tags'
+                    ? 'bg-orange-100 text-orange-700 border border-orange-200'
+                    : 'bg-slate-100 text-midnight border border-slate-200'
+              }`}>
+                {file.status}
+              </span>
+            </div>
+            <div class="flex items-center gap-2 mt-3">
+              <button class="text-xs font-semibold text-field-navy">Edit</button>
+              <span class="text-slate-300">•</span>
+              <button class="text-xs font-semibold text-field-navy">Attach to module</button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h2 class="text-lg font-semibold text-midnight">Upload Guidelines</h2>
+        <p class="text-sm text-midnight/60">JPEG/PNG up to 8 MB. Larger assets auto-resized.</p>
+      </div>
+      <button class="px-4 py-2 rounded-lg bg-champagne text-midnight text-sm font-semibold hover:bg-champagne/90 transition-colors shadow-sm">
+        Download Template
+      </button>
+    </div>
+    <ul class="list-disc list-inside text-sm text-midnight/70 mt-4 space-y-2">
+      <li>Use descriptive filenames so chefs and marketing can find imagery quickly.</li>
+      <li>Set at least one tag (hero, gallery, beverage, people) for each upload.</li>
+      <li>Portrait photography gets auto-cropped for cards—confirm framing.</li>
+    </ul>
+  </section>
+</AdminLayout>

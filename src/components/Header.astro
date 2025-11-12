@@ -2,27 +2,10 @@
 const currentPath = Astro.url.pathname;
 
 const navigation = [
-  { name: 'Home', href: '/' },
-  {
-    name: 'Menus',
-    href: '/menu',
-    submenu: [
-      { name: 'All Menus', href: '/menu' },
-      { name: 'Dinner', href: '/menu-dinner' },
-      { name: 'Lunch', href: '/menu-lunch' },
-      { name: 'Brunch', href: '/menu-brunch' },
-      { name: 'Happy Hour', href: '/menu-happy-hour' },
-      { name: 'Wine', href: '/menu-wine' },
-      { name: 'Cocktails & Beer', href: '/menu-cocktails-beer' },
-      { name: 'Kids Menu', href: '/menu-kids' },
-      { name: 'Dessert', href: '/dessert' },
-      { name: 'Dessert Cocktails & Ports', href: '/dessert-cocktails-ports' }
-    ]
-  },
-  { name: 'Private Events', href: '/private-events' },
-  { name: 'Our Story', href: '/ourstory' },
-  { name: 'Location', href: '/location' },
-  { name: 'Contact', href: '/contact' }
+  { name: 'OUR STORY', href: '/ourstory' },
+  { name: 'MENU', href: '/menu' },
+  { name: 'LOCATION', href: '/location' },
+  { name: 'PRIVATE EVENTS', href: '/private-events' }
 ];
 ---
 
@@ -31,69 +14,46 @@ const navigation = [
   class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
   data-header
 >
-  <nav class="container-custom">
-    <div class="flex items-center justify-between h-20 md:h-24">
-      <!-- Logo -->
-      <a href="/" class="flex items-center space-x-2 z-10">
-        <div class="text-2xl md:text-3xl font-heading font-bold text-field-navy">
-          Field <span class="text-field-copper">&</span> Tides
-        </div>
+  <div
+    data-header-bg
+    class="absolute inset-0 pointer-events-none backdrop-blur-md transition-all duration-300"
+    style="background: linear-gradient(180deg, rgba(255,255,255,0.68) 0%, rgba(17,76,135,0.18) 100%); box-shadow: 0 1px 4px rgb(0 0 0 / 0.08);"
+  ></div>
+
+  <div data-top-accent class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-champagne/25 to-transparent transition-all duration-300"></div>
+  <div data-bottom-accent class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-field-navy/15 to-transparent transition-all duration-300"></div>
+
+  <nav class="container-custom relative z-10">
+    <div class="flex items-center justify-between py-3 gap-6 min-h-[64px]">
+      <a href="/" class="flex items-center z-10 transition-all duration-200 hover:scale-[1.03]">
+        <img src="/images/ft2023.svg" alt="Field & Tides" class="h-11 md:h-12 w-auto" />
       </a>
 
-      <!-- Desktop Navigation -->
-      <div class="hidden lg:flex items-center space-x-8">
+      <div class="hidden lg:flex items-center gap-6">
         {navigation.map(item => (
-          item.submenu ? (
-            <div class="relative group">
-              <button
-                class="text-midnight hover:text-field-navy transition-colors duration-200 font-medium flex items-center gap-1"
-              >
-                {item.name}
-                <svg class="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              <div class="absolute left-0 mt-2 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform group-hover:translate-y-0 translate-y-2">
-                <div class="bg-white rounded-xl shadow-lg shadow-slate-200/50 py-2 border border-slate-100">
-                  {item.submenu.map(subitem => (
-                    <a
-                      href={subitem.href}
-                      class={`block px-4 py-2 text-sm hover:bg-field-shell transition-colors ${
-                        currentPath === subitem.href ? 'text-field-navy font-medium' : 'text-midnight'
-                      }`}
-                    >
-                      {subitem.name}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <a
-              href={item.href}
-              class={`link-underline text-midnight hover:text-field-navy transition-colors duration-200 font-medium ${
-                currentPath === item.href ? 'text-field-navy' : ''
-              }`}
-            >
-              {item.name}
-            </a>
-          )
+          <a
+            href={item.href}
+            class={`text-midnight/90 hover:text-field-navy transition-colors duration-200 font-heading font-semibold text-[0.85rem] tracking-[0.24em] ${
+              currentPath === item.href ? 'text-field-navy' : ''
+            }`}
+          >
+            {item.name}
+          </a>
         ))}
-        <a href="/giftcards" class="btn btn-secondary !py-2 !px-5">
-          Gift Cards
+        <a href="/contact" class="px-6 py-2.5 bg-champagne text-midnight font-heading font-semibold text-sm tracking-[0.28em] rounded-md hover:bg-champagne/90 transition-all duration-200 shadow-sm">
+          RESERVE
         </a>
       </div>
 
-      <!-- Mobile Menu Button -->
       <button
         id="mobile-menu-button"
-        class="lg:hidden z-10 p-2 text-midnight hover:text-field-navy transition-colors"
+        class="lg:hidden z-10 p-2 text-midnight hover:text-field-navy transition-all rounded-md hover:bg-field-navy/5"
         aria-label="Toggle menu"
         aria-expanded="false"
       >
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path class="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-          <path class="close-icon hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path class="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16" />
+          <path class="close-icon hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
@@ -106,45 +66,17 @@ const navigation = [
       <div class="container-custom">
         <div class="space-y-4">
           {navigation.map(item => (
-            <div>
-              {item.submenu ? (
-                <div>
-                  <button
-                    class="w-full text-left py-3 text-lg font-medium text-midnight hover:text-field-navy transition-colors flex items-center justify-between"
-                    data-mobile-dropdown
-                  >
-                    {item.name}
-                    <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  <div class="pl-4 space-y-2 max-h-0 overflow-hidden transition-all duration-300" data-mobile-submenu>
-                    {item.submenu.map(subitem => (
-                      <a
-                        href={subitem.href}
-                        class={`block py-2 text-base ${
-                          currentPath === subitem.href ? 'text-field-navy font-medium' : 'text-midnight/70'
-                        }`}
-                      >
-                        {subitem.name}
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <a
-                  href={item.href}
-                  class={`block py-3 text-lg font-medium hover:text-field-navy transition-colors ${
-                    currentPath === item.href ? 'text-field-navy' : 'text-midnight'
-                  }`}
-                >
-                  {item.name}
-                </a>
-              )}
-            </div>
+            <a
+              href={item.href}
+              class={`block py-3 text-lg font-heading font-semibold uppercase tracking-wide hover:text-field-navy transition-colors ${
+                currentPath === item.href ? 'text-field-navy' : 'text-midnight'
+              }`}
+            >
+              {item.name}
+            </a>
           ))}
-          <a href="/giftcards" class="btn btn-secondary w-full mt-6">
-            Gift Cards
+          <a href="/contact" class="inline-block bg-champagne text-midnight font-heading font-bold py-3 px-6 rounded w-full mt-6 uppercase tracking-wide hover:bg-champagne/90 transition-all duration-300 text-center text-sm">
+            Reservations
           </a>
         </div>
       </div>
@@ -155,19 +87,40 @@ const navigation = [
 <script>
   // Header scroll effect
   function initHeader() {
-    const header = document.querySelector('[data-header]');
-    let lastScroll = 0;
+    const header = document.querySelector('[data-header]') as HTMLElement;
+    const headerBg = header?.querySelector('[data-header-bg]') as HTMLElement;
+    const topAccent = header?.querySelector('[data-top-accent]') as HTMLElement;
+    const bottomAccent = header?.querySelector('[data-bottom-accent]') as HTMLElement;
 
     window.addEventListener('scroll', () => {
       const currentScroll = window.pageYOffset;
 
       if (currentScroll > 50) {
-        header?.classList.add('backdrop-blur-nav', 'shadow-md');
+        // Enhanced shadow and accent on scroll
+        if (headerBg) {
+          headerBg.style.boxShadow = '0 18px 35px -18px rgb(17 76 135 / 0.55)';
+          headerBg.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.69) 0%, rgba(17,76,135,0.32) 100%)';
+        }
+        if (topAccent) {
+          topAccent.style.opacity = '1';
+        }
+        if (bottomAccent) {
+          bottomAccent.style.opacity = '1';
+          bottomAccent.style.height = '2px';
+        }
       } else {
-        header?.classList.remove('backdrop-blur-nav', 'shadow-md');
+        if (headerBg) {
+          headerBg.style.boxShadow = '0 1px 4px rgb(0 0 0 / 0.08)';
+          headerBg.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.68) 0%, rgba(17,76,135,0.18) 100%)';
+        }
+        if (topAccent) {
+          topAccent.style.opacity = '0.5';
+        }
+        if (bottomAccent) {
+          bottomAccent.style.opacity = '0.5';
+          bottomAccent.style.height = '1px';
+        }
       }
-
-      lastScroll = currentScroll;
     });
   }
 

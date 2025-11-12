@@ -11,6 +11,7 @@
     "db:init": "node scripts/init-db.js"
   },
   "dependencies": {
+    "@astrojs/check": "^0.9.5",
     "@astrojs/node": "^9.0.0",
     "@astrojs/react": "^4.0.0",
     "@astrojs/tailwind": "^6.0.0",
@@ -18,7 +19,7 @@
     "astro": "^5.0.0",
     "better-sqlite3": "^11.5.0",
     "nanoid": "^5.0.7",
-    "nodemailer": "^6.9.14",
+    "nodemailer": "^7.0.10",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sharp": "^0.33.5",
@@ -32,6 +33,6 @@
     "@types/nodemailer": "^6.4.16",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
-    "typescript": "^5.6.3"
+    "typescript": "^5.9.3"
   }
 }

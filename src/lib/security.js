@@ -1,4 +1,4 @@
-import { db, prepare } from './database.js';
+import { prepare } from './database.js';
 
 // Rate limiting
 export function checkRateLimit(identifier, endpoint, maxRequests = 10, windowMinutes = 1) {

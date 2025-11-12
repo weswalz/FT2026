@@ -1,109 +1,147 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Hero from '../components/Hero.astro';
+import { getPageContent, pickSection, getSeoMeta } from '../lib/content.js';
+
+type HoursEntry = { label: string; value: string };
+type ButtonConfig = { text: string; href: string; variant?: 'primary' | 'outline'; target?: '_blank' | '_self' };
+
+const cmsPage = getPageContent('location');
+const seo = getSeoMeta(cmsPage, {
+  title: 'Location | Field & Tides',
+  description: "Visit Field & Tides in Houston's historic Heights neighborhood."
+});
+
+const infoSection = pickSection<{ hours?: HoursEntry[]; location?: string; contact?: { phone?: string; email?: string }; buttons?: ButtonConfig[] }>(
+  cmsPage,
+  'location_info',
+  {}
+);
+const hours: HoursEntry[] = infoSection?.hours ?? [
+  { label: 'Monday - Thursday', value: '11:00 AM - 9:00 PM' },
+  { label: 'Friday', value: '11:00 AM - 10:00 PM' },
+  { label: 'Saturday', value: '10:00 AM - 10:00 PM' },
+  { label: 'Sunday', value: '10:00 AM - 9:00 PM' }
+];
+const locationCopy = infoSection?.location ?? 'Field &amp; Tides Is Located In The Historic Heights District<br />705 East 11th Street<br />Houston, Texas 77008';
+const contact = infoSection?.contact ?? { phone: '713-861-6143', email: 'info@fieldandtides.com' };
+const buttons: ButtonConfig[] = infoSection?.buttons ?? [
+  { text: 'Get Directions', href: 'https://www.google.com/maps/place/Field+%26+Tides/@29.7891545,-95.3911187,17z', variant: 'primary', target: '_blank' },
+  { text: 'Contact Us', href: '/contact', variant: 'outline' }
+];
 ---
 
 <BaseLayout
-  title="Location | Field & Tides"
-  description="Visit Field & Tides in Houston's historic Heights neighborhood."
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  image={seo.image}
+  heroFocus={true}
 >
-  <Hero
-    title="Visit Us"
-    subtitle="Houston Heights"
-    image="/images/hero-location.jpg"
-    height="small"
-  />
-
-  <section class="section">
+  <section class="section bg-field-navy">
     <div class="container-custom">
-      <div class="grid lg:grid-cols-2 gap-12">
-        <!-- Location Info -->
-        <div>
-          <h2 class="text-3xl font-heading font-semibold mb-6">Find Us</h2>
-
-          <div class="space-y-8">
-            <div>
-              <h3 class="text-xl font-semibold text-field-navy mb-3">Address</h3>
-              <p class="text-midnight/70">
-                Houston Heights<br>
-                Houston, TX
-              </p>
-              <a
-                href="https://maps.google.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 text-field-navy hover:text-field-copper transition-colors mt-2"
-              >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                Get Directions
-              </a>
-            </div>
-
-            <div>
-              <h3 class="text-xl font-semibold text-field-navy mb-3">Hours of Operation</h3>
-              <div class="space-y-2 text-midnight/70">
-                <div class="flex justify-between">
-                  <span class="font-medium">Monday</span>
-                  <span>Closed</span>
+      <div class="max-w-6xl mx-auto text-white">
+        <div class="mb-10">
+          <p class="text-xs uppercase tracking-[0.5em] text-field-gold">Field &amp; tides</p>
+          <h2 class="text-4xl md:text-5xl font-heading mt-2">Field &amp; Tides Is Located In The Historic Heights District</h2>
+          <p class="text-white/80 mt-4 max-w-3xl">
+            Join us in the heart of Houston’s Heights neighborhood. Stop in for lunch, plan a leisurely dinner, or start the weekend with brunch—
+            the doors are open seven days a week.
+          </p>
+        </div>
+        <!-- Content Grid -->
+        <div class="grid lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] gap-8 items-stretch">
+          <!-- Info Card -->
+          <div class="bg-white/5 rounded-2xl p-8 border border-white/10 backdrop-blur-[6px] h-full" style="box-shadow: 0 18px 45px -28px rgba(0,0,0,0.85);">
+            <div class="space-y-10">
+              <!-- Hours -->
+              <div class="flex gap-5">
+                <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-white/10 shrink-0">
+                  <svg class="w-6 h-6 text-field-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
                 </div>
-                <div class="flex justify-between">
-                  <span class="font-medium">Tuesday</span>
-                  <span>5pm - 10pm (Dinner)</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="font-medium">Wednesday - Friday</span>
-                  <span>11am - 3pm, 5pm - 10pm</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="font-medium">Saturday</span>
-                  <span>10am - 3pm, 5pm - 10pm</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="font-medium">Sunday</span>
-                  <span>10am - 3pm, 5pm - 10pm</span>
+                <div class="flex-1">
+                  <h4 class="text-2xl font-heading font-semibold text-white">Standard Hours Of Operation</h4>
+                  <div class="mt-4 space-y-3">
+                    {hours.map((entry, index) => (
+                      <div class={`flex flex-wrap justify-between gap-2 py-2 ${index < hours.length - 1 ? 'border-b border-white/10' : ''}`}>
+                        <span class="font-semibold text-white/90">{entry.label}</span>
+                        <span class="text-white/75">{entry.value}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div>
-              <h3 class="text-xl font-semibold text-field-navy mb-3">Contact</h3>
-              <div class="space-y-2">
-                <p>
-                  <a href="tel:+15551234567" class="text-field-navy hover:text-field-copper transition-colors link-underline">
-                    (555) 123-4567
-                  </a>
-                </p>
-                <p>
-                  <a href="mailto:info@fieldandtides.com" class="text-field-navy hover:text-field-copper transition-colors link-underline">
-                    info@fieldandtides.com
-                  </a>
-                </p>
+              <!-- Location -->
+              <div class="flex gap-5">
+                <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-white/10 shrink-0">
+                  <svg class="w-6 h-6 text-field-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <h4 class="text-2xl font-heading font-semibold text-white">Location</h4>
+                  <p class="text-white/80 leading-relaxed mt-4" set:html={locationCopy} />
+                </div>
               </div>
-            </div>
 
-            <div>
-              <h3 class="text-xl font-semibold text-field-navy mb-3">Parking</h3>
-              <p class="text-midnight/70">
-                Street parking is available on site. Additional parking can be found in the surrounding Heights area.
-              </p>
+              <!-- Contact -->
+              <div class="flex gap-5">
+                <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-white/10 shrink-0">
+                  <svg class="w-6 h-6 text-field-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <h4 class="text-2xl font-heading font-semibold text-white">Contact</h4>
+                  <div class="space-y-2 mt-4">
+                    {contact.phone && (
+                      <p>
+                        <a href={`tel:${contact.phone}`} class="text-field-gold hover:text-white transition-colors font-medium">
+                          {contact.phone}
+                        </a>
+                      </p>
+                    )}
+                    {contact.email && (
+                      <p>
+                        <a href={`mailto:${contact.email}`} class="text-field-gold/80 hover:text-white transition-colors font-medium">
+                          {contact.email}
+                        </a>
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Buttons -->
+              <div class="flex flex-col sm:flex-row gap-3 pt-2 sm:pt-4">
+                {buttons.map((button) => (
+                  <a
+                    href={button.href}
+                    target={button.target ?? '_self'}
+                    rel="noopener noreferrer"
+                    class={`${button.variant === 'outline' ? 'btn btn-outline !border-white !text-white hover:!bg-white hover:!text-field-navy' : 'btn btn-secondary'} flex-1 justify-center`}
+                  >
+                    {button.text}
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Map Placeholder -->
-        <div>
-          <div class="card overflow-hidden h-full min-h-[500px]">
-            <div class="w-full h-full bg-slate-200 flex items-center justify-center text-midnight/50">
-              <div class="text-center">
-                <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <p>Map integration coming soon</p>
-              </div>
+          <!-- Map Card -->
+          <div class="relative overflow-hidden rounded-2xl border border-white/10 shadow-2xl bg-midnight/40 flex flex-col h-full">
+            <div class="flex-1 min-h-[320px] md:min-h-[420px] lg:min-h-[520px]">
+              <iframe
+                title="Field & Tides on Google Maps"
+                src="https://www.google.com/maps?q=Field+%26+Tides+Houston+TX&output=embed"
+                class="w-full h-full"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                allowfullscreen
+              ></iframe>
             </div>
           </div>
         </div>

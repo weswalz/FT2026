@@ -3,17 +3,39 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import MenuSection from '../components/MenuSection.astro';
 import { getMenuWithItems } from '../lib/menus.js';
+import { getPageContent, pickSection, getSeoMeta } from '../lib/content.js';
+
+type HeroSection = {
+  title?: string;
+  subtitle?: string;
+  image?: string;
+  height?: 'small' | 'medium' | 'large' | 'full';
+};
 
 const menu = getMenuWithItems('wine');
+const cmsPage = getPageContent('menu-wine');
+const seo = getSeoMeta(cmsPage, {
+  title: 'Wine List | Field & Tides',
+  description: 'Curated selections from around the world.'
+});
+
+const heroSection = pickSection<HeroSection>(cmsPage, 'hero', {});
+const hero = {
+  title: heroSection?.title ?? 'Wine List',
+  subtitle: heroSection?.subtitle ?? 'Curated selections from around the world',
+  image: heroSection?.image ?? '/images/hero-wine.jpg',
+  height: heroSection?.height ?? 'small'
+};
 ---
 
-<BaseLayout title="Wine List | Field & Tides">
-  <Hero
-    title="Wine List"
-    subtitle="Curated selections from around the world"
-    image="/images/hero-wine.jpg"
-    height="small"
-  />
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  image={seo.image}
+  heroFocus={true}
+>
+  <Hero {...hero} />
 
   <section class="section">
     <div class="container-custom max-w-5xl">

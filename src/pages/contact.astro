@@ -2,18 +2,70 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import ContactForm from '../components/ContactForm.astro';
+import { getPageContent, pickSection, getSeoMeta } from '../lib/content.js';
+
+type HeroSection = {
+  title?: string;
+  subtitle?: string;
+  image?: string;
+  height?: 'small' | 'medium' | 'large' | 'full';
+};
+
+type HoursEntry = { label: string; value: string };
+
+type ContactInfoSection = {
+  location?: string;
+  hours?: HoursEntry[];
+  contact?: { email?: string; phone?: string };
+  social?: { label: string; href: string; icon: string }[];
+};
+
+const cmsPage = getPageContent('contact');
+const seo = getSeoMeta(cmsPage, {
+  title: 'Contact Us | Field & Tides',
+  description: 'Get in touch with Field & Tides Restaurant & Bar in Houston Heights.'
+});
+
+const heroSection = pickSection<HeroSection>(cmsPage, 'hero', {});
+const hero = {
+  title: heroSection?.title ?? 'Contact Us',
+  subtitle: heroSection?.subtitle ?? "We'd love to hear from you",
+  image: heroSection?.image ?? '/images/hero-contact.jpg',
+  height: heroSection?.height ?? 'small'
+};
+
+const infoSection = pickSection<ContactInfoSection>(cmsPage, 'contact_info', {});
+const location = infoSection?.location ?? 'Houston Heights<br>Houston, TX';
+const hours: HoursEntry[] =
+  Array.isArray(infoSection?.hours) && infoSection.hours.length > 0
+    ? infoSection.hours
+    : [
+        { label: 'Lunch', value: 'Wed-Sun, 11am-3pm' },
+        { label: 'Dinner', value: 'Tue-Sun, 5pm-10pm' },
+        { label: 'Brunch', value: 'Sat-Sun, 10am-3pm' },
+        { label: 'Closed', value: 'Mondays' }
+      ];
+const contact = infoSection?.contact ?? {
+  email: 'info@fieldandtides.com',
+  phone: '(555) 123-4567'
+};
+const socialLinks =
+  Array.isArray(infoSection?.social) && infoSection.social.length > 0
+    ? infoSection.social
+    : [
+        { label: 'Facebook', href: 'https://facebook.com/fieldandtides', icon: 'facebook' },
+        { label: 'Instagram', href: 'https://instagram.com/fieldandtides', icon: 'instagram' }
+      ];
 ---
 
 <BaseLayout
-  title="Contact Us | Field & Tides"
-  description="Get in touch with Field & Tides Restaurant & Bar in Houston Heights."
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  image={seo.image}
+  heroFocus={true}
 >
-  <Hero
-    title="Contact Us"
-    subtitle="We'd love to hear from you"
-    image="/images/hero-contact.jpg"
-    height="small"
-  />
+  <Hero {...hero} />
 
   <section class="section">
     <div class="container-custom">
@@ -25,63 +77,62 @@ import ContactForm from '../components/ContactForm.astro';
           <div class="space-y-8">
             <div>
               <h3 class="text-xl font-semibold text-field-navy mb-3">Location</h3>
-              <p class="text-midnight/70">
-                Houston Heights<br>
-                Houston, TX
-              </p>
+              <p class="text-midnight/70" set:html={location} />
             </div>
 
             <div>
               <h3 class="text-xl font-semibold text-field-navy mb-3">Hours</h3>
               <div class="space-y-2 text-midnight/70">
-                <p><strong>Lunch:</strong> Wed-Sun, 11am-3pm</p>
-                <p><strong>Dinner:</strong> Tue-Sun, 5pm-10pm</p>
-                <p><strong>Brunch:</strong> Sat-Sun, 10am-3pm</p>
-                <p><strong>Closed:</strong> Mondays</p>
+                {hours.map((entry) => (
+                  <p>
+                    <strong>{entry.label}:</strong> {entry.value}
+                  </p>
+                ))}
               </div>
             </div>
 
             <div>
               <h3 class="text-xl font-semibold text-field-navy mb-3">Contact</h3>
               <div class="space-y-2">
-                <p>
-                  <a href="mailto:info@fieldandtides.com" class="text-field-navy hover:text-field-copper transition-colors link-underline">
-                    info@fieldandtides.com
-                  </a>
-                </p>
-                <p>
-                  <a href="tel:+15551234567" class="text-field-navy hover:text-field-copper transition-colors link-underline">
-                    (555) 123-4567
-                  </a>
-                </p>
+                {contact.email && (
+                  <p>
+                    <a href={`mailto:${contact.email}`} class="text-field-navy hover:text-field-copper transition-colors link-underline">
+                      {contact.email}
+                    </a>
+                  </p>
+                )}
+                {contact.phone && (
+                  <p>
+                    <a href={`tel:${contact.phone}`} class="text-field-navy hover:text-field-copper transition-colors link-underline">
+                      {contact.phone}
+                    </a>
+                  </p>
+                )}
               </div>
             </div>
 
             <div>
               <h3 class="text-xl font-semibold text-field-navy mb-3">Follow Us</h3>
               <div class="flex gap-4">
-                <a
-                  href="https://facebook.com/fieldandtides"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="w-12 h-12 rounded-full bg-field-navy text-white hover:bg-field-copper flex items-center justify-center transition-colors"
-                  aria-label="Facebook"
-                >
-                  <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                  </svg>
-                </a>
-                <a
-                  href="https://instagram.com/fieldandtides"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="w-12 h-12 rounded-full bg-field-navy text-white hover:bg-field-copper flex items-center justify-center transition-colors"
-                  aria-label="Instagram"
-                >
-                  <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                  </svg>
-                </a>
+                {socialLinks.map((social) => (
+                  <a
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="w-12 h-12 rounded-full bg-field-navy text-white hover:bg-field-copper flex items-center justify-center transition-colors"
+                    aria-label={social.label}
+                  >
+                    {social.icon === 'instagram' ? (
+                      <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                      </svg>
+                    ) : (
+                      <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                      </svg>
+                    )}
+                  </a>
+                ))}
               </div>
             </div>
           </div>

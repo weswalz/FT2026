@@ -21,7 +21,7 @@ export async function sendWebhook(submissionId, payload) {
     });
 
     if (response.ok) {
-      await updateWebhookStatus(submissionId, 'sent');
+      updateWebhookStatus(submissionId, 'sent');
       return { success: true };
     } else {
       throw new Error(`Webhook failed with status ${response.status}`);
@@ -59,7 +59,7 @@ export async function processWebhookQueue() {
 
     if (!result.success) {
       const newStatus = attempts >= 3 ? 'failed' : 'pending';
-      await updateWebhookStatus(submission.id, newStatus, attempts);
+      updateWebhookStatus(submission.id, newStatus, attempts);
     }
   }
 }

@@ -2,10 +2,10 @@
 interface MenuItem {
   id: number;
   name: string;
-  description?: string;
-  price?: string;
-  tags?: string[];
-  dietary_info?: string[];
+  description?: string | null;
+  price?: string | null;
+  tags?: string[] | null;
+  dietary_info?: string[] | null;
 }
 
 interface Props {
@@ -15,6 +15,13 @@ interface Props {
 }
 
 const { title, items, columns = 1 } = Astro.props;
+
+const dietaryLabels: Record<string, string> = {
+  vegan: 'VG',
+  vegetarian: 'VEG',
+  'gluten-free': 'GF',
+  'dairy-free': 'DF'
+};
 ---
 
 <div class="menu-section mb-12">
@@ -32,14 +39,14 @@ const { title, items, columns = 1 } = Astro.props;
             {item.name}
             {item.dietary_info && item.dietary_info.length > 0 && (
               <span class="ml-2 text-xs text-field-copper">
-                {item.dietary_info.map(info => (
-                  <span class="inline-flex items-center" title={info}>
-                    {info === 'vegan' && '🌱'}
-                    {info === 'vegetarian' && '🥬'}
-                    {info === 'gluten-free' && 'GF'}
-                    {info === 'dairy-free' && 'DF'}
-                  </span>
-                ))}
+                {item.dietary_info.map(info => {
+                  const shorthand = dietaryLabels[info] ?? info?.toUpperCase();
+                  return (
+                    <span class="inline-flex items-center" title={info}>
+                      {shorthand}
+                    </span>
+                  );
+                })}
               </span>
             )}
           </h4>

@@ -1,0 +1,164 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getSession } from '../../lib/auth.js';
+
+export const prerender = false;
+
+const sessionId = Astro.cookies.get('session_id')?.value;
+const session = sessionId ? getSession(sessionId) : null;
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+const menuSummary = [
+  { label: 'Live Menus', value: '8', subtext: 'Visible on site', accent: 'bg-field-navy/10 text-field-navy' },
+  { label: 'Drafts', value: '3', subtext: 'Waiting review', accent: 'bg-orange-500/10 text-orange-600' },
+  { label: 'Seasonal Specials', value: '2', subtext: 'Launching next week', accent: 'bg-champagne/30 text-field-copper' },
+  { label: 'Menu Items', value: '146', subtext: 'All categories', accent: 'bg-green-500/10 text-green-700' }
+];
+
+const menuEntries = [
+  {
+    title: 'Dinner Menu',
+    description: 'Seasonal Gulf seafood, steaks, and composed plates.',
+    status: 'Published',
+    featured: true,
+    category: 'Dinner',
+    updated: 'Oct 3, 2025',
+    items: 24
+  },
+  {
+    title: 'Brunch Menu',
+    description: 'Weekend comfort plates, brunch cocktails, and pastries.',
+    status: 'Published',
+    featured: false,
+    category: 'Brunch',
+    updated: 'Jun 1, 2025',
+    items: 18
+  },
+  {
+    title: 'Lunch Menu',
+    description: 'Midday staples with salads, sandwiches, and shareables.',
+    status: 'Published',
+    featured: false,
+    category: 'Lunch',
+    updated: 'Jun 25, 2025',
+    items: 20
+  },
+  {
+    title: 'Wine List',
+    description: 'Curated cellars with Old World and domestic highlights.',
+    status: 'Draft',
+    featured: false,
+    category: 'Beverages',
+    updated: 'Apr 24, 2025',
+    items: 42
+  },
+  {
+    title: 'Happy Hour',
+    description: 'Daily drink and bite specials, 3–6 PM.',
+    status: 'Published',
+    featured: false,
+    category: 'Specials',
+    updated: 'Jan 10, 2025',
+    items: 12
+  }
+];
+---
+
+<AdminLayout title="Menus" section="menus" session={session}>
+  <Fragment slot="actions">
+    <button class="px-4 py-2 rounded-lg bg-field-navy text-white font-semibold text-sm hover:bg-field-navy/90 transition-colors shadow-sm">
+      + Create Menu
+    </button>
+    <button class="px-4 py-2 rounded-lg bg-slate-100 text-midnight font-semibold text-sm hover:bg-slate-200 transition-colors border border-slate-200">
+      Import CSV
+    </button>
+  </Fragment>
+
+  <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 mb-8">
+    {menuSummary.map((item) => (
+      <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <p class="text-sm text-midnight/60 font-medium mb-3">{item.label}</p>
+        <p class="text-3xl font-bold text-midnight mb-1">{item.value}</p>
+        <p class={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${item.accent}`}>{item.subtext}</p>
+      </div>
+    ))}
+  </section>
+
+  <section class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm mb-6">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div>
+        <h2 class="text-lg font-semibold text-midnight">Menu Library</h2>
+        <p class="text-sm text-midnight/60 mt-1">Track every menu version before syncing to the public site.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button class="px-4 py-2 rounded-lg bg-field-navy text-white text-sm font-semibold">All</button>
+        <button class="px-4 py-2 rounded-lg bg-slate-100 text-midnight text-sm font-semibold border border-slate-200">Published</button>
+        <button class="px-4 py-2 rounded-lg bg-slate-100 text-midnight text-sm font-semibold border border-slate-200">Draft</button>
+        <button class="px-4 py-2 rounded-lg bg-slate-100 text-midnight text-sm font-semibold border border-slate-200">Featured</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+    <table class="w-full">
+      <thead class="bg-slate-50 border-b border-slate-200">
+        <tr>
+          <th class="px-6 py-4 text-left text-xs font-bold text-midnight/70 uppercase tracking-wide">Menu</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-midnight/70 uppercase tracking-wide">Status</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-midnight/70 uppercase tracking-wide">Category</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-midnight/70 uppercase tracking-wide">Items</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-midnight/70 uppercase tracking-wide">Updated</th>
+          <th class="px-6 py-4 text-right text-xs font-bold text-midnight/70 uppercase tracking-wide">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200">
+        {menuEntries.map((menu) => (
+          <tr class="hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4">
+              <p class="text-midnight font-semibold">{menu.title}</p>
+              <p class="text-sm text-midnight/60 mt-1">{menu.description}</p>
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex gap-2">
+                <span class={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+                  menu.status === 'Published'
+                    ? 'bg-green-100 text-green-700 border border-green-200'
+                    : 'bg-orange-100 text-orange-700 border border-orange-200'
+                }`}>
+                  {menu.status}
+                </span>
+                {menu.featured && (
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-champagne/30 text-field-copper border border-champagne/60">
+                    Featured
+                  </span>
+                )}
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <span class="text-midnight/70 font-medium">{menu.category}</span>
+            </td>
+            <td class="px-6 py-4">
+              <span class="text-midnight/70 font-medium">{menu.items}</span>
+            </td>
+            <td class="px-6 py-4">
+              <span class="text-midnight/70">{menu.updated}</span>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <button class="px-4 py-2 bg-slate-100 text-midnight font-semibold text-sm rounded-lg hover:bg-slate-200 transition-colors border border-slate-200">
+                  Preview
+                </button>
+                <button class="px-4 py-2 bg-champagne text-midnight font-semibold text-sm rounded-lg hover:bg-champagne/90 transition-colors shadow-sm">
+                  Edit
+                </button>
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </section>
+</AdminLayout>

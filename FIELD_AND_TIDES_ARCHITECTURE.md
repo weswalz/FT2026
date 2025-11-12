@@ -3,7 +3,7 @@
 ## 1. Overview
 - **Stack:** Astro 5.x (SSR) + selective React islands, Tailwind CSS, TypeScript-friendly JS, SQLite via `better-sqlite3`.
 - **Deployment:** Ubuntu 24.04 LTS, Node.js 22 LTS, PM2-managed Node server, Nginx reverse proxy (SSL termination, caching, security headers).
-- **Modules:** Public site, Admin panel, API routes, SQLite data layer, background job for n8n webhook retries.
+- **Modules:** Public site, REAKT PANEL admin, API routes, SQLite data layer, background job for n8n webhook retries.
 - **Brand Palette:** `#114C87` (deep navy), `#F4E297` (gold), `#FEFDFC` (lily white), `#081928` (midnight). Accent suggestion `#C07A3A`.
 
 ## 2. System Diagram
@@ -22,8 +22,8 @@ Astro SSR -> SMTP + n8n webhook (outbound integrations)
    - `/src/pages` contains 18 public routes mapping 1:1 with requirements.
    - `prerender` disabled for dynamic routes to ensure fresh data.
    - Shared layouts handle header, footer, navigation, SEO tags.
-2. **Admin Panel:**
-   - Lives under `/src/pages/admin` with identical structure to BiYu reference.
+2. **Admin Panel (REAKT PANEL):**
+   - Lives under `/src/pages/admin` with identical structure to the REAKT PANEL reference.
    - `AdminLayout.astro` sets up nav, theme, Lucide icons, user menu.
    - Sections: Dashboard, Menus, Gallery, Pages, Forms, Settings.
 3. **API Routes:**
@@ -52,7 +52,7 @@ Astro SSR -> SMTP + n8n webhook (outbound integrations)
 | `image_modules` | Reusable modules referencing galleries | `id`, `module_type`, `layout`, `content JSON` |
 | `form_submissions` | Contact + private dining data | `id`, `form_type`, `payload JSON`, `status`, `webhook_status`, `created_at` |
 | `users` | Admin accounts | `username`, `password_hash`, `role` |
-| `sessions`, `login_attempts`, `rate_limits`, `audit_log` | Security and monitoring tables reused from BiYu stack. |
+| `sessions`, `login_attempts`, `rate_limits`, `audit_log` | Security and monitoring tables reused from the REAKT PANEL stack. |
 
 ### Relationships
 - `menus` 1:N `menu_items`.
@@ -63,7 +63,8 @@ Astro SSR -> SMTP + n8n webhook (outbound integrations)
 ## 5. Theming & Design Tokens
 - Global CSS variables defined in `src/styles/theme.css` (new file) carrying restaurant palette.
 - Tailwind config extends color palette with `field`, `champagne`, `shell`, `midnight`.
-- Admin CSS adapted from BiYu to reflect new branding while keeping structure.
+- Admin CSS adapted from the REAKT PANEL base to reflect new branding while keeping structure.
+- Do **not** import the legacy WordPress/Bricks helper bundles. The Astro build should recreate typography, layout, and animation from scratch (Tailwind tokens + bespoke components) so there are zero dependencies on exported `wp-content` assets.
 
 ## 6. Build & Deployment
 - **Build command:** `npm run build` (Astro -> `/dist` server bundle).

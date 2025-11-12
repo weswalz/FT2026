@@ -1,4 +1,4 @@
-import { db, prepare } from './database.js';
+import { prepare } from './database.js';
 
 // Get all pages
 export function getAllPages(statusFilter = null) {

@@ -10,18 +10,22 @@ export const prerender = false;
   <title>Admin Login | Field & Tides</title>
   <link rel="stylesheet" href="/src/styles/global.css" />
 </head>
-<body class="bg-gradient-to-br from-field-navy to-midnight min-h-screen flex items-center justify-center">
-  <div class="w-full max-w-md p-8">
-    <div class="card">
-      <div class="card-body">
-        <div class="text-center mb-8">
-          <h1 class="text-3xl font-heading font-bold text-field-navy mb-2">Field & Tides</h1>
-          <p class="text-midnight/70">Admin Panel</p>
-        </div>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-md p-6">
+    <!-- Card Container -->
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+      <!-- Header with F&T Branding -->
+      <div class="bg-field-navy p-8 text-center">
+        <img src="/images/ft2023.svg" alt="Field & Tides" class="h-16 w-auto mx-auto mb-4 brightness-0 invert" />
+        <h1 class="text-2xl font-heading font-bold text-white">Admin Panel</h1>
+        <p class="text-white/70 text-sm mt-2">Sign in to manage your restaurant</p>
+      </div>
 
+      <!-- Form Section -->
+      <div class="p-8">
         <form action="/admin/auth" method="post" class="space-y-6">
           <div>
-            <label for="username" class="block text-sm font-medium text-midnight mb-2">
+            <label for="username" class="block text-sm font-semibold text-midnight mb-2">
               Username
             </label>
             <input
@@ -29,13 +33,13 @@ export const prerender = false;
               id="username"
               name="username"
               required
-              class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-field-navy focus:ring-2 focus:ring-field-navy/20 transition-all outline-none"
+              class="w-full px-4 py-3 rounded-lg border border-slate-300 bg-slate-50 focus:border-field-navy focus:ring-2 focus:ring-field-navy/20 focus:bg-white transition-all outline-none text-midnight font-medium"
               placeholder="Enter your username"
             />
           </div>
 
           <div>
-            <label for="password" class="block text-sm font-medium text-midnight mb-2">
+            <label for="password" class="block text-sm font-semibold text-midnight mb-2">
               Password
             </label>
             <input
@@ -43,25 +47,35 @@ export const prerender = false;
               id="password"
               name="password"
               required
-              class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-field-navy focus:ring-2 focus:ring-field-navy/20 transition-all outline-none"
+              class="w-full px-4 py-3 rounded-lg border border-slate-300 bg-slate-50 focus:border-field-navy focus:ring-2 focus:ring-field-navy/20 focus:bg-white transition-all outline-none text-midnight font-medium"
               placeholder="Enter your password"
             />
           </div>
 
-          <div id="error-message" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm"></div>
+          <div id="error-message" class="hidden p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p class="text-red-800 text-sm font-medium">Invalid credentials. Please try again.</p>
+          </div>
 
-          <button type="submit" class="btn btn-primary w-full">
+          <button type="submit" class="w-full px-6 py-3.5 bg-champagne text-midnight font-bold rounded-lg hover:bg-champagne/90 transition-colors shadow-md hover:shadow-lg">
             Sign In
           </button>
         </form>
 
-        <div class="mt-6 text-center">
-          <a href="/" class="text-sm text-field-navy hover:text-field-copper transition-colors">
-            ← Back to Website
+        <div class="mt-6 pt-6 border-t border-slate-200 text-center">
+          <a href="/" class="text-sm text-field-navy hover:text-field-copper transition-colors font-medium inline-flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Website
           </a>
         </div>
       </div>
     </div>
+
+    <!-- Footer Note -->
+    <p class="text-center text-sm text-midnight/50 mt-6">
+      Field & Tides Restaurant Management System
+    </p>
   </div>
 </body>
 </html>

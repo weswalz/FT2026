@@ -5,7 +5,7 @@
    - Gather final HTML references, imagery, menu spreadsheets.
    - Confirm integrations (SMTP, n8n endpoint, map provider).
 2. **Repo Initialization**
-   - Clone BiYu baseline, create new branch `field-and-tides`.
+   - Clone the REAKT PANEL baseline, create new branch `field-and-tides`.
    - Set up environment configs (.env.example).
 3. **Database Schema Planning**
    - Draft SQLite schema for menus, pages, gallery, forms, modules.
@@ -15,6 +15,7 @@
 1. **Branding & Theming**
    - Update Tailwind + CSS tokens with palette, typography.
    - Swap logos, favicons, meta defaults.
+   - Recreate typography + theming directly in Tailwind/CSS tokens; remove all reliance on exported WordPress assets so the Astro build is self-contained.
 2. **Routing Skeleton**
    - Create 18 Astro routes under `src/pages` with layout scaffolding.
    - Ensure nav/footer includes all menu links + gift card CTA.

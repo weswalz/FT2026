@@ -1,179 +1,109 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Hero from '../components/Hero.astro';
+import { getPageContent, pickSection, getSeoMeta } from '../lib/content.js';
 
-const features = [
-  {
-    title: 'Locally Sourced',
-    description: 'Fresh ingredients from local farms and the Gulf',
-    icon: '🌾'
-  },
-  {
-    title: 'Seasonal Menus',
-    description: 'Rotating selections that celebrate the seasons',
-    icon: '🍂'
-  },
-  {
-    title: 'Expert Craft',
-    description: 'Culinary artistry from Chef Travis Lenig',
-    icon: '👨‍🍳'
-  }
+type HeroSection = {
+  title?: string;
+  subtitle?: string;
+  slides?: string[];
+  images?: string[];
+};
+
+const cmsPage = getPageContent('homepage');
+const seo = getSeoMeta(cmsPage, {
+  title: 'Field & Tides Restaurant & Bar | Houston Heights',
+  description: 'Coastal dining in Houston Heights featuring seasonal menus and fresh Gulf seafood.'
+});
+
+const fallbackSlides: string[] = [
+  '/images/1HOMEREDFISH-1.jpg',
+  '/images/2HOMECOUNTRYHAM-1.jpg',
+  '/images/3BLUEBERRYGINGER-1.jpg',
+  '/images/4HOMECHICKENPICATTA-1.jpg',
+  '/images/5MUSHROOMPICATTA-1.jpg',
+  '/images/6LAMBSHANK-1.jpg',
+  '/images/7HOMEARUGALA-1.jpg',
+  '/images/8HOMEKITCHEN-1.jpg'
 ];
+
+const heroSection = pickSection<HeroSection>(cmsPage, 'hero', {});
+const heroSlides: string[] =
+  Array.isArray(heroSection?.slides) && heroSection.slides.length > 0
+    ? (heroSection.slides as string[])
+    : Array.isArray(heroSection?.images) && heroSection.images.length > 0
+      ? (heroSection.images as string[])
+      : fallbackSlides;
+const heroTitle = heroSection?.title ?? 'Field & Tides Restaurant & Bar';
 ---
 
 <BaseLayout
-  title="Field & Tides Restaurant & Bar | Houston Heights"
-  description="Coastal dining in Houston Heights featuring seasonal menus and fresh Gulf seafood."
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  image={seo.image}
+  heroFocus={true}
 >
-  <!-- Hero Section -->
-  <Hero
-    title="Field & Tides"
-    subtitle="Coastal Dining in the Heart of Houston Heights"
-    image="/images/hero-home.jpg"
-    height="large"
-    overlay="medium"
-    cta={{
-      text: 'View Our Menus',
-      href: '/menu',
-      variant: 'secondary'
-    }}
-  />
-
-  <!-- Welcome Section -->
-  <section class="section bg-field-shell coastal-texture">
-    <div class="container-custom">
-      <div class="max-w-3xl mx-auto text-center">
-        <h2 class="mb-6 text-balance">Welcome to Field & Tides</h2>
-        <p class="text-xl text-midnight/80 leading-relaxed mb-8">
-          Located in Houston's historic Heights neighborhood, Field & Tides features an open canvas menu that reflects
-          Executive Chef Travis Lenig's culinary experiences. Our cuisine draws from Southern, Italian, French, and Asian
-          traditions, celebrating both land and sea.
-        </p>
-        <a href="/ourstory" class="btn btn-outline">
-          Our Story
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features Section -->
-  <section class="section">
-    <div class="container-custom">
-      <div class="grid md:grid-cols-3 gap-12">
-        {features.map(feature => (
-          <div class="text-center fade-in">
-            <div class="text-5xl mb-4">{feature.icon}</div>
-            <h3 class="text-2xl font-heading font-semibold mb-3 text-field-navy">
-              {feature.title}
-            </h3>
-            <p class="text-midnight/70 leading-relaxed">
-              {feature.description}
-            </p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- Menu Highlight Section -->
-  <section class="section bg-white">
-    <div class="container-custom">
-      <div class="text-center mb-12">
-        <h2 class="mb-4">Explore Our Menus</h2>
-        <p class="text-xl text-midnight/70 max-w-2xl mx-auto">
-          From brunch to dinner, happy hour to dessert cocktails, discover flavors that celebrate the best of field and tides.
-        </p>
-      </div>
-
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {[
-          { name: 'Dinner', href: '/menu-dinner', image: '/images/menu-dinner.jpg' },
-          { name: 'Lunch', href: '/menu-lunch', image: '/images/menu-lunch.jpg' },
-          { name: 'Brunch', href: '/menu-brunch', image: '/images/menu-brunch.jpg' },
-          { name: 'Happy Hour', href: '/menu-happy-hour', image: '/images/menu-happy-hour.jpg' },
-          { name: 'Wine', href: '/menu-wine', image: '/images/menu-wine.jpg' },
-          { name: 'Cocktails', href: '/menu-cocktails-beer', image: '/images/menu-cocktails.jpg' }
-        ].map(menu => (
-          <a
-            href={menu.href}
-            class="card group hover:shadow-xl transition-all duration-300 overflow-hidden"
-          >
-            <div class="aspect-[4/3] overflow-hidden">
-              <img
-                src={menu.image}
-                alt={menu.name}
-                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              />
-            </div>
-            <div class="card-body text-center">
-              <h3 class="text-xl font-heading font-semibold text-field-navy group-hover:text-field-copper transition-colors">
-                {menu.name}
-              </h3>
-            </div>
-          </a>
-        ))}
-      </div>
-
-      <div class="text-center mt-12">
-        <a href="/menu" class="btn btn-primary">
-          View All Menus
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Private Events CTA -->
-  <section class="section bg-gradient-to-br from-field-navy to-midnight text-white coastal-texture">
-    <div class="container-custom">
-      <div class="max-w-3xl mx-auto text-center">
-        <h2 class="text-white mb-6">Host Your Event With Us</h2>
-        <p class="text-xl text-white/90 mb-8 leading-relaxed">
-          From intimate gatherings to grand celebrations, Field & Tides provides the perfect setting for your special occasion.
-        </p>
-        <a href="/private-events" class="btn btn-secondary">
-          Learn More About Private Events
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Location Preview -->
-  <section class="section-sm">
-    <div class="container-custom">
-      <div class="grid lg:grid-cols-2 gap-12 items-center">
-        <div>
-          <h2 class="mb-6">Visit Us in the Heights</h2>
-          <div class="space-y-4 text-midnight/80">
-            <div>
-              <h4 class="font-semibold text-field-navy mb-2">Hours</h4>
-              <div class="space-y-1 text-sm">
-                <p><strong>Lunch:</strong> Wed-Sun 11am-3pm</p>
-                <p><strong>Dinner:</strong> Tue-Sun 5pm-10pm</p>
-                <p><strong>Brunch:</strong> Sat-Sun 10am-3pm</p>
-              </div>
-            </div>
-            <div>
-              <h4 class="font-semibold text-field-navy mb-2">Location</h4>
-              <p class="text-sm">Houston Heights<br>Houston, TX</p>
-            </div>
-          </div>
-          <div class="mt-8 flex gap-4">
-            <a href="/location" class="btn btn-primary">
-              Get Directions
-            </a>
-            <a href="/contact" class="btn btn-outline">
-              Contact Us
-            </a>
-          </div>
-        </div>
-        <div class="card overflow-hidden">
+  <!-- Hero Slider -->
+  <div
+    class="relative overflow-hidden"
+    style="height: calc(100vh - var(--layout-header-height, 80px) - var(--layout-footer-height, 140px)); min-height: max(420px, calc(100vh - var(--layout-header-height, 80px) - var(--layout-footer-height, 140px)));"
+  >
+    <div id="hero-slider" class="relative w-full h-full">
+      {heroSlides.map((image, index) => (
+        <div
+          class={`absolute inset-0 transition-opacity duration-[1500ms] ${index === 0 ? 'opacity-100' : 'opacity-0'}`}
+          data-slide={index}
+        >
           <img
-            src="/images/restaurant-interior.jpg"
-            alt="Field & Tides Restaurant Interior"
-            class="w-full h-full object-cover aspect-[4/3]"
+            src={image}
+            alt={heroTitle}
+            class="w-full h-full object-cover scale-105"
+            style="animation: slowZoom 20s ease-out infinite;"
           />
         </div>
-      </div>
+      ))}
     </div>
-  </section>
+
+    <!-- Subtle gradient vignette -->
+    <div class="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-midnight/30"></div>
+  </div>
+
+  <style>
+    @keyframes slowZoom {
+      0%, 100% { transform: scale(1.05); }
+      50% { transform: scale(1.1); }
+    }
+  </style>
+
+  <script>
+    function initHeroSlider() {
+      const slides = document.querySelectorAll('#hero-slider [data-slide]');
+      if (slides.length === 0) return;
+
+      let currentSlide = 0;
+
+      function showSlide(index: number) {
+        slides.forEach((slide, i) => {
+          if (i === index) {
+            slide.classList.remove('opacity-0');
+            slide.classList.add('opacity-100');
+          } else {
+            slide.classList.remove('opacity-100');
+            slide.classList.add('opacity-0');
+          }
+        });
+      }
+
+      function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+      }
+
+      setInterval(nextSlide, 5000);
+    }
+
+    document.addEventListener('DOMContentLoaded', initHeroSlider);
+    document.addEventListener('astro:page-load', initHeroSlider);
+  </script>
+
 </BaseLayout>

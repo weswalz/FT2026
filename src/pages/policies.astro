@@ -1,115 +1,119 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
+import { getPageContent, pickSection, listSections, getSeoMeta } from '../lib/content.js';
+
+type HeroSection = {
+  title?: string;
+  subtitle?: string;
+  image?: string;
+  height?: 'small' | 'medium' | 'large' | 'full';
+};
+
+type PolicyCard = {
+  title: string;
+  body: string;
+  cta?: { text: string; href: string; variant?: 'primary' | 'outline' };
+};
+
+const cmsPage = getPageContent('policies');
+const seo = getSeoMeta(cmsPage, {
+  title: 'Policies | Field & Tides',
+  description: 'Restaurant policies, reservations, and important information.'
+});
+
+const heroSection = pickSection<HeroSection>(cmsPage, 'hero', {});
+const hero = {
+  title: heroSection?.title ?? 'Policies',
+  subtitle: heroSection?.subtitle ?? 'Important information for your visit',
+  image: heroSection?.image ?? '/images/winterdisheswide-1-scaled.jpg',
+  height: heroSection?.height ?? 'small'
+};
+
+const cardSection = pickSection<{ items?: PolicyCard[] }>(cmsPage, 'policy_cards');
+const cardCandidates =
+  Array.isArray(cardSection?.items) && cardSection.items.length > 0
+    ? cardSection.items
+    : listSections<PolicyCard>(cmsPage, 'policy_card');
+const cards: PolicyCard[] =
+  cardCandidates.length > 0
+    ? cardCandidates
+    : [
+        {
+          title: 'Reservations',
+          body: `<p>We accept reservations up to 30 days in advance. Reservations can be made online or by phone.
+          Walk-ins are welcome based on availability.</p>
+          <ul>
+            <li>Reservations are held for 15 minutes past the reserved time</li>
+            <li>Cancellations must be made at least 24 hours in advance</li>
+            <li>Large parties (8+ guests) require a credit card to hold the reservation</li>
+            <li>For parties of 10 or more, please contact our events team</li>
+          </ul>`
+        },
+        {
+          title: 'Dress Code',
+          body: '<p class="text-midnight/70">We maintain an upscale casual atmosphere. While we do not enforce a strict dress code, we ask that guests dress appropriately for fine dining. Beach attire, athletic wear, and excessively casual clothing are discouraged.</p>'
+        },
+        {
+          title: 'Dietary Restrictions & Allergies',
+          body: `<p>We are committed to accommodating dietary restrictions and allergies. Please inform
+          your server of any dietary needs when making your reservation or upon arrival.</p>
+          <p>While we make every effort to accommodate food allergies, we cannot guarantee that
+          cross-contamination will not occur. Please notify us of severe allergies.</p>`
+        },
+        {
+          title: 'Children',
+          body: '<p class="text-midnight/70">Children are welcome at Field & Tides. We offer a kids menu for guests 12 and under. High chairs and booster seats are available upon request.</p>'
+        },
+        {
+          title: 'Accessibility',
+          body: '<p class="text-midnight/70">Our restaurant is wheelchair accessible with designated parking spaces available. Please contact us in advance if you require specific accommodations.</p>'
+        },
+        {
+          title: 'Gratuity',
+          body: '<p class="text-midnight/70">A 20% gratuity will be added to parties of 6 or more. For parties smaller than 6, gratuity is at your discretion.</p>'
+        },
+        {
+          title: 'Gift Cards',
+          body: '<p class="text-midnight/70 mb-4">Gift cards are available for purchase online or at the restaurant. They do not expire and can be used for dine-in or private events.</p>',
+          cta: { text: 'Purchase Gift Cards', href: '/giftcards' }
+        }
+      ];
+
+const footerSection = pickSection<{ text: string }>(cmsPage, 'footer', {
+  text: 'Have questions? <a href="/contact" class="text-field-navy hover:text-field-copper transition-colors link-underline">Contact us</a>'
+});
 ---
 
 <BaseLayout
-  title="Policies | Field & Tides"
-  description="Restaurant policies, reservations, and important information."
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  image={seo.image}
+  heroFocus={true}
 >
-  <Hero
-    title="Policies"
-    subtitle="Important information for your visit"
-    image="/images/hero-policies.jpg"
-    height="small"
-  />
+  <Hero {...hero} />
 
   <section class="section">
     <div class="container-custom max-w-4xl">
       <div class="space-y-12">
-        <div class="card">
-          <div class="card-body">
-            <h2 class="text-2xl font-heading font-semibold text-field-navy mb-4">Reservations</h2>
-            <div class="prose">
-              <p>
-                We accept reservations up to 30 days in advance. Reservations can be made online or by phone.
-                Walk-ins are welcome based on availability.
-              </p>
-              <ul>
-                <li>Reservations are held for 15 minutes past the reserved time</li>
-                <li>Cancellations must be made at least 24 hours in advance</li>
-                <li>Large parties (8+ guests) require a credit card to hold the reservation</li>
-                <li>For parties of 10 or more, please contact our events team</li>
-              </ul>
+        {cards.map((card) => (
+          <div class="card">
+            <div class="card-body">
+              <h2 class="text-2xl font-heading font-semibold text-field-navy mb-4">{card.title}</h2>
+              <div class={`text-midnight/70 ${typeof card.body === 'string' && card.body.includes('<') ? 'prose' : ''}`} set:html={card.body} />
+              {card.cta && (
+                <a href={card.cta.href} class={`btn ${card.cta.variant === 'outline' ? 'btn-outline' : 'btn-primary'} mt-4`}>
+                  {card.cta.text}
+                </a>
+              )}
             </div>
           </div>
-        </div>
-
-        <div class="card">
-          <div class="card-body">
-            <h2 class="text-2xl font-heading font-semibold text-field-navy mb-4">Dress Code</h2>
-            <p class="text-midnight/70">
-              We maintain an upscale casual atmosphere. While we don't enforce a strict dress code,
-              we ask that guests dress appropriately for fine dining. Beach attire, athletic wear,
-              and excessively casual clothing are discouraged.
-            </p>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-body">
-            <h2 class="text-2xl font-heading font-semibold text-field-navy mb-4">Dietary Restrictions & Allergies</h2>
-            <div class="prose">
-              <p>
-                We are committed to accommodating dietary restrictions and allergies. Please inform
-                your server of any dietary needs when making your reservation or upon arrival.
-              </p>
-              <p>
-                While we make every effort to accommodate food allergies, we cannot guarantee that
-                cross-contamination will not occur. Please notify us of severe allergies.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-body">
-            <h2 class="text-2xl font-heading font-semibold text-field-navy mb-4">Children</h2>
-            <p class="text-midnight/70">
-              Children are welcome at Field & Tides. We offer a kids menu for guests 12 and under.
-              High chairs and booster seats are available upon request.
-            </p>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-body">
-            <h2 class="text-2xl font-heading font-semibold text-field-navy mb-4">Accessibility</h2>
-            <p class="text-midnight/70">
-              Our restaurant is wheelchair accessible with designated parking spaces available.
-              Please contact us in advance if you require specific accommodations.
-            </p>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-body">
-            <h2 class="text-2xl font-heading font-semibold text-field-navy mb-4">Gratuity</h2>
-            <p class="text-midnight/70">
-              A 20% gratuity will be added to parties of 6 or more. For parties smaller than 6,
-              gratuity is at your discretion.
-            </p>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-body">
-            <h2 class="text-2xl font-heading font-semibold text-field-navy mb-4">Gift Cards</h2>
-            <p class="text-midnight/70 mb-4">
-              Gift cards are available for purchase online or at the restaurant. They do not expire
-              and can be used for dine-in or private events.
-            </p>
-            <a href="/giftcards" class="btn btn-primary">
-              Purchase Gift Cards
-            </a>
-          </div>
-        </div>
+        ))}
       </div>
 
       <div class="mt-12 text-center">
-        <p class="text-midnight/60">
-          Have questions? <a href="/contact" class="text-field-navy hover:text-field-copper transition-colors link-underline">Contact us</a>
-        </p>
+        <p class="text-midnight/60" set:html={footerSection.text} />
       </div>
     </div>
   </section>

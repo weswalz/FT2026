@@ -9,9 +9,17 @@ interface Props {
   description?: string;
   keywords?: string;
   image?: string;
+  heroFocus?: boolean;
 }
 
-const { title, description, keywords, image } = Astro.props;
+const {
+  title,
+  description,
+  keywords,
+  image,
+  heroFocus = false
+} = Astro.props as Props;
+const mainPaddingClasses = heroFocus ? '' : 'pt-6 md:pt-10';
 ---
 
 <!DOCTYPE html>
@@ -30,10 +38,10 @@ const { title, description, keywords, image } = Astro.props;
     image={image}
   />
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col site-body">
   <Header />
 
-  <main class="flex-grow pt-20 md:pt-24">
+  <main class={`flex-grow ${mainPaddingClasses}`}>
     <slot />
   </main>
 
@@ -56,6 +64,8 @@ const { title, description, keywords, image } = Astro.props;
       const scrollBtn = document.getElementById('scroll-to-top');
 
       if (!scrollBtn) return;
+      if (scrollBtn.dataset.bound === 'true') return;
+      scrollBtn.dataset.bound = 'true';
 
       window.addEventListener('scroll', () => {
         if (window.pageYOffset > 300) {
@@ -75,11 +85,35 @@ const { title, description, keywords, image } = Astro.props;
       });
     }
 
-    // Initialize on page load
-    document.addEventListener('DOMContentLoaded', initScrollToTop);
+    function updateLayoutOffsets() {
+      const header = document.getElementById('main-header');
+      const footer = document.querySelector('footer');
 
-    // Re-initialize on navigation
-    document.addEventListener('astro:page-load', initScrollToTop);
+      if (header) {
+        document.documentElement.style.setProperty('--layout-header-height', `${header.offsetHeight}px`);
+      }
+
+      if (footer) {
+        document.documentElement.style.setProperty('--layout-footer-height', `${footer.offsetHeight}px`);
+      }
+    }
+
+    function initLayoutUtilities() {
+      updateLayoutOffsets();
+      initScrollToTop();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initLayoutUtilities();
+      if (!window.__layoutResizeListenerAttached) {
+        window.addEventListener('resize', updateLayoutOffsets);
+        window.__layoutResizeListenerAttached = true;
+      }
+    });
+
+    document.addEventListener('astro:page-load', () => {
+      initLayoutUtilities();
+    });
   </script>
 </body>
 </html>

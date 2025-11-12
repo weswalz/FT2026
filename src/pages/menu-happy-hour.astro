@@ -3,17 +3,39 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import MenuSection from '../components/MenuSection.astro';
 import { getMenuWithItems } from '../lib/menus.js';
+import { getPageContent, pickSection, getSeoMeta } from '../lib/content.js';
+
+type HeroSection = {
+  title?: string;
+  subtitle?: string;
+  image?: string;
+  height?: 'small' | 'medium' | 'large' | 'full';
+};
 
 const menu = getMenuWithItems('happy-hour');
+const cmsPage = getPageContent('menu-happy-hour');
+const seo = getSeoMeta(cmsPage, {
+  title: 'Happy Hour | Field & Tides',
+  description: 'Special pricing on select appetizers and drinks.'
+});
+
+const heroSection = pickSection<HeroSection>(cmsPage, 'hero', {});
+const hero = {
+  title: heroSection?.title ?? 'Happy Hour',
+  subtitle: heroSection?.subtitle ?? 'Special pricing Tuesday - Friday, 4pm - 6pm',
+  image: heroSection?.image ?? '/images/hero-happy-hour.jpg',
+  height: heroSection?.height ?? 'small'
+};
 ---
 
-<BaseLayout title="Happy Hour | Field & Tides">
-  <Hero
-    title="Happy Hour"
-    subtitle="Special pricing Tuesday - Friday, 4pm - 6pm"
-    image="/images/hero-happy-hour.jpg"
-    height="small"
-  />
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  image={seo.image}
+  heroFocus={true}
+>
+  <Hero {...hero} />
 
   <section class="section">
     <div class="container-custom max-w-5xl">

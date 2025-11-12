@@ -49,7 +49,7 @@ export async function POST({ request, redirect, cookies }) {
     }
 
     // Create session
-    const { sessionId, csrfToken } = createSession(user.id);
+    const { sessionId } = createSession(user.id);
     logLoginAttempt(clientIP, username, true);
 
     // Set session cookie

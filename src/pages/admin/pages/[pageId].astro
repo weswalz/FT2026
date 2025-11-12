@@ -1,0 +1,185 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { getSession } from '../../../lib/auth.js';
+import { getPageById } from '../../../lib/pages.js';
+
+export const prerender = false;
+
+type SeoMeta = {
+  title?: string;
+  description?: string;
+  keywords?: string[] | string;
+};
+
+const sessionId = Astro.cookies.get('session_id')?.value;
+const session = sessionId ? getSession(sessionId) : null;
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+const { pageId } = Astro.params;
+const numericId = Number(pageId);
+
+if (Number.isNaN(numericId)) {
+  return Astro.redirect('/admin/pages');
+}
+
+const page = getPageById(numericId);
+
+if (!page) {
+  return Astro.redirect('/admin/pages');
+}
+
+const sections: any[] = Array.isArray(page.sections) ? page.sections : [];
+const seo: SeoMeta = page.seo_meta ?? {};
+const route = page.slug?.startsWith('/') ? page.slug : `/${page.slug}`;
+const sectionsSize = JSON.stringify(sections).length;
+const seoSize = JSON.stringify(seo).length;
+
+const formatDateTime = (value?: string | null) => {
+  if (!value) return '—';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit'
+  });
+};
+
+const summarizeContent = (section: any) => {
+  if (!section || typeof section !== 'object') return 'Custom content block';
+  if (typeof section.content === 'string') {
+    return section.content.slice(0, 120);
+  }
+
+  if (section.content && typeof section.content === 'object') {
+    const { title, heading, subtitle, body } = section.content;
+    if (title) return title;
+    if (heading) return heading;
+    if (subtitle) return subtitle;
+    if (typeof body === 'string') return body.slice(0, 120);
+  }
+
+  return 'Structured content';
+};
+---
+
+<AdminLayout title={`Edit ${page.title}`} section="pages" session={session}>
+  <Fragment slot="actions">
+    <button class="px-4 py-2 rounded-lg bg-field-navy text-white font-semibold text-sm hover:bg-field-navy/90 transition-colors shadow-sm">
+      Save Draft
+    </button>
+    <button class="px-4 py-2 rounded-lg bg-champagne text-midnight font-semibold text-sm hover:bg-champagne/90 transition-colors shadow-sm">
+      Publish
+    </button>
+  </Fragment>
+
+  <section class="grid grid-cols-1 gap-6 xl:grid-cols-3 mb-8">
+    <div class="space-y-6 xl:col-span-2">
+      <form class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
+        <div>
+          <p class="text-sm text-midnight/60 uppercase tracking-wide font-semibold">Page Basics</p>
+          <h2 class="text-2xl font-heading font-semibold text-midnight">{page.title}</h2>
+          <p class="text-sm text-midnight/60 mt-1">ID #{page.id}</p>
+        </div>
+
+        <label class="text-sm font-semibold text-midnight">Title
+          <input value={page.title} class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2" />
+        </label>
+        <label class="text-sm font-semibold text-midnight">Slug
+          <div class="mt-1 flex items-center gap-2">
+            <span class="text-midnight/60 text-sm">https://fieldandtides.com</span>
+            <input value={route} class="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-4 py-2" />
+          </div>
+        </label>
+        <label class="text-sm font-semibold text-midnight">Status
+          <select class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-2">
+            <option selected={page.status !== 'draft'}>published</option>
+            <option selected={page.status === 'draft'}>draft</option>
+          </select>
+        </label>
+      </form>
+
+      <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-midnight">Sections</h3>
+            <p class="text-sm text-midnight/60">{sections.length} content {sections.length === 1 ? 'block' : 'blocks'}</p>
+          </div>
+          <button class="px-3 py-2 rounded-lg bg-field-navy text-white text-sm font-semibold">+ Add block</button>
+        </div>
+
+        <div class="space-y-3">
+          {sections.map((section, index) => (
+            <div class="border border-slate-200 rounded-xl p-4">
+              <div class="flex items-start justify-between gap-4">
+                <div>
+                  <p class="text-xs uppercase tracking-wide text-midnight/50 font-semibold">#{index + 1} • {section.type ?? 'custom'}</p>
+                  <p class="text-midnight font-semibold mt-1">{summarizeContent(section)}</p>
+                </div>
+                <button class="text-sm font-semibold text-field-navy">Edit</button>
+              </div>
+            </div>
+          ))}
+          {sections.length === 0 && (
+            <div class="border border-dashed border-slate-300 rounded-xl p-8 text-center text-midnight/60 text-sm">
+              No structured sections stored for this page yet. Save a draft from the content editor to populate this list.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-6">
+      <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+        <h3 class="text-lg font-semibold text-midnight">Metadata</h3>
+        <dl class="mt-4 space-y-2 text-sm text-midnight/70">
+          <div class="flex justify-between">
+            <dt class="font-semibold text-midnight">Status</dt>
+            <dd class={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${
+              page.status === 'draft'
+                ? 'bg-orange-100 text-orange-700 border border-orange-200'
+                : 'bg-green-100 text-green-700 border border-green-200'
+            }`}>
+              {page.status ?? 'published'}
+            </dd>
+          </div>
+          <div class="flex justify-between">
+            <dt>Updated</dt>
+            <dd>{formatDateTime(page.updated_at)}</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt>Created</dt>
+            <dd>{formatDateTime(page.created_at)}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-3">
+        <h3 class="text-lg font-semibold text-midnight">SEO Meta</h3>
+        <label class="text-sm font-semibold text-midnight">Meta Title
+          <input value={seo.title ?? ''} class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2" />
+        </label>
+        <label class="text-sm font-semibold text-midnight">Meta Description
+          <textarea class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 min-h-[90px]">{seo.description ?? ''}</textarea>
+        </label>
+        <label class="text-sm font-semibold text-midnight">Keywords
+          <input value={Array.isArray(seo.keywords) ? seo.keywords.join(', ') : (seo.keywords ?? '')} class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2" />
+        </label>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+        <h3 class="text-lg font-semibold text-midnight mb-3">Data Snapshot</h3>
+        <ul class="text-sm text-midnight/70 space-y-2">
+          <li>Sections JSON size: {sectionsSize} chars</li>
+          <li>SEO JSON size: {seoSize} chars</li>
+          <li>Preview URL: <span class="text-field-navy font-semibold">{route}</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</AdminLayout>

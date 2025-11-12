@@ -1,78 +1,185 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
+import { getPageContent, pickSection, getSeoMeta } from '../lib/content.js';
+
+type HeroSection = {
+  title?: string;
+  subtitle?: string;
+  image?: string;
+  height?: 'small' | 'medium' | 'large' | 'full';
+};
+
+type TeamMember = {
+  name: string;
+  title: string;
+  image: string;
+  imageAlt?: string;
+  bio: string[];
+};
+
+type TeamSection = {
+  eyebrow?: string;
+  heading?: string;
+  members?: TeamMember[];
+};
+
+const cmsPage = getPageContent('ourstory');
+const seo = getSeoMeta(cmsPage, {
+  title: 'Our Story | Field & Tides',
+  description: 'Learn about the story behind Field & Tides Restaurant & Bar and Chef Travis Lenig.'
+});
+
+const heroSection = pickSection<HeroSection>(cmsPage, 'hero', {});
+const hero = {
+  title: heroSection?.title ?? 'Our Story',
+  subtitle: heroSection?.subtitle ?? 'A passion for coastal cuisine in the heart of Houston',
+  image: heroSection?.image ?? '/images/ftfront1.jpg',
+  height: heroSection?.height ?? 'medium'
+};
+
+const bodySection = pickSection(cmsPage, 'body');
+
+const teamSection = pickSection<TeamSection>(cmsPage, 'team', {
+  eyebrow: 'OUR STORY',
+  heading: 'Meet the people shaping Field & Tides',
+  members: [
+    {
+      name: 'Travis Lenig',
+      title: 'Owner and Executive Chef',
+      image: '/images/photo-travis-lenig.jpg',
+      imageAlt: 'Chef Travis Lenig smiling inside Field & Tides.',
+      bio: [
+        `Field & Tides, located in Houston’s historic Heights neighborhood, features an open canvas menu that reflects Executive Chef Travis Lenig’s 29 years of culinary experiences. His roots stem from his love for many different types of cuisine such as Southern, Italian, French, and Asian.`,
+        `“Field” is represented by locally sourced vegetables, pork, poultry, beef, and game, while “Tides” is seafood that is locally sourced as well, with an emphasis on the Gulf.`,
+        `Chef Lenig acquires his organic heirloom veggies from Huckleberry Farm, which is his father-in-law and mother-in-law’s farm in Round Top, Texas. Bobby and Ann Rauch grow tomatoes, eggplant, beets, potatoes, cucumbers, squash, and figs, as well as a variety of herbs and lettuce such as kale, arugula, and chard.`,
+        `The upscale casual restaurant is open for lunch and dinner daily with brunch served on Saturday and Sunday.`
+      ]
+    },
+    {
+      name: 'Justin Syzdek',
+      title: 'General Manager',
+      image: '/images/photo-justin-syzdek.jpg',
+      imageAlt: 'General Manager Justin Syzdek standing in the dining room.',
+      bio: [
+        `Justin Syzdek grew up in a home where food was the heart of every gathering. Influenced by a rich blend of cultural traditions, he developed an early appreciation for global flavors and the way food brings people together.`,
+        `That passion led him to culinary school, followed by a degree in Global Hospitality Leadership from the University of Houston.`,
+        `Justin joined Field & Tides because he was drawn to its unique take on Southern American cuisine, thoughtfully layered with global inspiration.`,
+        `As manager, he works hand in hand with Chef Travis Lenig to create a dining experience that’s both warm and memorable—rooted in bold flavors and genuine hospitality.`
+      ]
+    }
+  ]
+});
+
+const ctaSection = pickSection(cmsPage, 'cta', {
+  title: 'Join Us',
+  body: 'Experience the flavors of field and tide. We look forward to welcoming you.',
+  buttons: [
+    { text: 'View Our Menus', href: '/menu', variant: 'secondary' },
+    { text: 'Contact Us', href: '/contact', variant: 'outline' }
+  ]
+});
+
+const teamMembers = teamSection?.members ?? [];
+const hasTeamMembers = teamMembers.length > 0;
 ---
 
 <BaseLayout
-  title="Our Story | Field & Tides"
-  description="Learn about the story behind Field & Tides Restaurant & Bar and Chef Travis Lenig."
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  image={seo.image}
+  heroFocus={true}
 >
-  <Hero
-    title="Our Story"
-    subtitle="A passion for coastal cuisine in the heart of Houston"
-    image="/images/hero-story.jpg"
-    height="medium"
-  />
+  <Hero {...hero} />
 
-  <section class="section">
-    <div class="container-custom max-w-4xl">
-      <div class="prose prose-lg mx-auto">
-        <p class="lead text-xl">
-          Field & Tides opened in Houston's historic Heights neighborhood with a vision to bring
-          coastal-inspired dining to the heart of the city.
-        </p>
-
-        <h2>The Vision</h2>
-        <p>
-          Our name reflects our philosophy: "Field" represents locally sourced vegetables, pork,
-          poultry, beef, and game, while "Tides" celebrates seafood that is locally sourced from
-          the Gulf. This dual focus allows us to honor both land and sea, creating a menu that's
-          as diverse as it is delicious.
-        </p>
-
-        <h2>Chef Travis Lenig</h2>
-        <p>
-          Executive Chef Travis Lenig's culinary journey has taken him through some of the finest
-          kitchens in the country. His roots stem from his love for many different types of cuisine
-          including Southern, Italian, French, and Asian influences. This diverse background creates
-          an "open canvas" menu that evolves with the seasons and showcases the best of what's available.
-        </p>
-
-        <h2>Our Philosophy</h2>
-        <p>
-          At Field & Tides, we believe in:
-        </p>
-        <ul>
-          <li><strong>Seasonal Excellence:</strong> Our menus change with the seasons, ensuring the freshest ingredients</li>
-          <li><strong>Local Partnerships:</strong> We work closely with local farmers and fishermen</li>
-          <li><strong>Sustainable Practices:</strong> We're committed to responsible sourcing and minimal waste</li>
-          <li><strong>Culinary Creativity:</strong> Every dish tells a story of land and sea</li>
-        </ul>
-
-        <h2>The Space</h2>
-        <p>
-          Our restaurant embodies the upscale coastal aesthetic—warm, bright interiors with
-          natural light, polished restraint, and an atmosphere that's both refined and welcoming.
-          Whether you're joining us for brunch, lunch, or dinner, you'll find a space that celebrates
-          both the elegance and comfort of coastal dining.
-        </p>
+  {bodySection?.html && (
+    <section class="section">
+      <div class="container-custom max-w-4xl">
+        <div class="prose mx-auto" set:html={bodySection.html} />
       </div>
-    </div>
-  </section>
+    </section>
+  )}
+
+  {hasTeamMembers && (
+    <section class="section bg-gradient-to-b from-[#0d2741] via-[#123963] to-midnight text-white night-pattern">
+      <div class="container-custom text-center relative z-10">
+        {teamSection?.eyebrow && (
+          <p class="text-sm font-semibold tracking-[0.3em] text-field-gold uppercase mb-3">
+            {teamSection.eyebrow}
+          </p>
+        )}
+        {teamSection?.heading && (
+          <h2 class="text-4xl md:text-5xl font-heading text-white mb-10">
+            {teamSection.heading}
+          </h2>
+        )}
+        <div class="space-y-16 text-left">
+          {teamMembers.map((member, index) => {
+            const isReversed = index % 2 === 1;
+            return (
+              <article
+                class="grid gap-y-10 gap-x-8 md:gap-x-16 lg:gap-x-20 items-center md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] bg-white/15 rounded-2xl p-8 md:p-10 ring-1 ring-white/20 backdrop-blur-lg shadow-[0_25px_65px_rgba(0,0,0,0.35)] relative z-10"
+              >
+                <div
+                  class={`relative flex justify-center ${isReversed ? 'md:order-2 md:justify-end' : 'md:justify-start'}`}
+                >
+                  <div class="rounded-[26px] overflow-hidden border border-white/15 shadow-2xl bg-field-navy/20 ring-1 ring-white/10 inline-block max-w-[380px] sm:max-w-[420px] w-full mx-auto">
+                    <img
+                      src={member.image}
+                      alt={member.imageAlt ?? member.name}
+                      class="w-full h-auto object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                </div>
+                <div class={`space-y-4 text-left ${isReversed ? 'md:order-1' : ''}`}>
+                  <header class="text-left">
+                    <p class="text-field-copper text-sm uppercase tracking-[0.2em] mb-2">
+                      {member.title}
+                    </p>
+                    <h3 class="text-3xl md:text-[2.1rem] font-heading font-semibold text-field-gold drop-shadow-[0_5px_15px_rgba(8,25,40,0.35)]">
+                      {member.name}
+                    </h3>
+                    <div class="w-16 h-px bg-gradient-to-r from-field-gold/70 via-white/40 to-transparent mt-3 mb-2"></div>
+                  </header>
+                  {member.bio?.map((paragraph, bioIndex) => (
+                    <p
+                      class="text-base md:text-lg text-white/90 leading-relaxed"
+                      key={`${member.name}-${bioIndex}`}
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  )}
 
   <section class="section-sm bg-gradient-to-br from-field-navy to-midnight text-white">
     <div class="container-custom text-center">
-      <h2 class="text-white mb-4">Join Us</h2>
+      <h2 class="text-white mb-4">{ctaSection.title}</h2>
       <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-        Experience the flavors of field and tide. We look forward to welcoming you.
+        {ctaSection.body}
       </p>
       <div class="flex flex-wrap justify-center gap-4">
-        <a href="/menu" class="btn btn-secondary">
-          View Our Menus
-        </a>
-        <a href="/contact" class="btn btn-outline !text-white !border-white hover:!bg-white hover:!text-field-navy">
-          Contact Us
-        </a>
+        {(ctaSection.buttons ?? []).map((button) => (
+          <a
+            href={button.href}
+            class={
+              button.variant === 'outline'
+                ? 'btn btn-outline !text-white !border-white hover:!bg-white hover:!text-field-navy'
+                : 'btn btn-secondary'
+            }
+          >
+            {button.text}
+          </a>
+        ))}
       </div>
     </div>
   </section>

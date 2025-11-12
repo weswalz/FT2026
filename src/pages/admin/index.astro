@@ -1,9 +1,9 @@
 ---
+import AdminLayout from '../../layouts/AdminLayout.astro';
 import { getSession } from '../../lib/auth.js';
 
 export const prerender = false;
 
-// Check authentication
 const sessionId = Astro.cookies.get('session_id')?.value;
 const session = sessionId ? getSession(sessionId) : null;
 
@@ -12,92 +12,259 @@ if (!session) {
 }
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Dashboard | Field & Tides</title>
-  <link rel="stylesheet" href="/src/styles/global.css" />
-</head>
-<body class="bg-slate-100">
-  <div class="min-h-screen">
-    <!-- Admin Header -->
-    <header class="bg-field-navy text-white shadow-lg">
-      <div class="container-custom">
-        <div class="flex items-center justify-between h-16">
-          <div class="flex items-center gap-8">
-            <h1 class="text-xl font-heading font-bold">Field & Tides Admin</h1>
-            <nav class="hidden md:flex gap-6">
-              <a href="/admin" class="text-white/90 hover:text-white transition-colors">Dashboard</a>
-              <a href="/admin/menus" class="text-white/70 hover:text-white transition-colors">Menus</a>
-              <a href="/admin/forms" class="text-white/70 hover:text-white transition-colors">Forms</a>
-              <a href="/admin/pages" class="text-white/70 hover:text-white transition-colors">Pages</a>
-            </nav>
-          </div>
-          <div class="flex items-center gap-4">
-            <span class="text-sm text-white/80">Welcome, {session.username}</span>
-            <form action="/admin/logout" method="post">
-              <button type="submit" class="btn btn-secondary !py-2 !px-4 !text-sm">
-                Logout
+<AdminLayout title="Dashboard" section="dashboard" session={session}>
+  <Fragment slot="actions">
+    <button class="px-4 py-2 rounded-lg bg-champagne text-midnight font-semibold text-sm hover:bg-champagne/90 transition-colors shadow-sm">
+      + Add New Menu
+    </button>
+  </Fragment>
+
+  <section class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4 mb-8">
+    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <p class="text-sm text-midnight/60 font-medium">Total Menus</p>
+        <div class="w-10 h-10 rounded-lg bg-field-navy/10 flex items-center justify-center">
+          <svg class="w-5 h-5 text-field-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+      </div>
+      <p class="text-3xl font-bold text-field-navy">10</p>
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <p class="text-sm text-midnight/60 font-medium">Published</p>
+        <div class="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
+          <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+      </div>
+      <p class="text-3xl font-bold text-green-600">85</p>
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <p class="text-sm text-midnight/60 font-medium">Drafts</p>
+        <div class="w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
+          <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+        </div>
+      </div>
+      <p class="text-3xl font-bold text-orange-600">12</p>
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <p class="text-sm text-midnight/60 font-medium">Featured</p>
+        <div class="w-10 h-10 rounded-lg bg-field-copper/10 flex items-center justify-center">
+          <svg class="w-5 h-5 text-field-copper" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+          </svg>
+        </div>
+      </div>
+      <p class="text-3xl font-bold text-field-copper">8</p>
+    </div>
+  </section>
+
+  <section class="bg-white border border-slate-200 rounded-xl p-6 mb-6 shadow-sm">
+    <div class="flex flex-col lg:flex-row lg:items-center gap-4">
+      <div class="flex-1 relative">
+        <svg class="w-5 h-5 text-midnight/40 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input
+          type="text"
+          placeholder="Search menus by title, category, or content..."
+          class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-midnight placeholder-midnight/40 focus:border-field-navy focus:outline-none focus:ring-2 focus:ring-field-navy/20 transition-all"
+        />
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button class="px-5 py-3 bg-field-navy text-white font-semibold rounded-lg hover:bg-field-navy/90 transition-colors shadow-sm">
+          All
+        </button>
+        <button class="px-5 py-3 bg-slate-50 border border-slate-200 text-midnight/70 font-medium rounded-lg hover:bg-slate-100 transition-colors">
+          Published
+        </button>
+        <button class="px-5 py-3 bg-slate-50 border border-slate-200 text-midnight/70 font-medium rounded-lg hover:bg-slate-100 transition-colors">
+          Drafts
+        </button>
+        <button class="px-5 py-3 bg-slate-50 border border-slate-200 text-midnight/70 font-medium rounded-lg hover:bg-slate-100 transition-colors">
+          Featured
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+    <table class="w-full">
+      <thead class="bg-slate-50 border-b border-slate-200">
+        <tr>
+          <th class="text-left px-6 py-4 text-xs font-bold text-midnight/70 uppercase tracking-wider">Title</th>
+          <th class="text-left px-6 py-4 text-xs font-bold text-midnight/70 uppercase tracking-wider">Status</th>
+          <th class="text-left px-6 py-4 text-xs font-bold text-midnight/70 uppercase tracking-wider">Category</th>
+          <th class="text-left px-6 py-4 text-xs font-bold text-midnight/70 uppercase tracking-wider">Date</th>
+          <th class="text-right px-6 py-4 text-xs font-bold text-midnight/70 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200">
+        <tr class="hover:bg-slate-50 transition-colors">
+          <td class="px-6 py-4">
+            <div>
+              <p class="text-midnight font-semibold">Dinner Menu</p>
+              <p class="text-sm text-midnight/50 mt-1">Fresh seasonal selections featuring Gulf seafood and local ingredients</p>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <div class="flex gap-2">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200">
+                Published
+              </span>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-champagne/20 text-field-copper border border-champagne">
+                Featured
+              </span>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <span class="text-midnight/70 font-medium">Dinner</span>
+          </td>
+          <td class="px-6 py-4">
+            <span class="text-midnight/70">Oct 3, 2025</span>
+          </td>
+          <td class="px-6 py-4 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <button class="px-4 py-2 bg-champagne text-midnight font-semibold text-sm rounded-lg hover:bg-champagne/90 transition-colors shadow-sm">
+                Edit
               </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="container-custom py-8">
-      <h2 class="text-3xl font-heading font-semibold mb-8">Dashboard</h2>
-
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {[
-          { title: 'Total Menus', value: '10', icon: '📋' },
-          { title: 'Menu Items', value: '85', icon: '🍽️' },
-          { title: 'Form Submissions', value: '12', icon: '✉️' },
-          { title: 'Pages', value: '8', icon: '📄' }
-        ].map(stat => (
-          <div class="card">
-            <div class="card-body">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-sm text-midnight/60 mb-1">{stat.title}</p>
-                  <p class="text-3xl font-bold text-field-navy">{stat.value}</p>
-                </div>
-                <div class="text-4xl">{stat.icon}</div>
-              </div>
+              <button class="px-4 py-2 bg-red-50 text-red-600 font-semibold text-sm rounded-lg hover:bg-red-100 transition-colors border border-red-200">
+                Delete
+              </button>
             </div>
-          </div>
-        ))}
-      </div>
+          </td>
+        </tr>
 
-      <div class="grid lg:grid-cols-2 gap-6">
-        <div class="card">
-          <div class="card-body">
-            <h3 class="text-xl font-heading font-semibold mb-4">Quick Actions</h3>
-            <div class="space-y-3">
-              <a href="/admin/menus/new" class="block p-3 bg-field-shell rounded-lg hover:bg-field-navy/5 transition-colors">
-                + Add New Menu
-              </a>
-              <a href="/admin/menu-items/new" class="block p-3 bg-field-shell rounded-lg hover:bg-field-navy/5 transition-colors">
-                + Add Menu Item
-              </a>
-              <a href="/admin/pages/new" class="block p-3 bg-field-shell rounded-lg hover:bg-field-navy/5 transition-colors">
-                + Create Page
-              </a>
+        <tr class="hover:bg-slate-50 transition-colors">
+          <td class="px-6 py-4">
+            <div>
+              <p class="text-midnight font-semibold">Lunch Menu</p>
+              <p class="text-sm text-midnight/50 mt-1">Midday favorites with lighter fare and signature dishes</p>
             </div>
-          </div>
-        </div>
+          </td>
+          <td class="px-6 py-4">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200">
+              Published
+            </span>
+          </td>
+          <td class="px-6 py-4">
+            <span class="text-midnight/70 font-medium">Lunch</span>
+          </td>
+          <td class="px-6 py-4">
+            <span class="text-midnight/70">Jun 25, 2025</span>
+          </td>
+          <td class="px-6 py-4 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <button class="px-4 py-2 bg-champagne text-midnight font-semibold text-sm rounded-lg hover:bg-champagne/90 transition-colors shadow-sm">
+                Edit
+              </button>
+              <button class="px-4 py-2 bg-red-50 text-red-600 font-semibold text-sm rounded-lg hover:bg-red-100 transition-colors border border-red-200">
+                Delete
+              </button>
+            </div>
+          </td>
+        </tr>
 
-        <div class="card">
-          <div class="card-body">
-            <h3 class="text-xl font-heading font-semibold mb-4">Recent Activity</h3>
-            <p class="text-midnight/60 text-sm">No recent activity</p>
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
-</body>
-</html>
+        <tr class="hover:bg-slate-50 transition-colors">
+          <td class="px-6 py-4">
+            <div>
+              <p class="text-midnight font-semibold">Brunch Menu</p>
+              <p class="text-sm text-midnight/50 mt-1">Weekend brunch offerings with breakfast classics and lunch items</p>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200">
+              Published
+            </span>
+          </td>
+          <td class="px-6 py-4">
+            <span class="text-midnight/70 font-medium">Brunch</span>
+          </td>
+          <td class="px-6 py-4">
+            <span class="text-midnight/70">Jun 1, 2025</span>
+          </td>
+          <td class="px-6 py-4 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <button class="px-4 py-2 bg-champagne text-midnight font-semibold text-sm rounded-lg hover:bg-champagne/90 transition-colors shadow-sm">
+                Edit
+              </button>
+              <button class="px-4 py-2 bg-red-50 text-red-600 font-semibold text-sm rounded-lg hover:bg-red-100 transition-colors border border-red-200">
+                Delete
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        <tr class="hover:bg-slate-50 transition-colors">
+          <td class="px-6 py-4">
+            <div>
+              <p class="text-midnight font-semibold">Wine List</p>
+              <p class="text-sm text-midnight/50 mt-1">Curated selection of domestic and international wines</p>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-700 border border-orange-200">
+              Draft
+            </span>
+          </td>
+          <td class="px-6 py-4">
+            <span class="text-midnight/70 font-medium">Beverages</span>
+          </td>
+          <td class="px-6 py-4">
+            <span class="text-midnight/70">Apr 24, 2025</span>
+          </td>
+          <td class="px-6 py-4 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <button class="px-4 py-2 bg-champagne text-midnight font-semibold text-sm rounded-lg hover:bg-champagne/90 transition-colors shadow-sm">
+                Edit
+              </button>
+              <button class="px-4 py-2 bg-red-50 text-red-600 font-semibold text-sm rounded-lg hover:bg-red-100 transition-colors border border-red-200">
+                Delete
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        <tr class="hover:bg-slate-50 transition-colors">
+          <td class="px-6 py-4">
+            <div>
+              <p class="text-midnight font-semibold">Happy Hour</p>
+              <p class="text-sm text-midnight/50 mt-1">Daily specials on drinks and appetizers</p>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200">
+              Published
+            </span>
+          </td>
+          <td class="px-6 py-4">
+            <span class="text-midnight/70 font-medium">Specials</span>
+          </td>
+          <td class="px-6 py-4">
+            <span class="text-midnight/70">Jan 10, 2025</span>
+          </td>
+          <td class="px-6 py-4 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <button class="px-4 py-2 bg-champagne text-midnight font-semibold text-sm rounded-lg hover:bg-champagne/90 transition-colors shadow-sm">
+                Edit
+              </button>
+              <button class="px-4 py-2 bg-red-50 text-red-600 font-semibold text-sm rounded-lg hover:bg-red-100 transition-colors border border-red-200">
+                Delete
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</AdminLayout>

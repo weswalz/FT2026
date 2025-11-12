@@ -3,17 +3,39 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import MenuSection from '../components/MenuSection.astro';
 import { getMenuWithItems } from '../lib/menus.js';
+import { getPageContent, pickSection, getSeoMeta } from '../lib/content.js';
+
+type HeroSection = {
+  title?: string;
+  subtitle?: string;
+  image?: string;
+  height?: 'small' | 'medium' | 'large' | 'full';
+};
 
 const menu = getMenuWithItems('cocktails-beer');
+const cmsPage = getPageContent('menu-cocktails-beer');
+const seo = getSeoMeta(cmsPage, {
+  title: 'Cocktails & Beer | Field & Tides',
+  description: 'Craft cocktails and local brews.'
+});
+
+const heroSection = pickSection<HeroSection>(cmsPage, 'hero', {});
+const hero = {
+  title: heroSection?.title ?? 'Cocktails & Beer',
+  subtitle: heroSection?.subtitle ?? 'Craft cocktails and local brews',
+  image: heroSection?.image ?? '/images/hero-cocktails.jpg',
+  height: heroSection?.height ?? 'small'
+};
 ---
 
-<BaseLayout title="Cocktails & Beer | Field & Tides">
-  <Hero
-    title="Cocktails & Beer"
-    subtitle="Craft cocktails and local brews"
-    image="/images/hero-cocktails.jpg"
-    height="small"
-  />
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  image={seo.image}
+  heroFocus={true}
+>
+  <Hero {...hero} />
 
   <section class="section">
     <div class="container-custom max-w-5xl">

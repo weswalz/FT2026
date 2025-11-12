@@ -1,49 +1,116 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
+import { getPageContent, pickSection, listSections, getSeoMeta } from '../lib/content.js';
+
+type HeroSection = {
+  title?: string;
+  subtitle?: string;
+  image?: string;
+  height?: 'small' | 'medium' | 'large' | 'full';
+};
+
+type FeatureCard = { title: string; description: string; icon: string };
+type PurchaseSection = {
+  title: string;
+  description: string;
+  phone?: string;
+  contactHref?: string;
+  contactLabel?: string;
+  amounts?: string[];
+};
+type TermsSection = { title: string; items?: string[] };
+type CTASection = { title: string; body: string; cta?: { text: string; href: string } };
+
+const cmsPage = getPageContent('giftcards');
+const seo = getSeoMeta(cmsPage, {
+  title: 'Gift Cards | Field & Tides',
+  description: 'Give the gift of exceptional dining at Field & Tides.'
+});
+
+const heroSection = pickSection<HeroSection>(cmsPage, 'hero', {});
+const hero = {
+  title: heroSection?.title ?? 'Gift Cards',
+  subtitle: heroSection?.subtitle ?? 'Share the experience of Field & Tides',
+  image: heroSection?.image ?? '/images/GIFTCARD-e1677781147843.jpg',
+  height: heroSection?.height ?? 'medium'
+};
+
+const emojiRegex = /\p{Extended_Pictographic}/gu;
+const sanitizeIcon = (value?: string, fallback?: string) => {
+  if (!value) return fallback ?? '';
+  const cleaned = value.replace(emojiRegex, '').trim();
+  return cleaned || (fallback ?? '');
+};
+
+const introSection = pickSection<{ text: string }>(cmsPage, 'intro', {
+  text: 'Field & Tides gift cards are the perfect way to share an unforgettable dining experience with friends, family, or colleagues.'
+});
+
+const featureSection = pickSection<{ items?: FeatureCard[] }>(cmsPage, 'features');
+const featureCandidates =
+  Array.isArray(featureSection?.items) && featureSection.items.length > 0
+    ? featureSection.items
+    : listSections<FeatureCard>(cmsPage, 'feature_card');
+const featureCards: FeatureCard[] =
+  featureCandidates.length > 0
+    ? featureCandidates
+    : [
+        { title: 'Any Amount', description: 'Choose any dollar amount that suits your needs', icon: 'AMT' },
+        { title: 'Never Expires', description: 'Our gift cards never expire and have no fees', icon: 'NO FEE' },
+        { title: 'Easy to Use', description: 'Redeemable for dine-in or private events', icon: 'EASY' }
+      ];
+
+const purchaseSection = pickSection<PurchaseSection>(cmsPage, 'purchase', {
+  title: 'Purchase a Gift Card',
+  description: 'Gift cards can be purchased in-person at the restaurant or by calling us directly.',
+  phone: '(555) 123-4567',
+  contactHref: '/contact',
+  amounts: ['$50', '$100', '$250']
+});
+
+const termsSection = pickSection<TermsSection>(cmsPage, 'terms', {
+  title: 'Gift Card Terms',
+  items: [
+    'Gift cards never expire and have no dormancy fees',
+    'Gift cards are non-refundable and cannot be exchanged for cash',
+    'Lost or stolen gift cards cannot be replaced',
+    'Valid for dine-in and private events only',
+    'Cannot be used to purchase additional gift cards'
+  ]
+});
+
+const corporateSection = pickSection<CTASection>(cmsPage, 'corporate', {
+  title: 'Corporate Gifting',
+  body: 'Looking to purchase gift cards in bulk for your business? Contact our events team for special corporate rates.',
+  cta: { text: 'Corporate Inquiries', href: '/private-events' }
+});
 ---
 
 <BaseLayout
-  title="Gift Cards | Field & Tides"
-  description="Give the gift of exceptional dining at Field & Tides."
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  image={seo.image}
+  heroFocus={true}
 >
-  <Hero
-    title="Gift Cards"
-    subtitle="Share the experience of Field & Tides"
-    image="/images/hero-giftcards.jpg"
-    height="medium"
-  />
+  <Hero {...hero} />
 
   <section class="section">
     <div class="container-custom max-w-4xl">
       <div class="text-center mb-12">
         <p class="text-xl text-midnight/80 leading-relaxed max-w-2xl mx-auto">
-          Field & Tides gift cards are the perfect way to share an unforgettable dining experience
-          with friends, family, or colleagues.
+          {introSection?.text}
         </p>
       </div>
 
       <div class="grid md:grid-cols-3 gap-8 mb-16">
-        {[
-          {
-            title: 'Any Amount',
-            description: 'Choose any dollar amount that suits your needs',
-            icon: '💰'
-          },
-          {
-            title: 'Never Expires',
-            description: 'Our gift cards never expire and have no fees',
-            icon: '♾️'
-          },
-          {
-            title: 'Easy to Use',
-            description: 'Redeemable for dine-in or private events',
-            icon: '✨'
-          }
-        ].map(feature => (
+        {featureCards.map(feature => (
           <div class="card text-center">
             <div class="card-body">
-              <div class="text-5xl mb-4">{feature.icon}</div>
+              <div class="mx-auto mb-4 w-16 h-16 rounded-full bg-field-navy/10 text-field-navy flex items-center justify-center text-xs font-semibold tracking-[0.3em]">
+                {sanitizeIcon(feature.icon, feature.title.slice(0, 3).toUpperCase())}
+              </div>
               <h3 class="text-xl font-heading font-semibold mb-3 text-field-navy">
                 {feature.title}
               </h3>
@@ -57,26 +124,28 @@ import Hero from '../components/Hero.astro';
 
       <div class="card bg-gradient-to-br from-field-shell to-white">
         <div class="card-body text-center">
-          <h2 class="text-3xl font-heading font-semibold mb-6">Purchase a Gift Card</h2>
+          <h2 class="text-3xl font-heading font-semibold mb-6">{purchaseSection.title}</h2>
 
           <div class="max-w-md mx-auto space-y-6">
             <p class="text-midnight/70">
-              Gift cards can be purchased in-person at the restaurant or by calling us directly.
+              {purchaseSection.description}
             </p>
 
             <div class="space-y-4">
-              <a href="tel:+15551234567" class="btn btn-primary w-full">
-                Call (555) 123-4567
-              </a>
-              <a href="/contact" class="btn btn-outline w-full">
-                Contact Us
+              {purchaseSection.phone && (
+                <a href={`tel:${purchaseSection.phone}`} class="btn btn-primary w-full">
+                  Call {purchaseSection.phone}
+                </a>
+              )}
+              <a href={purchaseSection.contactHref ?? '/contact'} class="btn btn-outline w-full">
+                {purchaseSection.contactLabel ?? 'Contact Us'}
               </a>
             </div>
 
             <div class="pt-6 border-t border-midnight/10">
               <h4 class="font-semibold text-field-navy mb-3">Popular Amounts</h4>
               <div class="grid grid-cols-3 gap-3">
-                {['$50', '$100', '$250'].map(amount => (
+                {(purchaseSection.amounts ?? ['$50', '$100', '$250']).map(amount => (
                   <div class="p-4 border-2 border-field-navy/20 rounded-lg hover:border-field-navy hover:bg-field-shell transition-colors cursor-pointer">
                     <div class="text-2xl font-bold text-field-navy">{amount}</div>
                   </div>
@@ -90,13 +159,11 @@ import Hero from '../components/Hero.astro';
       <div class="mt-12">
         <div class="card">
           <div class="card-body">
-            <h3 class="text-2xl font-heading font-semibold text-field-navy mb-4">Gift Card Terms</h3>
+            <h3 class="text-2xl font-heading font-semibold text-field-navy mb-4">{termsSection.title}</h3>
             <ul class="space-y-2 text-midnight/70">
-              <li>• Gift cards never expire and have no dormancy fees</li>
-              <li>• Gift cards are non-refundable and cannot be exchanged for cash</li>
-              <li>• Lost or stolen gift cards cannot be replaced</li>
-              <li>• Valid for dine-in and private events only</li>
-              <li>• Cannot be used to purchase additional gift cards</li>
+              {(termsSection.items ?? []).map((item) => (
+                <li>• {item}</li>
+              ))}
             </ul>
           </div>
         </div>
@@ -106,12 +173,12 @@ import Hero from '../components/Hero.astro';
 
   <section class="section-sm bg-field-navy text-white">
     <div class="container-custom text-center">
-      <h2 class="text-white mb-4">Corporate Gifting</h2>
+      <h2 class="text-white mb-4">{corporateSection.title}</h2>
       <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-        Looking to purchase gift cards in bulk for your business? Contact our events team for special corporate rates.
+        {corporateSection.body}
       </p>
-      <a href="/private-events" class="btn btn-secondary">
-        Corporate Inquiries
+      <a href={corporateSection.cta?.href ?? '/private-events'} class="btn btn-secondary">
+        {corporateSection.cta?.text ?? 'Learn More'}
       </a>
     </div>
   </section>

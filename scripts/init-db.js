@@ -23,7 +23,7 @@ async function initializeDatabase() {
     status: 'published'
   });
 
-  const lunchId = createMenu({
+  createMenu({
     name: 'Lunch Menu',
     slug: 'lunch',
     description: 'Light, fresh options for your midday meal',
@@ -31,7 +31,7 @@ async function initializeDatabase() {
     status: 'published'
   });
 
-  const brunchId = createMenu({
+  createMenu({
     name: 'Brunch Menu',
     slug: 'brunch',
     description: 'Weekend brunch favorites',

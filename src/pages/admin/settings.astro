@@ -1,0 +1,114 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getSession } from '../../lib/auth.js';
+
+export const prerender = false;
+
+const sessionId = Astro.cookies.get('session_id')?.value;
+const session = sessionId ? getSession(sessionId) : null;
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+---
+
+<AdminLayout title="Settings" section="settings" session={session}>
+  <Fragment slot="actions">
+    <button class="px-4 py-2 rounded-lg bg-field-navy text-white font-semibold text-sm hover:bg-field-navy/90 transition-colors shadow-sm">
+      Save Changes
+    </button>
+    <button class="px-4 py-2 rounded-lg bg-slate-100 text-midnight font-semibold text-sm hover:bg-slate-200 transition-colors border border-slate-200">
+      Clear Draft
+    </button>
+  </Fragment>
+
+  <section class="grid grid-cols-1 gap-6 xl:grid-cols-2 mb-8">
+    <form class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
+      <div>
+        <h2 class="text-lg font-semibold text-midnight">Restaurant Info</h2>
+        <p class="text-sm text-midnight/60 mt-1">What guests see in the footer & contact sections.</p>
+      </div>
+      <label class="block text-sm font-semibold text-midnight">Restaurant Name
+        <input class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 focus:border-field-navy focus:ring-2 focus:ring-field-navy/20 outline-none" value="Field &amp; Tides" />
+      </label>
+      <label class="block text-sm font-semibold text-midnight">Address
+        <input class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2" value="705 E 11th St, Houston, TX 77008" />
+      </label>
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <label class="block text-sm font-semibold text-midnight">Phone
+          <input class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2" value="(713) 861-6143" />
+        </label>
+        <label class="block text-sm font-semibold text-midnight">Email
+          <input class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2" value="hello@fieldandtides.com" />
+        </label>
+      </div>
+      <label class="block text-sm font-semibold text-midnight">Gift Card Link
+        <input class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2" value="https://squareup.com/gift/fieldandtides" />
+      </label>
+    </form>
+
+    <form class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
+      <div>
+        <h2 class="text-lg font-semibold text-midnight">Operating Hours</h2>
+        <p class="text-sm text-midnight/60 mt-1">Displayed on the location page + schema markup.</p>
+      </div>
+      {['Mon–Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+        <label class="block text-sm font-semibold text-midnight">
+          {day}
+          <input class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2" value={
+            day === 'Mon–Thu' ? '11:00 AM – 10:00 PM'
+            : day === 'Fri' ? '11:00 AM – 11:00 PM'
+            : day === 'Sat' ? '10:00 AM – 11:00 PM'
+            : '10:00 AM – 9:00 PM'
+          } />
+        </label>
+      ))}
+      <label class="block text-sm font-semibold text-midnight">Holiday Notes
+        <textarea class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 min-h-[90px]">Closed Thanksgiving Day. Special tasting menus Dec 24 &amp; 31 (reservations required).</textarea>
+      </label>
+    </form>
+  </section>
+
+  <section class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm mb-8">
+    <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between mb-4">
+      <div>
+        <h2 class="text-lg font-semibold text-midnight">SEO &amp; Social</h2>
+        <p class="text-sm text-midnight/60">Meta defaults applied to pages without overrides.</p>
+      </div>
+      <button class="px-4 py-2 rounded-lg bg-champagne text-midnight text-sm font-semibold hover:bg-champagne/90 transition-colors shadow-sm">
+        Generate Preview
+      </button>
+    </div>
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <label class="block text-sm font-semibold text-midnight">Meta Title
+        <input class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2" value="Field &amp; Tides | Seasonal Southern Coastal Restaurant" />
+      </label>
+      <label class="block text-sm font-semibold text-midnight">Meta Description
+        <textarea class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 min-h-[90px]">Field &amp; Tides pairs Gulf seafood, Southern inspiration, and chef-driven menus in the Houston Heights. Book private events, browse seasonal menus, or stop in for brunch.</textarea>
+      </label>
+      <label class="block text-sm font-semibold text-midnight">Instagram
+        <input class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2" value="https://instagram.com/fieldandtides" />
+      </label>
+      <label class="block text-sm font-semibold text-midnight">Facebook
+        <input class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2" value="https://facebook.com/fieldandtides" />
+      </label>
+    </div>
+  </section>
+
+  <section class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+    <h2 class="text-lg font-semibold text-midnight mb-2">System</h2>
+    <p class="text-sm text-midnight/60 mb-4">Environment values to double-check with devops before launch.</p>
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div class="border border-slate-200 rounded-lg p-4">
+        <p class="text-xs text-midnight/50 uppercase font-semibold tracking-wide">Database</p>
+        <p class="text-midnight font-semibold mt-2">SQLite – local.db</p>
+        <p class="text-sm text-midnight/60 mt-1">Last backup: 2 hours ago</p>
+      </div>
+      <div class="border border-slate-200 rounded-lg p-4">
+        <p class="text-xs text-midnight/50 uppercase font-semibold tracking-wide">SMTP</p>
+        <p class="text-midnight font-semibold mt-2">sendgrid (api)</p>
+        <p class="text-sm text-midnight/60 mt-1">Status: Connected</p>
+      </div>
+    </div>
+  </section>
+</AdminLayout>

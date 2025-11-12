@@ -3,17 +3,39 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import MenuSection from '../components/MenuSection.astro';
 import { getMenuWithItems } from '../lib/menus.js';
+import { getPageContent, pickSection, getSeoMeta } from '../lib/content.js';
+
+type HeroSection = {
+  title?: string;
+  subtitle?: string;
+  image?: string;
+  height?: 'small' | 'medium' | 'large' | 'full';
+};
 
 const menu = getMenuWithItems('dessert');
+const cmsPage = getPageContent('dessert');
+const seo = getSeoMeta(cmsPage, {
+  title: 'Dessert Menu | Field & Tides',
+  description: 'House-made sweet endings.'
+});
+
+const heroSection = pickSection<HeroSection>(cmsPage, 'hero', {});
+const hero = {
+  title: heroSection?.title ?? 'Dessert',
+  subtitle: heroSection?.subtitle ?? 'House-made sweet endings',
+  image: heroSection?.image ?? '/images/hero-dessert.jpg',
+  height: heroSection?.height ?? 'small'
+};
 ---
 
-<BaseLayout title="Dessert Menu | Field & Tides">
-  <Hero
-    title="Dessert"
-    subtitle="House-made sweet endings"
-    image="/images/hero-dessert.jpg"
-    height="small"
-  />
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  image={seo.image}
+  heroFocus={true}
+>
+  <Hero {...hero} />
 
   <section class="section">
     <div class="container-custom max-w-5xl">

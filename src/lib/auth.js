@@ -1,6 +1,6 @@
 import argon2 from 'argon2';
 import { nanoid } from 'nanoid';
-import { db, prepare } from './database.js';
+import { prepare } from './database.js';
 
 // Hash password
 export async function hashPassword(password) {

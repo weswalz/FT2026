@@ -3,17 +3,47 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import MenuSection from '../components/MenuSection.astro';
 import { getMenuWithItems } from '../lib/menus.js';
+import { getPageContent, pickSection, getSeoMeta } from '../lib/content.js';
+
+type HeroSection = {
+  title?: string;
+  subtitle?: string;
+  image?: string;
+  height?: 'small' | 'medium' | 'large' | 'full';
+};
+
+type AvailabilityInfo = { label: string; value: string; note: string };
 
 const menu = getMenuWithItems('lunch');
+const cmsPage = getPageContent('menu-lunch');
+const seo = getSeoMeta(cmsPage, {
+  title: 'Lunch Menu | Field & Tides',
+  description: 'Light, fresh midday selections.'
+});
+
+const heroSection = pickSection<HeroSection>(cmsPage, 'hero', {});
+const hero = {
+  title: heroSection?.title ?? 'Lunch Menu',
+  subtitle: heroSection?.subtitle ?? menu?.description ?? 'Light, fresh midday selections',
+  image: heroSection?.image ?? '/images/hero-lunch.jpg',
+  height: heroSection?.height ?? 'small'
+};
+
+const availability = pickSection<AvailabilityInfo>(cmsPage, 'availability', {
+  label: 'Available',
+  value: 'Wednesday - Sunday, 11am - 3pm',
+  note: 'Menu items and prices subject to change based on seasonal availability.'
+});
 ---
 
-<BaseLayout title="Lunch Menu | Field & Tides">
-  <Hero
-    title="Lunch Menu"
-    subtitle={menu?.description || 'Light, fresh midday selections'}
-    image="/images/hero-lunch.jpg"
-    height="small"
-  />
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  image={seo.image}
+  heroFocus={true}
+>
+  <Hero {...hero} />
 
   <section class="section">
     <div class="container-custom max-w-5xl">
@@ -26,6 +56,14 @@ const menu = getMenuWithItems('lunch');
           <p class="text-xl text-midnight/70">Menu coming soon...</p>
         </div>
       )}
+      <div class="mt-16 p-8 bg-field-shell rounded-2xl text-center">
+        <p class="text-midnight/70 mb-4">
+          <strong>{availability.label}:</strong> {availability.value}
+        </p>
+        <p class="text-sm text-midnight/60">
+          {availability.note}
+        </p>
+      </div>
     </div>
   </section>
 </BaseLayout>

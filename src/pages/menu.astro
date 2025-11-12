@@ -1,97 +1,221 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Hero from '../components/Hero.astro';
+import { getAllMenus } from '../lib/menus.js';
+import { getPageContent, pickSection, getSeoMeta } from '../lib/content.js';
 
-const menuCategories = [
-  {
-    title: 'Dinner Menu',
-    slug: 'menu-dinner',
-    description: 'Evening selections featuring seasonal ingredients and fresh Gulf seafood',
-    image: '/images/menu-dinner.jpg',
-    available: 'Tuesday - Sunday, 5pm - 10pm'
-  },
-  {
-    title: 'Lunch Menu',
-    slug: 'menu-lunch',
-    description: 'Light, fresh options perfect for your midday meal',
-    image: '/images/menu-lunch.jpg',
-    available: 'Wednesday - Sunday, 11am - 3pm'
-  },
-  {
-    title: 'Brunch Menu',
-    slug: 'menu-brunch',
-    description: 'Weekend brunch favorites with coastal flair',
-    image: '/images/menu-brunch.jpg',
-    available: 'Saturday - Sunday, 10am - 3pm'
-  },
-  {
-    title: 'Happy Hour',
-    slug: 'menu-happy-hour',
-    description: 'Special pricing on select appetizers and drinks',
-    image: '/images/menu-happy-hour.jpg',
-    available: 'Tuesday - Friday, 4pm - 6pm'
-  },
-  {
-    title: 'Wine List',
-    slug: 'menu-wine',
-    description: 'Curated selection of wines from around the world',
-    image: '/images/menu-wine.jpg',
-    available: 'All service times'
-  },
-  {
-    title: 'Cocktails & Beer',
-    slug: 'menu-cocktails-beer',
-    description: 'Craft cocktails and local brews',
-    image: '/images/menu-cocktails.jpg',
-    available: 'All service times'
-  },
-  {
-    title: 'Kids Menu',
-    slug: 'menu-kids',
-    description: 'Kid-friendly favorites',
-    image: '/images/menu-kids.jpg',
-    available: 'All service times'
-  },
-  {
-    title: 'Dessert',
-    slug: 'dessert',
-    description: 'House-made sweet endings',
-    image: '/images/menu-dessert.jpg',
-    available: 'All service times'
-  },
-  {
-    title: 'Dessert Cocktails & Ports',
-    slug: 'dessert-cocktails-ports',
-    description: 'After-dinner drinks and dessert pairings',
-    image: '/images/menu-dessert-drinks.jpg',
-    available: 'All service times'
-  }
+type HeroSection = {
+  title?: string;
+  subtitle?: string;
+  image?: string;
+  height?: 'small' | 'medium' | 'large' | 'full';
+  overlay?: 'light' | 'medium' | 'dark';
+  slides?: string[];
+};
+
+type MenuCard = {
+  title: string;
+  slug: string;
+  description?: string;
+  image?: string;
+  available?: string;
+};
+
+type DietarySection = {
+  title: string;
+  body: string;
+};
+
+const cmsPage = getPageContent('menu');
+const seo = getSeoMeta(cmsPage, {
+  title: 'Menus | Field & Tides',
+  description: 'Explore our seasonal menus featuring locally sourced ingredients and Gulf seafood.'
+});
+
+const heroSection = pickSection<HeroSection>(cmsPage, 'hero', {});
+const hero = {
+  title: heroSection?.title ?? 'Our Menus',
+  subtitle: heroSection?.subtitle ?? 'Seasonal flavors celebrating land and sea',
+  image: heroSection?.image ?? '/images/hero-menu.jpg',
+  height: heroSection?.height ?? 'medium',
+  overlay: heroSection?.overlay ?? 'dark'
+};
+
+const defaultMenuHeroSlides: string[] = [
+  '/images/1-Beef-Rib-FT©Al-Torres-Photography-0123-21.jpg',
+  '/images/2-FT-Scotch-Egg-Field-Tides©Al-Torres-Photography-218-copy.jpg',
+  '/images/3-Jicama-Salad-Field-Tides©Al-Torres-Photography-91-copy.jpeg',
+  '/images/4-Scallops-FT©Al-Torres-Photography-24.jpg',
+  '/images/5-Belly-Hash-FT©Al-Torres-Photography-83.jpg',
+  '/images/6-Field-Tides-BW©Al-Torres-Photography-17.jpeg'
 ];
+
+const heroSlides: string[] =
+  Array.isArray(heroSection?.slides) && heroSection.slides.length > 0
+    ? (heroSection.slides as string[])
+    : defaultMenuHeroSlides;
+
+const introSection = pickSection<{ text: string }>(cmsPage, 'intro', {
+  text: 'Field & Tides, from Chef Travis Lenig, highlights the best of Gulf Coast flavors with a thoughtful, familiar touch. The deviled eggs with crispy Berkshire pork belly, tomato crab stack, and double-cut pork chop are house favorites, each prepared with the kind of care that defines the restaurant’s quiet consistency.'
+});
+
+const defaultCategoryImages: Record<string, string> = {
+  'menu-dinner': '/images/menu-dinner.jpg',
+  'menu-lunch': '/images/menu-lunch.jpg',
+  'menu-brunch': '/images/menu-brunch.jpg',
+  'menu-happy-hour': '/images/menu-happy-hour.jpg',
+  'menu-wine': '/images/menu-wine.jpg',
+  'menu-cocktails-beer': '/images/menu-cocktails.jpg',
+  'menu-kids': '/images/menu-kids.jpg',
+  dessert: '/images/menu-dessert.jpg',
+  'dessert-cocktails-ports': '/images/menu-dessert-drinks.jpg'
+};
+
+const defaultCategories: MenuCard[] = [
+  { title: 'Dinner Menu', slug: 'menu-dinner', description: 'Evening selections featuring seasonal ingredients and fresh Gulf seafood', image: defaultCategoryImages['menu-dinner'], available: 'Tuesday - Sunday, 5pm - 10pm' },
+  { title: 'Lunch Menu', slug: 'menu-lunch', description: 'Light, fresh options perfect for your midday meal', image: defaultCategoryImages['menu-lunch'], available: 'Wednesday - Sunday, 11am - 3pm' },
+  { title: 'Brunch Menu', slug: 'menu-brunch', description: 'Weekend brunch favorites with coastal flair', image: defaultCategoryImages['menu-brunch'], available: 'Saturday - Sunday, 10am - 3pm' },
+  { title: 'Happy Hour', slug: 'menu-happy-hour', description: 'Special pricing on select appetizers and drinks', image: defaultCategoryImages['menu-happy-hour'], available: 'Tuesday - Friday, 4pm - 6pm' },
+  { title: 'Wine List', slug: 'menu-wine', description: 'Curated selection of wines from around the world', image: defaultCategoryImages['menu-wine'], available: 'All service times' },
+  { title: 'Cocktails & Beer', slug: 'menu-cocktails-beer', description: 'Craft cocktails and local brews', image: defaultCategoryImages['menu-cocktails-beer'], available: 'All service times' },
+  { title: 'Kids Menu', slug: 'menu-kids', description: 'Kid-friendly favorites', image: defaultCategoryImages['menu-kids'], available: 'All service times' },
+  { title: 'Dessert', slug: 'dessert', description: 'House-made sweet endings', image: defaultCategoryImages['dessert'], available: 'All service times' },
+  { title: 'Dessert Cocktails & Ports', slug: 'dessert-cocktails-ports', description: 'After-dinner drinks and dessert pairings', image: defaultCategoryImages['dessert-cocktails-ports'], available: 'All service times' }
+];
+
+const cardSection = pickSection<{ items?: MenuCard[] }>(cmsPage, 'menu_cards');
+const cmsCards = Array.isArray(cardSection?.items) ? (cardSection.items as MenuCard[]) : null;
+const menuCards: MenuCard[] = cmsCards?.length ? cmsCards : defaultCategories;
+
+const menuDescriptions = getAllMenus();
+const resolveImage = (src?: string | null, slug?: string) => {
+  if (typeof src === 'string' && src.length > 0) {
+    if (src.startsWith('http')) return src;
+    if (src.startsWith('/')) return src;
+    return `/images/${src.replace(/^\/+/, '')}`;
+  }
+  if (slug && defaultCategoryImages[slug]) {
+    return defaultCategoryImages[slug];
+  }
+  return defaultMenuHeroSlides[0];
+};
+
+const categories: MenuCard[] = menuCards.map((card) => {
+  const match = menuDescriptions.find((menu) => `menu-${menu.slug}` === card.slug || menu.slug === card.slug);
+  return {
+    ...card,
+    description: card.description ?? match?.description ?? card.description,
+    available: card.available ?? match?.availability ?? card.available,
+    image: resolveImage(card.image ?? match?.image, card.slug)
+  } as MenuCard;
+});
+
+const dietarySection = pickSection<DietarySection>(cmsPage, 'dietary', {
+  title: 'Dietary Accommodations',
+  body: "We're happy to accommodate dietary restrictions and allergies. Please inform your server of any special requirements, and our chef will work with you to ensure a memorable dining experience."
+});
 ---
 
 <BaseLayout
-  title="Menus | Field & Tides"
-  description="Explore our seasonal menus featuring locally sourced ingredients and Gulf seafood."
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  image={seo.image}
+  heroFocus={true}
 >
-  <Hero
-    title="Our Menus"
-    subtitle="Seasonal flavors celebrating land and sea"
-    image="/images/hero-menu.jpg"
-    height="medium"
-    overlay="dark"
-  />
+  <!-- Menu Hero Slider -->
+  <div
+    class="relative overflow-hidden"
+    style="height: clamp(520px, calc(85vh - var(--layout-header-height, 80px)), 900px); min-height: 520px;"
+  >
+    <div id="menu-hero-slider" class="relative w-full h-full">
+      {heroSlides.map((image, index) => (
+        <div
+          class={`absolute inset-0 transition-opacity duration-[1500ms] ${index === 0 ? 'opacity-100' : 'opacity-0'}`}
+          data-slide={index}
+        >
+          <img
+            src={image}
+            alt={hero.title}
+            class="w-full h-full object-cover scale-105"
+            style="animation: menuSlowZoom 22s ease-out infinite;"
+          />
+        </div>
+      ))}
+    </div>
 
-  <section class="section">
+    <div class="absolute inset-0 bg-gradient-to-b from-midnight/10 via-midnight/40 to-midnight/80"></div>
+    <div class="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-midnight/50"></div>
+
+    <div class="relative h-full flex items-center">
+      <div class="container-custom w-full">
+        <div class="text-center max-w-3xl mx-auto text-white space-y-6">
+          <p class="uppercase tracking-[0.5em] text-xs text-white/70">Field & Tides</p>
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-heading font-semibold">{hero.title}</h1>
+          <p class="text-white/85 text-lg md:text-2xl leading-relaxed">
+            {hero.subtitle}
+          </p>
+          <div class="flex flex-wrap justify-center gap-4">
+            <a href="#menus" class="btn btn-primary">Explore Menus</a>
+            <a href="/private-events" class="btn btn-outline">Private Dining</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <style>
+    @keyframes menuSlowZoom {
+      0%, 100% { transform: scale(1.05); }
+      50% { transform: scale(1.12); }
+    }
+  </style>
+
+  <script>
+    function initMenuHeroSlider() {
+      const slides = document.querySelectorAll('#menu-hero-slider [data-slide]');
+      if (slides.length === 0) return;
+
+      if (window.menuHeroInterval) {
+        clearInterval(window.menuHeroInterval);
+      }
+
+      let currentSlide = 0;
+
+      function showSlide(index) {
+        slides.forEach((slide, i) => {
+          if (i === index) {
+            slide.classList.remove('opacity-0');
+            slide.classList.add('opacity-100');
+          } else {
+            slide.classList.remove('opacity-100');
+            slide.classList.add('opacity-0');
+          }
+        });
+      }
+
+      function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+      }
+
+      window.menuHeroInterval = window.setInterval(nextSlide, 5000);
+    }
+
+    document.addEventListener('DOMContentLoaded', initMenuHeroSlider);
+    document.addEventListener('astro:page-load', initMenuHeroSlider);
+  </script>
+
+  <section class="section pt-10" id="menus">
     <div class="container-custom">
       <div class="max-w-3xl mx-auto text-center mb-16">
         <p class="text-xl text-midnight/80 leading-relaxed">
-          Our menus reflect Chef Travis Lenig's commitment to seasonal, locally sourced ingredients.
-          Each dish celebrates the bounty of the field and the freshness of the tides.
+          {introSection?.text}
         </p>
       </div>
 
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {menuCategories.map(category => (
+        {categories.map(category => (
           <a href={`/${category.slug}`} class="card group hover:shadow-xl transition-all duration-300">
             <div class="aspect-[4/3] overflow-hidden">
               <img
@@ -124,25 +248,10 @@ const menuCategories = [
   <section class="section-sm bg-field-shell">
     <div class="container-custom">
       <div class="max-w-2xl mx-auto text-center">
-        <h3 class="text-2xl font-heading font-semibold mb-4">Dietary Accommodations</h3>
+        <h3 class="text-2xl font-heading font-semibold mb-4">{dietarySection.title}</h3>
         <p class="text-midnight/70 mb-6">
-          We're happy to accommodate dietary restrictions and allergies. Please inform your server of any
-          special requirements, and our chef will work with you to ensure a memorable dining experience.
+          {dietarySection.body}
         </p>
-        <div class="flex justify-center gap-6 text-sm text-midnight/60">
-          <div class="flex items-center gap-2">
-            <span class="text-lg">🌱</span>
-            <span>Vegan Options</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-lg">🥬</span>
-            <span>Vegetarian</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="font-semibold">GF</span>
-            <span>Gluten-Free</span>
-          </div>
-        </div>
       </div>
     </div>
   </section>

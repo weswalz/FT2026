@@ -3,17 +3,47 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import MenuSection from '../components/MenuSection.astro';
 import { getMenuWithItems } from '../lib/menus.js';
+import { getPageContent, pickSection, getSeoMeta } from '../lib/content.js';
+
+type HeroSection = {
+  title?: string;
+  subtitle?: string;
+  image?: string;
+  height?: 'small' | 'medium' | 'large' | 'full';
+};
+
+type AvailabilityInfo = { label: string; value: string; note: string };
 
 const menu = getMenuWithItems('dinner');
+const cmsPage = getPageContent('menu-dinner');
+const seo = getSeoMeta(cmsPage, {
+  title: 'Dinner Menu | Field & Tides',
+  description: 'Evening selections featuring seasonal ingredients.'
+});
+
+const heroSection = pickSection<HeroSection>(cmsPage, 'hero', {});
+const hero = {
+  title: heroSection?.title ?? 'Dinner Menu',
+  subtitle: heroSection?.subtitle ?? menu?.description ?? 'Evening selections featuring seasonal ingredients',
+  image: heroSection?.image ?? '/images/hero-dinner.jpg',
+  height: heroSection?.height ?? 'small'
+};
+
+const availability = pickSection<AvailabilityInfo>(cmsPage, 'availability', {
+  label: 'Available',
+  value: 'Tuesday - Sunday, 5pm - 10pm',
+  note: 'Menu items and prices subject to change based on seasonal availability.'
+});
 ---
 
-<BaseLayout title="Dinner Menu | Field & Tides">
-  <Hero
-    title="Dinner Menu"
-    subtitle={menu?.description || 'Evening selections featuring seasonal ingredients'}
-    image="/images/hero-dinner.jpg"
-    height="small"
-  />
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  image={seo.image}
+  heroFocus={true}
+>
+  <Hero {...hero} />
 
   <section class="section">
     <div class="container-custom max-w-5xl">
@@ -29,10 +59,10 @@ const menu = getMenuWithItems('dinner');
 
       <div class="mt-16 p-8 bg-field-shell rounded-2xl text-center">
         <p class="text-midnight/70 mb-4">
-          <strong>Available:</strong> Tuesday - Sunday, 5pm - 10pm
+          <strong>{availability.label}:</strong> {availability.value}
         </p>
         <p class="text-sm text-midnight/60">
-          Menu items and prices subject to change based on seasonal availability.
+          {availability.note}
         </p>
       </div>
     </div>

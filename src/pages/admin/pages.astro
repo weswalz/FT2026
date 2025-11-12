@@ -1,0 +1,131 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getSession } from '../../lib/auth.js';
+import { getAllPages } from '../../lib/pages.js';
+
+export const prerender = false;
+
+const sessionId = Astro.cookies.get('session_id')?.value;
+const session = sessionId ? getSession(sessionId) : null;
+
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+const formatRoute = (slug?: string | null) => {
+  if (!slug) return '/';
+  return slug.startsWith('/') ? slug : `/${slug}`;
+};
+
+const formatDate = (value?: string | null) => {
+  if (!value) return '—';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+};
+
+const pages = getAllPages().map((page) => {
+  let modules = 0;
+  if (page.sections) {
+    try {
+      const parsed = JSON.parse(page.sections);
+      modules = Array.isArray(parsed) ? parsed.length : 0;
+    } catch (error) {
+      modules = 0;
+    }
+  }
+
+  return {
+    ...page,
+    route: formatRoute(page.slug),
+    modules,
+    updatedDisplay: formatDate(page.updated_at)
+  };
+});
+---
+
+<AdminLayout title="Pages & Modules" section="pages" session={session}>
+  <Fragment slot="actions">
+    <button class="px-4 py-2 rounded-lg bg-field-navy text-white font-semibold text-sm hover:bg-field-navy/90 transition-colors shadow-sm">
+      + Add Landing Page
+    </button>
+    <button class="px-4 py-2 rounded-lg bg-slate-100 text-midnight font-semibold text-sm hover:bg-slate-200 transition-colors border border-slate-200">
+      Preview Site
+    </button>
+  </Fragment>
+
+  <section class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm mb-6">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div>
+        <h2 class="text-lg font-semibold text-midnight">Page Inventory</h2>
+        <p class="text-sm text-midnight/60">{pages.length} total {pages.length === 1 ? 'page' : 'pages'} tracked in the CMS.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button class="px-4 py-2 rounded-lg bg-field-navy text-white text-sm font-semibold">All</button>
+        <button class="px-4 py-2 rounded-lg bg-slate-100 text-midnight text-sm font-semibold border border-slate-200">Marketing</button>
+        <button class="px-4 py-2 rounded-lg bg-slate-100 text-midnight text-sm font-semibold border border-slate-200">Menus</button>
+        <button class="px-4 py-2 rounded-lg bg-slate-100 text-midnight text-sm font-semibold border border-slate-200">Events</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+    <table class="w-full">
+      <thead class="bg-slate-50 border-b border-slate-200">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-bold text-midnight/70 uppercase tracking-wide">Page</th>
+          <th class="px-6 py-3 text-left text-xs font-bold text-midnight/70 uppercase tracking-wide">Route</th>
+          <th class="px-6 py-3 text-left text-xs font-bold text-midnight/70 uppercase tracking-wide">Modules</th>
+          <th class="px-6 py-3 text-left text-xs font-bold text-midnight/70 uppercase tracking-wide">Updated</th>
+          <th class="px-6 py-3 text-left text-xs font-bold text-midnight/70 uppercase tracking-wide">Status</th>
+          <th class="px-6 py-3 text-right text-xs font-bold text-midnight/70 uppercase tracking-wide">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-200">
+        {pages.map((page) => (
+          <tr class="hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 font-semibold text-midnight">{page.title}</td>
+            <td class="px-6 py-4">
+              <code class="text-sm bg-slate-100 px-2 py-1 rounded">{page.route}</code>
+            </td>
+            <td class="px-6 py-4 text-midnight/70">{page.modules}</td>
+            <td class="px-6 py-4 text-midnight/70">{page.updatedDisplay}</td>
+            <td class="px-6 py-4">
+              <span class={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${
+                page.status === 'draft'
+                  ? 'bg-orange-100 text-orange-700 border border-orange-200'
+                  : 'bg-green-100 text-green-700 border border-green-200'
+              }`}>
+                {page.status ?? 'published'}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <a class="px-3 py-2 text-sm font-semibold text-field-navy hover:underline" href={page.route} target="_blank" rel="noreferrer">
+                  Preview
+                </a>
+                <a
+                  class="px-4 py-2 bg-champagne text-midnight text-sm font-semibold rounded-lg hover:bg-champagne/90 transition-colors shadow-sm inline-flex items-center justify-center"
+                  href={`/admin/pages/${page.id}`}
+                >
+                  Edit
+                </a>
+              </div>
+            </td>
+          </tr>
+        ))}
+        {pages.length === 0 && (
+          <tr>
+            <td colspan="6" class="px-6 py-12 text-center text-midnight/60 text-sm">
+              No pages found in the database yet. Once you add content via the API or migration, it will appear here automatically.
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </section>
+</AdminLayout>

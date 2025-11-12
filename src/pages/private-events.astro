@@ -1,115 +1,169 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Hero from '../components/Hero.astro';
 import ContactForm from '../components/ContactForm.astro';
+import { getPageContent, pickSection, getSeoMeta } from '../lib/content.js';
+
+type HeroSection = {
+  title?: string;
+  subtitle?: string;
+  image?: string;
+  height?: 'small' | 'medium' | 'large' | 'full';
+  overlay?: 'light' | 'medium' | 'dark';
+  cta?: { text: string; href: string; variant?: 'primary' | 'secondary' };
+  slides?: string[];
+};
+
+const cmsPage = getPageContent('private-events');
+const seo = getSeoMeta(cmsPage, {
+  title: 'Private Events | Field & Tides',
+  description: 'Host your special event at Field & Tides. Perfect for corporate events, weddings, and celebrations.'
+});
+
+const heroSection = pickSection<HeroSection>(cmsPage, 'hero', {});
+const hero = {
+  title: heroSection?.title ?? 'Private Events',
+  subtitle: heroSection?.subtitle ?? 'Create unforgettable memories at Field & Tides',
+  image: heroSection?.image ?? '/images/4-FT-Patio-inside©Al-Torres-Photography-35-copy.jpg',
+  height: heroSection?.height ?? 'medium',
+  overlay: heroSection?.overlay ?? 'dark',
+  cta: heroSection?.cta ?? {
+    text: 'Inquire About Your Event',
+    href: '#private-dining-room',
+    variant: 'secondary'
+  }
+};
+
+const defaultEventSlides: string[] = [
+  '/images/pdr1.jpg',
+  '/images/pdr2-1024x682.jpg',
+  '/images/pdr3.jpg',
+  '/images/4-FT-Patio-inside©Al-Torres-Photography-35-copy.jpg'
+];
+
+const heroSlides: string[] =
+  Array.isArray(heroSection?.slides) && heroSection.slides.length > 0
+    ? (heroSection.slides as string[])
+    : defaultEventSlides;
+
 ---
 
 <BaseLayout
-  title="Private Events | Field & Tides"
-  description="Host your special event at Field & Tides. Perfect for corporate events, weddings, and celebrations."
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  image={seo.image}
+  heroFocus={true}
 >
-  <Hero
-    title="Private Events"
-    subtitle="Create unforgettable memories at Field & Tides"
-    image="/images/hero-private-events.jpg"
-    height="medium"
-    overlay="dark"
-    cta={{
-      text: 'Inquire About Your Event',
-      href: '#inquiry-form',
-      variant: 'secondary'
-    }}
-  />
+  <div
+    class="relative overflow-hidden"
+    style="height: clamp(520px, calc(90vh - var(--layout-header-height, 80px)), 960px); min-height: 520px;"
+  >
+    <div id="events-hero-slider" class="relative w-full h-full">
+      {heroSlides.map((image, index) => (
+        <div
+          class={`absolute inset-0 transition-opacity duration-[1500ms] ${index === 0 ? 'opacity-100' : 'opacity-0'}`}
+          data-slide={index}
+        >
+          <img
+            src={image}
+            alt={hero.title}
+            class="w-full h-full object-cover scale-105"
+            style="animation: eventsSlowZoom 26s ease-out infinite;"
+          />
+        </div>
+      ))}
+    </div>
 
-  <section class="section">
-    <div class="container-custom">
-      <div class="max-w-3xl mx-auto text-center mb-16">
-        <h2 class="mb-6">Unforgettable Gatherings</h2>
-        <p class="text-xl text-midnight/80 leading-relaxed">
-          Whether you're planning an intimate dinner, corporate gathering, or grand celebration,
-          Field & Tides provides the perfect backdrop for your special occasion.
+    <div class="absolute inset-0 bg-gradient-to-b from-midnight/20 via-midnight/50 to-midnight/80"></div>
+    <div class="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-midnight/60"></div>
+
+    <div class="relative h-full flex items-center">
+      <div class="container-custom w-full">
+        <div class="text-center lg:text-left max-w-4xl text-white space-y-6">
+          <p class="uppercase tracking-[0.4em] text-xs text-white/70">Private Dining</p>
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-heading font-semibold">{hero.title}</h1>
+          <p class="text-white/85 text-lg md:text-2xl leading-relaxed">
+            {hero.subtitle}
+          </p>
+          <div class="flex flex-wrap gap-4 justify-center lg:justify-start">
+            <a href={hero.cta?.href ?? '#private-dining-room'} class="btn btn-primary">
+              {hero.cta?.text ?? 'Plan Your Event'}
+            </a>
+            <a href="/contact" class="btn btn-outline">
+              Contact Team
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes eventsSlowZoom {
+      0%, 100% { transform: scale(1.04); }
+      50% { transform: scale(1.12); }
+    }
+  </style>
+
+  <script>
+    function initEventsHeroSlider() {
+      const slides = document.querySelectorAll('#events-hero-slider [data-slide]');
+      if (slides.length === 0) return;
+
+      if (window.eventsHeroInterval) {
+        clearInterval(window.eventsHeroInterval);
+      }
+
+      let currentSlide = 0;
+
+      function showSlide(index) {
+        slides.forEach((slide, i) => {
+          if (i === index) {
+            slide.classList.remove('opacity-0');
+            slide.classList.add('opacity-100');
+          } else {
+            slide.classList.remove('opacity-100');
+            slide.classList.add('opacity-0');
+          }
+        });
+      }
+
+      function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+      }
+
+      window.eventsHeroInterval = window.setInterval(nextSlide, 5000);
+    }
+
+    document.addEventListener('DOMContentLoaded', initEventsHeroSlider);
+    document.addEventListener('astro:page-load', initEventsHeroSlider);
+  </script>
+
+  <section class="bg-midnight text-white py-20" id="private-dining-room">
+    <div class="container-custom max-w-5xl">
+      <div class="text-center space-y-6">
+        <div class="space-y-3">
+          <p class="text-sm tracking-[0.4em] uppercase text-white/60">Private Dining Room</p>
+          <h2 class="text-3xl md:text-4xl font-heading font-semibold">Private Dining Room</h2>
+          <div class="w-24 h-px bg-white/40 mx-auto"></div>
+        </div>
+        <p class="text-lg md:text-xl text-white/80 leading-relaxed">
+          Our private dining room offers seated dinners for up to 30 guests and standing room only for up to 75 guests. We can accommodate up to 50 guests on our outdoor patio. A full bar is available, along with access to A/V with four screens for presentations. We offer event packages for seated dining, cocktail and hors d'oeuvres or any combination.
+        </p>
+        <p class="text-lg md:text-xl text-white/80 leading-relaxed">
+          We offer off-site catering on a case-by-case basis. Please call the restaurant or email us for more information.
+        </p>
+        <p class="italic text-champagne">
+          Please complete the form below and a Field &amp; Tides representative will contact you within 48 hours.
+        </p>
+        <p class="uppercase text-xs tracking-[0.3em] text-champagne/80">
+          No balloons, confetti or glitter for decorations are permitted for private parties or any events indoors.
         </p>
       </div>
 
-      <div class="grid md:grid-cols-3 gap-8 mb-16">
-        {[
-          {
-            title: 'Intimate Dinners',
-            description: 'Private dining for 10-20 guests with personalized menus',
-            icon: '🍽️'
-          },
-          {
-            title: 'Corporate Events',
-            description: 'Professional setting for meetings, celebrations, and networking',
-            icon: '🤝'
-          },
-          {
-            title: 'Special Occasions',
-            description: 'Weddings, anniversaries, birthdays, and milestone celebrations',
-            icon: '🎉'
-          }
-        ].map(item => (
-          <div class="card text-center">
-            <div class="card-body">
-              <div class="text-5xl mb-4">{item.icon}</div>
-              <h3 class="text-xl font-heading font-semibold mb-3 text-field-navy">
-                {item.title}
-              </h3>
-              <p class="text-midnight/70">
-                {item.description}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="section bg-field-shell">
-    <div class="container-custom">
-      <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-12">
-          <h2 class="mb-6">What We Offer</h2>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-8">
-          {[
-            'Customized menus tailored to your event',
-            'Full bar service with craft cocktails',
-            'Flexible dining spaces for various group sizes',
-            'Professional event planning assistance',
-            'Audio/visual equipment available',
-            'Dietary accommodations for all guests',
-            'Dedicated event coordinator',
-            'Beautiful coastal-inspired ambiance'
-          ].map(feature => (
-            <div class="flex items-start gap-3">
-              <svg class="w-6 h-6 text-field-navy flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
-              <span class="text-midnight/80">{feature}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="inquiry-form">
-    <div class="container-custom">
-      <div class="max-w-3xl mx-auto">
-        <div class="card">
-          <div class="card-body">
-            <div class="text-center mb-8">
-              <h2 class="mb-4">Inquire About Your Event</h2>
-              <p class="text-midnight/70">
-                Fill out the form below and our events team will get back to you within 24 hours.
-              </p>
-            </div>
-
-            <ContactForm type="private-dining" />
-          </div>
-        </div>
+      <div class="mt-12 bg-white text-midnight rounded-3xl shadow-2xl p-6 md:p-10">
+        <ContactForm type="private-dining" variant="split" />
       </div>
     </div>
   </section>
