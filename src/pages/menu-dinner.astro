@@ -1,0 +1,97 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/Hero.astro';
+import MenuSection from '../components/MenuSection.astro';
+import { getMenuWithItems } from '../lib/menus.js';
+
+const menuData = getMenuWithItems('dinner');
+
+if (!menuData) {
+  return Astro.redirect('/menu');
+}
+---
+
+<Layout
+  title={`${menuData.name} - Field & Tides Restaurant & Bar`}
+  description={menuData.description || 'View our dinner menu featuring coastal cuisine and fresh seafood.'}
+>
+  <Header />
+
+  <Hero
+    title={menuData.name}
+    subtitle={menuData.description}
+    image="/images/hero-dinner.jpg"
+  />
+
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        {/* Render each section */}
+        {Object.entries(menuData.sections).map(([sectionTitle, items]) => (
+          <MenuSection title={sectionTitle} items={items} />
+        ))}
+
+        {Object.keys(menuData.sections).length === 0 && (
+          <div class="text-center py-12">
+            <p class="text-gray-500 text-lg">
+              This menu is currently being updated. Please check back soon.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- Dietary Legend -->
+  <section class="py-8 bg-gray-50 border-t">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <h3 class="text-sm font-semibold text-gray-700 mb-2">Dietary Information:</h3>
+        <div class="flex flex-wrap gap-4 text-sm text-gray-600">
+          <span><strong class="text-green-800">V</strong> = Vegetarian</span>
+          <span><strong class="text-green-800">VG</strong> = Vegan</span>
+          <span><strong class="text-green-800">GF</strong> = Gluten Free</span>
+          <span><strong class="text-green-800">DF</strong> = Dairy Free</span>
+          <span><strong class="text-green-800">NF</strong> = Nut Free</span>
+        </div>
+        <p class="text-sm text-gray-600 mt-2">
+          Please inform your server of any dietary restrictions or allergies.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-16 bg-[#114C87] text-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-3xl font-serif font-bold mb-4">
+          Reserve Your Table
+        </h2>
+        <p class="text-lg mb-8">
+          Join us for dinner and experience our exceptional coastal cuisine.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href="https://www.opentable.com/field-and-tides"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-block px-8 py-3 bg-[#F4E297] text-[#114C87] font-semibold rounded hover:bg-[#e5d388] transition-colors border border-[#F4E297]"
+          >
+            Make a Reservation
+          </a>
+          <a
+            href="/menu"
+            class="inline-block px-8 py-3 bg-transparent text-white font-semibold rounded hover:bg-white/10 transition-colors border border-white"
+          >
+            View All Menus
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>

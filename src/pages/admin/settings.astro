@@ -1,0 +1,271 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getUserFromCookie } from '../../lib/auth.js';
+import { getSettings, updateSettings } from '../../lib/settings.js';
+
+// Check authentication
+const user = getUserFromCookie(Astro.cookies);
+if (!user) {
+  return Astro.redirect('/admin/login');
+}
+
+let message = null;
+
+// Handle form submission
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const category = formData.get('category')?.toString();
+
+  if (category === 'site') {
+    const siteName = formData.get('siteName')?.toString();
+    const siteDescription = formData.get('siteDescription')?.toString();
+    const contactEmail = formData.get('contactEmail')?.toString();
+    const contactPhone = formData.get('contactPhone')?.toString();
+    const address = formData.get('address')?.toString();
+
+    const result = updateSettings('site', {
+      siteName,
+      siteDescription,
+      contactEmail,
+      contactPhone,
+      address
+    }, user.username);
+
+    if (result) {
+      message = { type: 'success', text: 'Site settings updated successfully!' };
+    } else {
+      message = { type: 'error', text: 'Failed to update settings.' };
+    }
+  } else if (category === 'social') {
+    const facebook = formData.get('facebook')?.toString();
+    const instagram = formData.get('instagram')?.toString();
+    const twitter = formData.get('twitter')?.toString();
+    const yelp = formData.get('yelp')?.toString();
+
+    const result = updateSettings('social', {
+      facebook,
+      instagram,
+      twitter,
+      yelp
+    }, user.username);
+
+    if (result) {
+      message = { type: 'success', text: 'Social media settings updated successfully!' };
+    } else {
+      message = { type: 'error', text: 'Failed to update settings.' };
+    }
+  } else if (category === 'hours') {
+    const monday = formData.get('monday')?.toString();
+    const tuesday = formData.get('tuesday')?.toString();
+    const wednesday = formData.get('wednesday')?.toString();
+    const thursday = formData.get('thursday')?.toString();
+    const friday = formData.get('friday')?.toString();
+    const saturday = formData.get('saturday')?.toString();
+    const sunday = formData.get('sunday')?.toString();
+
+    const result = updateSettings('hours', {
+      monday,
+      tuesday,
+      wednesday,
+      thursday,
+      friday,
+      saturday,
+      sunday
+    }, user.username);
+
+    if (result) {
+      message = { type: 'success', text: 'Hours updated successfully!' };
+    } else {
+      message = { type: 'error', text: 'Failed to update hours.' };
+    }
+  }
+}
+
+// Get current settings
+const siteSettings = getSettings('site') || { data: {} };
+const socialSettings = getSettings('social') || { data: {} };
+const hoursSettings = getSettings('hours') || { data: {} };
+---
+
+<AdminLayout pageTitle="Settings">
+  {message && (
+    <div class={`alert alert-${message.type}`}>
+      {message.text}
+    </div>
+  )}
+
+  <!-- Site Settings -->
+  <div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+      <h3 class="card-title">Site Information</h3>
+    </div>
+
+    <form method="POST">
+      <input type="hidden" name="category" value="site" />
+
+      <div class="form-group">
+        <label for="siteName" class="form-label">Site Name</label>
+        <input
+          type="text"
+          id="siteName"
+          name="siteName"
+          class="form-input"
+          value={siteSettings.data.siteName || 'Field & Tides'}
+          placeholder="Field & Tides"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="siteDescription" class="form-label">Site Description</label>
+        <textarea
+          id="siteDescription"
+          name="siteDescription"
+          class="form-textarea"
+          placeholder="A brief description of your restaurant"
+        >{siteSettings.data.siteDescription || ''}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="contactEmail" class="form-label">Contact Email</label>
+        <input
+          type="email"
+          id="contactEmail"
+          name="contactEmail"
+          class="form-input"
+          value={siteSettings.data.contactEmail || ''}
+          placeholder="info@fieldandtides.com"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="contactPhone" class="form-label">Contact Phone</label>
+        <input
+          type="tel"
+          id="contactPhone"
+          name="contactPhone"
+          class="form-input"
+          value={siteSettings.data.contactPhone || ''}
+          placeholder="(555) 123-4567"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="address" class="form-label">Address</label>
+        <textarea
+          id="address"
+          name="address"
+          class="form-textarea"
+          placeholder="123 Main Street, City, State 12345"
+        >{siteSettings.data.address || ''}</textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        <i data-lucide="save" style="width: 16px; height: 16px;"></i>
+        Save Site Settings
+      </button>
+    </form>
+  </div>
+
+  <!-- Hours -->
+  <div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+      <h3 class="card-title">Business Hours</h3>
+    </div>
+
+    <form method="POST">
+      <input type="hidden" name="category" value="hours" />
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
+        {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => (
+          <div class="form-group">
+            <label for={day.toLowerCase()} class="form-label">{day}</label>
+            <input
+              type="text"
+              id={day.toLowerCase()}
+              name={day.toLowerCase()}
+              class="form-input"
+              value={hoursSettings.data[day.toLowerCase()] || ''}
+              placeholder="e.g., 11:00 AM - 10:00 PM or Closed"
+            />
+          </div>
+        ))}
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        <i data-lucide="save" style="width: 16px; height: 16px;"></i>
+        Save Hours
+      </button>
+    </form>
+  </div>
+
+  <!-- Social Media -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Social Media Links</h3>
+    </div>
+
+    <form method="POST">
+      <input type="hidden" name="category" value="social" />
+
+      <div class="form-group">
+        <label for="facebook" class="form-label">Facebook URL</label>
+        <input
+          type="url"
+          id="facebook"
+          name="facebook"
+          class="form-input"
+          value={socialSettings.data.facebook || ''}
+          placeholder="https://facebook.com/fieldandtides"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="instagram" class="form-label">Instagram URL</label>
+        <input
+          type="url"
+          id="instagram"
+          name="instagram"
+          class="form-input"
+          value={socialSettings.data.instagram || ''}
+          placeholder="https://instagram.com/fieldandtides"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="twitter" class="form-label">Twitter URL</label>
+        <input
+          type="url"
+          id="twitter"
+          name="twitter"
+          class="form-input"
+          value={socialSettings.data.twitter || ''}
+          placeholder="https://twitter.com/fieldandtides"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="yelp" class="form-label">Yelp URL</label>
+        <input
+          type="url"
+          id="yelp"
+          name="yelp"
+          class="form-input"
+          value={socialSettings.data.yelp || ''}
+          placeholder="https://yelp.com/biz/field-and-tides"
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        <i data-lucide="save" style="width: 16px; height: 16px;"></i>
+        Save Social Links
+      </button>
+    </form>
+  </div>
+</AdminLayout>
+
+<script>
+  // Initialize Lucide icons
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+</script>

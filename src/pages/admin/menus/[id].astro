@@ -1,0 +1,415 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { getUserFromCookie } from '../../../lib/auth.js';
+import { getMenu, updateMenu, getMenuItems, createMenuItem, updateMenuItem, deleteMenuItem } from '../../../lib/menus.js';
+
+// Check authentication
+const user = getUserFromCookie(Astro.cookies);
+if (!user) {
+  return Astro.redirect('/admin/login');
+}
+
+const { id } = Astro.params;
+let message = null;
+
+// Handle form submissions
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const action = formData.get('action');
+
+  if (action === 'update-menu') {
+    const name = formData.get('name')?.toString();
+    const slug = formData.get('slug')?.toString();
+    const description = formData.get('description')?.toString();
+    const category = formData.get('category')?.toString();
+
+    if (name && slug) {
+      const result = updateMenu(id, {
+        name,
+        slug,
+        description,
+        category,
+        updatedBy: user.username
+      });
+
+      if (result) {
+        message = { type: 'success', text: 'Menu updated successfully!' };
+      } else {
+        message = { type: 'error', text: 'Failed to update menu.' };
+      }
+    }
+  } else if (action === 'create-item') {
+    const name = formData.get('itemName')?.toString();
+    const section = formData.get('section')?.toString();
+    const description = formData.get('itemDescription')?.toString();
+    const price = formData.get('price')?.toString();
+
+    if (name) {
+      const result = createMenuItem({
+        menuId: id,
+        name,
+        section,
+        description,
+        price,
+        status: 'published'
+      });
+
+      if (result) {
+        message = { type: 'success', text: 'Menu item created successfully!' };
+      } else {
+        message = { type: 'error', text: 'Failed to create menu item.' };
+      }
+    }
+  } else if (action === 'update-item') {
+    const itemId = formData.get('itemId')?.toString();
+    const name = formData.get('itemName')?.toString();
+    const section = formData.get('section')?.toString();
+    const description = formData.get('itemDescription')?.toString();
+    const price = formData.get('price')?.toString();
+
+    if (itemId && name) {
+      const result = updateMenuItem(itemId, {
+        name,
+        section,
+        description,
+        price
+      });
+
+      if (result) {
+        message = { type: 'success', text: 'Menu item updated successfully!' };
+      } else {
+        message = { type: 'error', text: 'Failed to update menu item.' };
+      }
+    }
+  } else if (action === 'delete-item') {
+    const itemId = formData.get('itemId')?.toString();
+    if (itemId) {
+      const result = deleteMenuItem(itemId);
+      if (result) {
+        message = { type: 'success', text: 'Menu item deleted successfully!' };
+      } else {
+        message = { type: 'error', text: 'Failed to delete menu item.' };
+      }
+    }
+  }
+}
+
+// Get menu and items
+const menu = getMenu(id);
+if (!menu) {
+  return Astro.redirect('/admin/menus');
+}
+
+const menuItems = getMenuItems(id);
+
+// Group items by section
+const sections = {};
+menuItems.forEach(item => {
+  const section = item.section || 'General';
+  if (!sections[section]) {
+    sections[section] = [];
+  }
+  sections[section].push(item);
+});
+---
+
+<AdminLayout pageTitle={`Edit Menu: ${menu.name}`}>
+  <div slot="header-actions">
+    <a href="/admin/menus" class="btn btn-secondary">
+      <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i>
+      Back to Menus
+    </a>
+  </div>
+
+  {message && (
+    <div class={`alert alert-${message.type}`}>
+      {message.text}
+    </div>
+  )}
+
+  <!-- Menu Details -->
+  <div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+      <h3 class="card-title">Menu Details</h3>
+    </div>
+
+    <form method="POST">
+      <input type="hidden" name="action" value="update-menu" />
+
+      <div class="form-group">
+        <label for="name" class="form-label">Menu Name</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          class="form-input"
+          value={menu.name}
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="slug" class="form-label">Slug</label>
+        <input
+          type="text"
+          id="slug"
+          name="slug"
+          class="form-input"
+          value={menu.slug}
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="category" class="form-label">Category</label>
+        <input
+          type="text"
+          id="category"
+          name="category"
+          class="form-input"
+          value={menu.category || ''}
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="description" class="form-label">Description</label>
+        <textarea
+          id="description"
+          name="description"
+          class="form-textarea"
+        >{menu.description || ''}</textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        <i data-lucide="save" style="width: 16px; height: 16px;"></i>
+        Save Menu
+      </button>
+    </form>
+  </div>
+
+  <!-- Menu Items -->
+  <div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+      <h3 class="card-title">Menu Items</h3>
+      <button class="btn btn-primary btn-sm" onclick="document.getElementById('createItemModal').style.display = 'flex'">
+        <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+        Add Item
+      </button>
+    </div>
+
+    {Object.keys(sections).length > 0 ? (
+      Object.entries(sections).map(([sectionName, items]) => (
+        <div style="margin-bottom: 2rem;">
+          <h4 style="font-size: 1.125rem; font-weight: 600; color: var(--ft-gold-primary); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--admin-border-subtle);">
+            {sectionName}
+          </h4>
+
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Price</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map(item => (
+                  <tr>
+                    <td style="font-weight: 600;">{item.name}</td>
+                    <td style="max-width: 300px;">{item.description || '-'}</td>
+                    <td>{item.price ? `$${item.price}` : '-'}</td>
+                    <td>
+                      <div style="display: flex; gap: 0.5rem;">
+                        <button
+                          class="btn btn-secondary btn-sm"
+                          onclick={`openEditItemModal('${item.id}', '${item.name}', '${item.section || ''}', '${item.description || ''}', '${item.price || ''}')`}
+                        >
+                          <i data-lucide="edit" style="width: 14px; height: 14px;"></i>
+                          Edit
+                        </button>
+                        <form method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                          <input type="hidden" name="action" value="delete-item" />
+                          <input type="hidden" name="itemId" value={item.id} />
+                          <button type="submit" class="btn btn-danger btn-sm">
+                            <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ))
+    ) : (
+      <div style="text-align: center; padding: 3rem; color: var(--admin-text-tertiary);">
+        <i data-lucide="utensils" style="width: 48px; height: 48px; margin-bottom: 1rem;"></i>
+        <p>No menu items yet. Add your first item to get started.</p>
+      </div>
+    )}
+  </div>
+
+  <!-- Create Item Modal -->
+  <div id="createItemModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); align-items: center; justify-content: center; z-index: 1000;">
+    <div class="card" style="max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 class="card-title">Add Menu Item</h3>
+        <button onclick="document.getElementById('createItemModal').style.display = 'none'" style="background: none; border: none; color: var(--admin-text-secondary); cursor: pointer; font-size: 1.5rem;">
+          ×
+        </button>
+      </div>
+
+      <form method="POST">
+        <input type="hidden" name="action" value="create-item" />
+
+        <div class="form-group">
+          <label for="itemName" class="form-label">Item Name *</label>
+          <input
+            type="text"
+            id="itemName"
+            name="itemName"
+            class="form-input"
+            placeholder="e.g., Grilled Salmon"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="section" class="form-label">Section</label>
+          <input
+            type="text"
+            id="section"
+            name="section"
+            class="form-input"
+            placeholder="e.g., Entrees, Appetizers, Desserts"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="itemDescription" class="form-label">Description</label>
+          <textarea
+            id="itemDescription"
+            name="itemDescription"
+            class="form-textarea"
+            placeholder="Describe the dish"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="price" class="form-label">Price</label>
+          <input
+            type="text"
+            id="price"
+            name="price"
+            class="form-input"
+            placeholder="e.g., 24.95"
+          />
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('createItemModal').style.display = 'none'">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">
+            Add Item
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Item Modal -->
+  <div id="editItemModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); align-items: center; justify-content: center; z-index: 1000;">
+    <div class="card" style="max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 class="card-title">Edit Menu Item</h3>
+        <button onclick="document.getElementById('editItemModal').style.display = 'none'" style="background: none; border: none; color: var(--admin-text-secondary); cursor: pointer; font-size: 1.5rem;">
+          ×
+        </button>
+      </div>
+
+      <form method="POST" id="editItemForm">
+        <input type="hidden" name="action" value="update-item" />
+        <input type="hidden" name="itemId" id="editItemId" />
+
+        <div class="form-group">
+          <label for="editItemName" class="form-label">Item Name *</label>
+          <input
+            type="text"
+            id="editItemName"
+            name="itemName"
+            class="form-input"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="editSection" class="form-label">Section</label>
+          <input
+            type="text"
+            id="editSection"
+            name="section"
+            class="form-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="editItemDescription" class="form-label">Description</label>
+          <textarea
+            id="editItemDescription"
+            name="itemDescription"
+            class="form-textarea"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="editPrice" class="form-label">Price</label>
+          <input
+            type="text"
+            id="editPrice"
+            name="price"
+            class="form-input"
+          />
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('editItemModal').style.display = 'none'">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">
+            Update Item
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  // Initialize Lucide icons
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+
+  // Function to open edit modal
+  window.openEditItemModal = function(id, name, section, description, price) {
+    document.getElementById('editItemId').value = id;
+    document.getElementById('editItemName').value = name;
+    document.getElementById('editSection').value = section;
+    document.getElementById('editItemDescription').value = description;
+    document.getElementById('editPrice').value = price;
+    document.getElementById('editItemModal').style.display = 'flex';
+  };
+
+  // Close modals on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.getElementById('createItemModal').style.display = 'none';
+      document.getElementById('editItemModal').style.display = 'none';
+    }
+  });
+</script>

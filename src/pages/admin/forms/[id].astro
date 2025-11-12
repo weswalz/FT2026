@@ -1,0 +1,266 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { getUserFromCookie } from '../../../lib/auth.js';
+import { getSubmissionById, updateSubmissionStatus } from '../../../lib/forms.js';
+
+// Check authentication
+const user = getUserFromCookie(Astro.cookies);
+if (!user) {
+  return Astro.redirect('/admin/login');
+}
+
+const { id } = Astro.params;
+let message = null;
+
+// Handle form submission
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const action = formData.get('action');
+
+  if (action === 'update-status') {
+    const status = formData.get('status')?.toString();
+    const notes = formData.get('internalNotes')?.toString();
+
+    if (status) {
+      const result = updateSubmissionStatus(id, status, notes);
+      if (result) {
+        message = { type: 'success', text: 'Status updated successfully!' };
+      } else {
+        message = { type: 'error', text: 'Failed to update status.' };
+      }
+    }
+  }
+}
+
+// Get submission
+const submission = getSubmissionById(id);
+if (!submission) {
+  return Astro.redirect('/admin/forms');
+}
+
+// Format date helper
+function formatDate(dateStr) {
+  if (!dateStr) return 'N/A';
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+// Format payload for display
+const payload = submission.payload || {};
+---
+
+<AdminLayout pageTitle="Form Submission">
+  <div slot="header-actions">
+    <a href="/admin/forms" class="btn btn-secondary">
+      <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i>
+      Back to Forms
+    </a>
+  </div>
+
+  {message && (
+    <div class={`alert alert-${message.type}`}>
+      {message.text}
+    </div>
+  )}
+
+  <div style="display: grid; grid-template-columns: 1fr 350px; gap: 1.5rem;">
+    <!-- Main Content -->
+    <div>
+      <!-- Submission Details -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="card-header">
+          <h3 class="card-title">Submission Details</h3>
+        </div>
+
+        <div style="display: grid; gap: 1.5rem;">
+          <div>
+            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--admin-text-secondary); margin-bottom: 0.5rem;">
+              Form Type
+            </div>
+            <span class="badge badge-info">{submission.formType}</span>
+          </div>
+
+          <div>
+            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--admin-text-secondary); margin-bottom: 0.5rem;">
+              Submitted
+            </div>
+            <div style="color: var(--admin-text-primary);">{formatDate(submission.createdAt)}</div>
+          </div>
+
+          <div>
+            <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--admin-text-secondary); margin-bottom: 0.5rem;">
+              Status
+            </div>
+            <span class={`badge ${
+              submission.status === 'new' ? 'badge-danger' :
+              submission.status === 'contacted' ? 'badge-warning' :
+              'badge-success'
+            }`}>
+              {submission.status}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Data -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Form Data</h3>
+        </div>
+
+        <div style="display: grid; gap: 1.5rem;">
+          {Object.entries(payload).map(([key, value]) => (
+            <div>
+              <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--admin-text-secondary); margin-bottom: 0.5rem;">
+                {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+              </div>
+              <div style="color: var(--admin-text-primary); white-space: pre-wrap; word-break: break-word;">
+                {typeof value === 'object' ? JSON.stringify(value, null, 2) : value || 'N/A'}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div>
+      <!-- Update Status -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1rem; font-weight: 600; color: var(--admin-text-primary); margin-bottom: 1rem;">
+          Update Status
+        </h3>
+
+        <form method="POST">
+          <input type="hidden" name="action" value="update-status" />
+
+          <div class="form-group">
+            <label for="status" class="form-label">Status</label>
+            <select id="status" name="status" class="form-select">
+              <option value="new" selected={submission.status === 'new'}>New</option>
+              <option value="contacted" selected={submission.status === 'contacted'}>Contacted</option>
+              <option value="resolved" selected={submission.status === 'resolved'}>Resolved</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="internalNotes" class="form-label">Internal Notes</label>
+            <textarea
+              id="internalNotes"
+              name="internalNotes"
+              class="form-textarea"
+              placeholder="Add notes about this submission..."
+            >{submission.internalNotes || ''}</textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            <i data-lucide="save" style="width: 16px; height: 16px;"></i>
+            Update Status
+          </button>
+        </form>
+      </div>
+
+      <!-- Contact Information -->
+      {(submission.email || payload.email) && (
+        <div class="card" style="margin-bottom: 1.5rem;">
+          <h3 style="font-size: 1rem; font-weight: 600; color: var(--admin-text-primary); margin-bottom: 1rem;">
+            Contact Info
+          </h3>
+
+          {(submission.name || payload.name) && (
+            <div style="margin-bottom: 0.75rem;">
+              <div style="font-size: 0.75rem; color: var(--admin-text-secondary); margin-bottom: 0.25rem;">
+                Name
+              </div>
+              <div style="color: var(--admin-text-primary);">
+                {submission.name || payload.name}
+              </div>
+            </div>
+          )}
+
+          <div style="margin-bottom: 0.75rem;">
+            <div style="font-size: 0.75rem; color: var(--admin-text-secondary); margin-bottom: 0.25rem;">
+              Email
+            </div>
+            <a
+              href={`mailto:${submission.email || payload.email}`}
+              style="color: var(--ft-gold-primary); text-decoration: none;"
+            >
+              {submission.email || payload.email}
+            </a>
+          </div>
+
+          {payload.phone && (
+            <div>
+              <div style="font-size: 0.75rem; color: var(--admin-text-secondary); margin-bottom: 0.25rem;">
+                Phone
+              </div>
+              <a
+                href={`tel:${payload.phone}`}
+                style="color: var(--ft-gold-primary); text-decoration: none;"
+              >
+                {payload.phone}
+              </a>
+            </div>
+          )}
+        </div>
+      )}
+
+      <!-- Webhook Status -->
+      {submission.webhookStatus && submission.webhookStatus !== 'not_applicable' && (
+        <div class="card">
+          <h3 style="font-size: 1rem; font-weight: 600; color: var(--admin-text-primary); margin-bottom: 1rem;">
+            Webhook
+          </h3>
+
+          <div style="margin-bottom: 0.75rem;">
+            <div style="font-size: 0.75rem; color: var(--admin-text-secondary); margin-bottom: 0.25rem;">
+              Status
+            </div>
+            <span class={`badge ${
+              submission.webhookStatus === 'success' ? 'badge-success' :
+              submission.webhookStatus === 'failed' ? 'badge-danger' :
+              'badge-warning'
+            }`}>
+              {submission.webhookStatus}
+            </span>
+          </div>
+
+          {submission.webhookAttempts > 0 && (
+            <div style="margin-bottom: 0.75rem;">
+              <div style="font-size: 0.75rem; color: var(--admin-text-secondary); margin-bottom: 0.25rem;">
+                Attempts
+              </div>
+              <div style="color: var(--admin-text-primary);">
+                {submission.webhookAttempts}
+              </div>
+            </div>
+          )}
+
+          {submission.webhookLastAttempt && (
+            <div>
+              <div style="font-size: 0.75rem; color: var(--admin-text-secondary); margin-bottom: 0.25rem;">
+                Last Attempt
+              </div>
+              <div style="color: var(--admin-text-primary); font-size: 0.875rem;">
+                {formatDate(submission.webhookLastAttempt)}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  // Initialize Lucide icons
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+</script>

@@ -1,0 +1,158 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getUserFromCookie } from '../../lib/auth.js';
+import { getAllMenus } from '../../lib/menus.js';
+import { getAllPages } from '../../lib/pages.js';
+import { getAllImages } from '../../lib/gallery.js';
+import { getAllSubmissions } from '../../lib/forms.js';
+
+// Check authentication
+const user = getUserFromCookie(Astro.cookies);
+if (!user) {
+  return Astro.redirect('/admin/login');
+}
+
+// Gather statistics
+let stats = {
+  menusCount: 0,
+  pagesCount: 0,
+  galleryCount: 0,
+  submissionsCount: 0,
+  newSubmissions: 0,
+};
+
+try {
+  const menus = getAllMenus();
+  stats.menusCount = menus.length;
+} catch (error) {
+  console.error('Error fetching menus:', error);
+}
+
+try {
+  const pages = getAllPages();
+  stats.pagesCount = pages.length;
+} catch (error) {
+  console.error('Error fetching pages:', error);
+}
+
+try {
+  const images = getAllImages();
+  stats.galleryCount = images.length;
+} catch (error) {
+  console.error('Error fetching gallery:', error);
+}
+
+try {
+  const submissions = getAllSubmissions();
+  stats.submissionsCount = submissions.length;
+  stats.newSubmissions = submissions.filter(s => s.status === 'new').length;
+} catch (error) {
+  console.error('Error fetching submissions:', error);
+}
+---
+
+<AdminLayout pageTitle="Dashboard">
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold mb-2" style="color: var(--admin-text-primary);">Welcome back, {user.username}!</h2>
+    <p style="color: var(--admin-text-secondary);">Here's an overview of your Field & Tides website.</p>
+  </div>
+
+  <!-- Statistics Grid -->
+  <div class="stats-grid">
+    <!-- Menus Card -->
+    <div class="stat-card">
+      <div class="stat-icon" style="background: rgba(244, 226, 151, 0.1);">
+        <i data-lucide="utensils" style="width: 24px; height: 24px; color: #F4E297;"></i>
+      </div>
+      <div class="stat-label">Total Menus</div>
+      <div class="stat-value">{stats.menusCount}</div>
+      <a href="/admin/menus" class="btn btn-secondary btn-sm" style="margin-top: 1rem;">
+        Manage Menus
+      </a>
+    </div>
+
+    <!-- Pages Card -->
+    <div class="stat-card">
+      <div class="stat-icon" style="background: rgba(17, 76, 135, 0.2);">
+        <i data-lucide="file-text" style="width: 24px; height: 24px; color: #114C87;"></i>
+      </div>
+      <div class="stat-label">Pages</div>
+      <div class="stat-value">{stats.pagesCount}</div>
+      <a href="/admin/pages" class="btn btn-secondary btn-sm" style="margin-top: 1rem;">
+        Manage Pages
+      </a>
+    </div>
+
+    <!-- Gallery Card -->
+    <div class="stat-card">
+      <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1);">
+        <i data-lucide="image" style="width: 24px; height: 24px; color: #10B981;"></i>
+      </div>
+      <div class="stat-label">Gallery Images</div>
+      <div class="stat-value">{stats.galleryCount}</div>
+      <a href="/admin/gallery" class="btn btn-secondary btn-sm" style="margin-top: 1rem;">
+        Manage Gallery
+      </a>
+    </div>
+
+    <!-- Form Submissions Card -->
+    <div class="stat-card">
+      <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1);">
+        <i data-lucide="inbox" style="width: 24px; height: 24px; color: #EF4444;"></i>
+      </div>
+      <div class="stat-label">Form Submissions</div>
+      <div class="stat-value">{stats.submissionsCount}</div>
+      {stats.newSubmissions > 0 && (
+        <span class="badge badge-danger" style="margin-top: 0.5rem;">
+          {stats.newSubmissions} new
+        </span>
+      )}
+      <a href="/admin/forms" class="btn btn-secondary btn-sm" style="margin-top: 1rem;">
+        View Submissions
+      </a>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+      <h3 class="card-title">Quick Actions</h3>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+      <a href="/admin/menus" class="btn btn-secondary" style="justify-content: flex-start;">
+        <i data-lucide="utensils" style="width: 18px; height: 18px;"></i>
+        Edit Menus
+      </a>
+      <a href="/admin/gallery" class="btn btn-secondary" style="justify-content: flex-start;">
+        <i data-lucide="image" style="width: 18px; height: 18px;"></i>
+        Upload Images
+      </a>
+      <a href="/admin/pages" class="btn btn-secondary" style="justify-content: flex-start;">
+        <i data-lucide="file-text" style="width: 18px; height: 18px;"></i>
+        Edit Pages
+      </a>
+      <a href="/admin/settings" class="btn btn-secondary" style="justify-content: flex-start;">
+        <i data-lucide="settings" style="width: 18px; height: 18px;"></i>
+        Site Settings
+      </a>
+    </div>
+  </div>
+
+  <!-- Recent Activity (placeholder) -->
+  <div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+      <h3 class="card-title">Recent Activity</h3>
+    </div>
+    <div style="text-align: center; padding: 2rem; color: var(--admin-text-tertiary);">
+      <i data-lucide="activity" style="width: 48px; height: 48px; margin-bottom: 1rem;"></i>
+      <p>Activity tracking coming soon</p>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  // Initialize Lucide icons
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+</script>

@@ -1,0 +1,170 @@
+---
+// Private dining form component
+---
+
+<form id="private-dining-form" class="space-y-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <label for="pd-name" class="block text-sm font-medium text-gray-700 mb-2">
+        Name <span class="text-red-500">*</span>
+      </label>
+      <input
+        type="text"
+        id="pd-name"
+        name="name"
+        required
+        class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[#114C87] focus:border-transparent"
+      />
+    </div>
+
+    <div>
+      <label for="pd-email" class="block text-sm font-medium text-gray-700 mb-2">
+        Email <span class="text-red-500">*</span>
+      </label>
+      <input
+        type="email"
+        id="pd-email"
+        name="email"
+        required
+        class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[#114C87] focus:border-transparent"
+      />
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <label for="pd-phone" class="block text-sm font-medium text-gray-700 mb-2">
+        Phone <span class="text-red-500">*</span>
+      </label>
+      <input
+        type="tel"
+        id="pd-phone"
+        name="phone"
+        required
+        class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[#114C87] focus:border-transparent"
+      />
+    </div>
+
+    <div>
+      <label for="pd-guests" class="block text-sm font-medium text-gray-700 mb-2">
+        Number of Guests <span class="text-red-500">*</span>
+      </label>
+      <input
+        type="number"
+        id="pd-guests"
+        name="guestCount"
+        min="1"
+        required
+        class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[#114C87] focus:border-transparent"
+      />
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <label for="pd-date" class="block text-sm font-medium text-gray-700 mb-2">
+        Preferred Date <span class="text-red-500">*</span>
+      </label>
+      <input
+        type="date"
+        id="pd-date"
+        name="eventDate"
+        required
+        class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[#114C87] focus:border-transparent"
+      />
+    </div>
+
+    <div>
+      <label for="pd-time" class="block text-sm font-medium text-gray-700 mb-2">
+        Preferred Time
+      </label>
+      <input
+        type="time"
+        id="pd-time"
+        name="eventTime"
+        class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[#114C87] focus:border-transparent"
+      />
+    </div>
+  </div>
+
+  <div>
+    <label for="pd-event-type" class="block text-sm font-medium text-gray-700 mb-2">
+      Event Type
+    </label>
+    <select
+      id="pd-event-type"
+      name="eventType"
+      class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[#114C87] focus:border-transparent"
+    >
+      <option value="">Select event type...</option>
+      <option value="wedding">Wedding</option>
+      <option value="corporate">Corporate Event</option>
+      <option value="birthday">Birthday Party</option>
+      <option value="anniversary">Anniversary</option>
+      <option value="other">Other</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="pd-message" class="block text-sm font-medium text-gray-700 mb-2">
+      Additional Details
+    </label>
+    <textarea
+      id="pd-message"
+      name="message"
+      rows="5"
+      class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-[#114C87] focus:border-transparent"
+    ></textarea>
+  </div>
+
+  <div id="pd-form-message" class="hidden p-4 rounded"></div>
+
+  <button
+    type="submit"
+    class="w-full md:w-auto px-8 py-3 bg-[#114C87] text-white font-semibold rounded hover:bg-[#0d3a67] transition-colors"
+  >
+    Submit Inquiry
+  </button>
+</form>
+
+<script>
+  const form = document.getElementById('private-dining-form') as HTMLFormElement;
+  const messageDiv = document.getElementById('pd-form-message');
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      const response = await fetch('/api/forms/private-dining', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (messageDiv) {
+        messageDiv.classList.remove('hidden');
+        if (response.ok) {
+          messageDiv.className = 'p-4 rounded bg-green-100 text-green-800';
+          messageDiv.textContent = result.message || 'Thank you for your inquiry! We will contact you soon to discuss your event.';
+          form.reset();
+        } else {
+          messageDiv.className = 'p-4 rounded bg-red-100 text-red-800';
+          messageDiv.textContent = result.error || 'Something went wrong. Please try again.';
+        }
+      }
+    } catch (error) {
+      if (messageDiv) {
+        messageDiv.classList.remove('hidden');
+        messageDiv.className = 'p-4 rounded bg-red-100 text-red-800';
+        messageDiv.textContent = 'Failed to submit inquiry. Please try again later.';
+      }
+    }
+  });
+</script>

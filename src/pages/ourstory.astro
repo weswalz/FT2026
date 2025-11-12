@@ -1,0 +1,146 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/Hero.astro';
+---
+
+<Layout
+  title="Our Story - Field & Tides Restaurant & Bar"
+  description="Learn about Field & Tides and Executive Chef Travis Lenig. Coastal cuisine in Houston's Heights neighborhood."
+>
+  <Header />
+
+  <Hero
+    title="Our Story"
+    subtitle="A passion for coastal cuisine in the heart of Houston"
+    image="/images/hero-ourstory.jpg"
+  />
+
+  <!-- Restaurant Story -->
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-3xl font-serif font-bold text-[#114C87] mb-6">
+          Welcome to Field & Tides
+        </h2>
+        <div class="prose prose-lg max-w-none text-gray-700 space-y-4">
+          <p>
+            Nestled in Houston's historic Heights neighborhood, Field & Tides represents a unique culinary vision where land meets sea. Our restaurant embodies the essence of coastal-inspired cuisine, bringing together the finest locally sourced ingredients with the abundant treasures of the Gulf.
+          </p>
+          <p>
+            The name "Field & Tides" tells our story: "Field" represents the locally sourced vegetables, pork, poultry, beef, and game from Texas farms and ranches, while "Tides" celebrates the fresh seafood sourced from the Gulf Coast. This dual commitment to land and sea creates a menu that's both diverse and deeply rooted in our region's culinary traditions.
+          </p>
+          <p>
+            Our upscale casual atmosphere provides the perfect setting for any occasion, whether it's a romantic dinner, family gathering, or special celebration. We're open for lunch and dinner daily, with an exceptional brunch service on Saturday and Sunday.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chef Section -->
+  <section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div>
+            <img
+              src="/images/chef-travis.jpg"
+              alt="Executive Chef Travis Lenig"
+              class="w-full rounded-lg shadow-lg"
+            />
+          </div>
+          <div>
+            <h2 class="text-3xl font-serif font-bold text-[#114C87] mb-6">
+              Executive Chef Travis Lenig
+            </h2>
+            <div class="prose prose-lg max-w-none text-gray-700 space-y-4">
+              <p>
+                Chef Travis Lenig's culinary journey is reflected in every dish at Field & Tides. His open canvas approach to menu creation stems from a deep appreciation for diverse culinary traditions, including Southern, Italian, French, and Asian cuisines.
+              </p>
+              <p>
+                With years of experience in fine dining establishments, Chef Lenig brings a sophisticated yet approachable style to Field & Tides. His commitment to seasonal, locally sourced ingredients ensures that each menu is fresh, innovative, and celebrates the best of what our region has to offer.
+              </p>
+              <p>
+                Chef Lenig's philosophy is simple: let quality ingredients shine through thoughtful preparation and creative presentation. This approach has made Field & Tides a beloved destination for food enthusiasts throughout Houston.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Philosophy Section -->
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-3xl font-serif font-bold text-[#114C87] mb-8 text-center">
+          Our Philosophy
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div class="w-16 h-16 bg-[#F4E297] rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-[#114C87]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-serif font-bold text-[#114C87] mb-2">Local Sourcing</h3>
+            <p class="text-gray-600">
+              We partner with local farms and suppliers to bring you the freshest ingredients.
+            </p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-16 h-16 bg-[#F4E297] rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-[#114C87]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-serif font-bold text-[#114C87] mb-2">Seasonal Menus</h3>
+            <p class="text-gray-600">
+              Our menu changes with the seasons to showcase the best ingredients available.
+            </p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-16 h-16 bg-[#F4E297] rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-[#114C87]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-serif font-bold text-[#114C87] mb-2">Quality First</h3>
+            <p class="text-gray-600">
+              Every dish is crafted with care and attention to detail.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-16 bg-[#114C87] text-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-3xl font-serif font-bold mb-4">
+          Experience Field & Tides
+        </h2>
+        <p class="text-lg mb-8">
+          Join us for lunch, dinner, or weekend brunch and discover why we're one of Houston's favorite dining destinations.
+        </p>
+        <a
+          href="https://www.opentable.com/field-and-tides"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-block px-8 py-3 bg-[#F4E297] text-[#114C87] font-semibold rounded hover:bg-[#e5d388] transition-colors border border-[#F4E297]"
+        >
+          Make a Reservation
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>

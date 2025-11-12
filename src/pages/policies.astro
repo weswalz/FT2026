@@ -1,0 +1,177 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/Hero.astro';
+---
+
+<Layout
+  title="Restaurant Policies - Field & Tides Restaurant & Bar"
+  description="View our restaurant policies including reservations, cancellations, dress code, and more."
+>
+  <Header />
+
+  <Hero
+    title="Restaurant Policies"
+    subtitle="Important information for your visit"
+    image="/images/hero-policies.jpg"
+  />
+
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <div class="space-y-8">
+          <!-- Reservations -->
+          <div class="border-b border-gray-200 pb-8">
+            <h2 class="text-2xl font-serif font-bold text-[#114C87] mb-4">
+              Reservations
+            </h2>
+            <div class="prose max-w-none text-gray-700">
+              <p>
+                We highly recommend making reservations, especially for dinner and weekend brunch. Reservations can be made through OpenTable or by calling us at (713) 862-0708.
+              </p>
+              <p>
+                We hold reservations for 15 minutes past the reservation time. If you are running late, please call us to let us know.
+              </p>
+            </div>
+          </div>
+
+          <!-- Cancellation Policy -->
+          <div class="border-b border-gray-200 pb-8">
+            <h2 class="text-2xl font-serif font-bold text-[#114C87] mb-4">
+              Cancellation Policy
+            </h2>
+            <div class="prose max-w-none text-gray-700">
+              <p>
+                We understand that plans change. If you need to cancel or modify your reservation, please do so at least 2 hours in advance. This allows us to accommodate other guests.
+              </p>
+              <p>
+                For parties of 6 or more, we require 24 hours notice for cancellations or modifications.
+              </p>
+            </div>
+          </div>
+
+          <!-- Dress Code -->
+          <div class="border-b border-gray-200 pb-8">
+            <h2 class="text-2xl font-serif font-bold text-[#114C87] mb-4">
+              Dress Code
+            </h2>
+            <div class="prose max-w-none text-gray-700">
+              <p>
+                Field & Tides maintains an upscale casual atmosphere. We ask that guests dress accordingly. Business casual attire is appropriate, though we do not have a strict dress code.
+              </p>
+              <p>
+                We kindly ask that guests refrain from wearing beachwear, athletic wear, or excessively casual clothing.
+              </p>
+            </div>
+          </div>
+
+          <!-- Children -->
+          <div class="border-b border-gray-200 pb-8">
+            <h2 class="text-2xl font-serif font-bold text-[#114C87] mb-4">
+              Children's Policy
+            </h2>
+            <div class="prose max-w-none text-gray-700">
+              <p>
+                We welcome families with children of all ages. High chairs and booster seats are available upon request.
+              </p>
+              <p>
+                We ask that parents ensure their children remain seated and supervised at all times for the safety and comfort of all our guests.
+              </p>
+            </div>
+          </div>
+
+          <!-- Dietary Restrictions -->
+          <div class="border-b border-gray-200 pb-8">
+            <h2 class="text-2xl font-serif font-bold text-[#114C87] mb-4">
+              Dietary Accommodations
+            </h2>
+            <div class="prose max-w-none text-gray-700">
+              <p>
+                We are happy to accommodate dietary restrictions and allergies whenever possible. Please inform your server of any dietary needs, and our kitchen will do its best to accommodate you.
+              </p>
+              <p>
+                While we take precautions to prevent cross-contamination, our kitchen does handle common allergens. Please discuss any severe allergies with your server.
+              </p>
+            </div>
+          </div>
+
+          <!-- Private Events -->
+          <div class="border-b border-gray-200 pb-8">
+            <h2 class="text-2xl font-serif font-bold text-[#114C87] mb-4">
+              Private Events & Large Parties
+            </h2>
+            <div class="prose max-w-none text-gray-700">
+              <p>
+                We offer private dining options for groups and special events. For parties of 10 or more, please contact our events coordinator to discuss menu options and arrangements.
+              </p>
+              <p>
+                Large party reservations may require a credit card to hold the reservation and may be subject to our private dining policies.
+              </p>
+            </div>
+          </div>
+
+          <!-- Gratuity -->
+          <div class="border-b border-gray-200 pb-8">
+            <h2 class="text-2xl font-serif font-bold text-[#114C87] mb-4">
+              Gratuity Policy
+            </h2>
+            <div class="prose max-w-none text-gray-700">
+              <p>
+                For parties of 6 or more, a gratuity of 20% will be automatically added to your bill.
+              </p>
+              <p>
+                For smaller parties, gratuity is at your discretion, and our staff appreciates your generosity.
+              </p>
+            </div>
+          </div>
+
+          <!-- Payment -->
+          <div class="border-b border-gray-200 pb-8">
+            <h2 class="text-2xl font-serif font-bold text-[#114C87] mb-4">
+              Payment Methods
+            </h2>
+            <div class="prose max-w-none text-gray-700">
+              <p>
+                We accept all major credit cards (Visa, MasterCard, American Express, Discover) and cash.
+              </p>
+            </div>
+          </div>
+
+          <!-- Smoking -->
+          <div class="border-b border-gray-200 pb-8">
+            <h2 class="text-2xl font-serif font-bold text-[#114C87] mb-4">
+              Smoking Policy
+            </h2>
+            <div class="prose max-w-none text-gray-700">
+              <p>
+                Field & Tides is a non-smoking establishment. Smoking is not permitted anywhere inside the restaurant.
+              </p>
+            </div>
+          </div>
+
+          <!-- Pets -->
+          <div>
+            <h2 class="text-2xl font-serif font-bold text-[#114C87] mb-4">
+              Pet Policy
+            </h2>
+            <div class="prose max-w-none text-gray-700">
+              <p>
+                For health and safety reasons, pets are not permitted inside the restaurant, with the exception of service animals.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Note -->
+        <div class="mt-12 p-6 bg-[#F4E297]/20 rounded-lg border border-[#F4E297]">
+          <p class="text-gray-700">
+            If you have any questions about our policies or need special accommodations, please don't hesitate to contact us at <a href="tel:+17138620708" class="text-[#114C87] hover:underline">(713) 862-0708</a> or <a href="mailto:info@fieldandtides.com" class="text-[#114C87] hover:underline">info@fieldandtides.com</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>

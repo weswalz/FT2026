@@ -1,0 +1,126 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/Hero.astro';
+import { getAllMenus } from '../lib/menus.js';
+
+const menus = getAllMenus('published');
+---
+
+<Layout
+  title="Our Menus - Field & Tides Restaurant & Bar"
+  description="Explore our seasonal menus featuring coastal cuisine, fresh seafood, and locally sourced ingredients."
+>
+  <Header />
+
+  <Hero
+    title="Our Menus"
+    subtitle="Seasonal coastal cuisine crafted with locally sourced ingredients"
+    image="/images/hero-menu.jpg"
+  />
+
+  <!-- Menu Overview -->
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto text-center mb-12">
+        <p class="text-lg text-gray-700 leading-relaxed">
+          Our menus change seasonally to showcase the freshest ingredients from local farms and the Gulf Coast. Each dish is thoughtfully prepared by Executive Chef Travis Lenig to bring you an exceptional dining experience.
+        </p>
+      </div>
+
+      <!-- Menu Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        {menus.map((menu) => (
+          <a
+            href={`/menu-${menu.slug}`}
+            class="bg-white border-2 border-gray-200 rounded-lg p-8 hover:border-[#114C87] hover:shadow-lg transition-all group"
+          >
+            <h2 class="text-3xl font-serif font-bold text-[#114C87] mb-3 group-hover:text-[#0d3a67]">
+              {menu.name}
+            </h2>
+            {menu.description && (
+              <p class="text-gray-600 mb-4">
+                {menu.description}
+              </p>
+            )}
+            <span class="text-[#114C87] font-semibold group-hover:underline">
+              View Menu →
+            </span>
+          </a>
+        ))}
+      </div>
+
+      {menus.length === 0 && (
+        <div class="text-center py-12">
+          <p class="text-gray-500 text-lg">
+            Our menus are being updated. Please check back soon or contact us for current offerings.
+          </p>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-3xl font-serif font-bold text-[#114C87] mb-8 text-center">
+          Dining at Field & Tides
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-xl font-semibold text-[#114C87] mb-3">Dinner Service</h3>
+            <p class="text-gray-600 mb-2">Monday - Thursday: 5:00 PM - 10:00 PM</p>
+            <p class="text-gray-600 mb-2">Friday: 5:00 PM - 11:00 PM</p>
+            <p class="text-gray-600">Saturday: 5:00 PM - 11:00 PM</p>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-xl font-semibold text-[#114C87] mb-3">Brunch Service</h3>
+            <p class="text-gray-600 mb-2">Saturday: 10:00 AM - 3:00 PM</p>
+            <p class="text-gray-600">Sunday: 10:00 AM - 3:00 PM</p>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-xl font-semibold text-[#114C87] mb-3">Dietary Accommodations</h3>
+            <p class="text-gray-600">
+              We offer vegetarian, vegan, and gluten-free options. Please inform your server of any dietary restrictions.
+            </p>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-xl font-semibold text-[#114C87] mb-3">Private Events</h3>
+            <p class="text-gray-600">
+              Host your special event at Field & Tides. We offer private dining options for groups.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-16 bg-[#114C87] text-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-3xl font-serif font-bold mb-4">
+          Ready to Dine?
+        </h2>
+        <p class="text-lg mb-8">
+          Reserve your table today and experience our exceptional coastal cuisine.
+        </p>
+        <a
+          href="https://www.opentable.com/field-and-tides"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-block px-8 py-3 bg-[#F4E297] text-[#114C87] font-semibold rounded hover:bg-[#e5d388] transition-colors border border-[#F4E297]"
+        >
+          Make a Reservation
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>

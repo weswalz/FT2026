@@ -1,0 +1,218 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/Hero.astro';
+import PrivateDiningForm from '../components/PrivateDiningForm.astro';
+---
+
+<Layout
+  title="Private Events & Dining - Field & Tides Restaurant & Bar"
+  description="Host your special event at Field & Tides. We offer private dining options for weddings, corporate events, and celebrations."
+>
+  <Header />
+
+  <Hero
+    title="Private Events & Dining"
+    subtitle="Create unforgettable memories at Field & Tides"
+    image="/images/hero-private-events.jpg"
+  />
+
+  <!-- Introduction -->
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-3xl font-serif font-bold text-[#114C87] mb-6">
+          Your Perfect Venue
+        </h2>
+        <p class="text-lg text-gray-700 leading-relaxed mb-8">
+          Field & Tides offers an elegant and intimate setting for your special occasions. Whether you're planning a corporate event, wedding reception, birthday celebration, or anniversary dinner, our dedicated team will work with you to create a memorable experience.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Event Types -->
+  <section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <div class="max-w-6xl mx-auto">
+        <h2 class="text-3xl font-serif font-bold text-[#114C87] mb-12 text-center">
+          Perfect For Any Occasion
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div class="bg-white p-6 rounded-lg shadow">
+            <div class="w-16 h-16 bg-[#F4E297] rounded-full flex items-center justify-center mb-4">
+              <svg class="w-8 h-8 text-[#114C87]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-[#114C87] mb-2">Corporate Events</h3>
+            <p class="text-gray-600">
+              Business meetings, client dinners, team building events, and corporate celebrations.
+            </p>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow">
+            <div class="w-16 h-16 bg-[#F4E297] rounded-full flex items-center justify-center mb-4">
+              <svg class="w-8 h-8 text-[#114C87]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-[#114C87] mb-2">Weddings</h3>
+            <p class="text-gray-600">
+              Rehearsal dinners, wedding receptions, and intimate ceremony celebrations.
+            </p>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow">
+            <div class="w-16 h-16 bg-[#F4E297] rounded-full flex items-center justify-center mb-4">
+              <svg class="w-8 h-8 text-[#114C87]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-[#114C87] mb-2">Birthday Parties</h3>
+            <p class="text-gray-600">
+              Celebrate milestone birthdays with exceptional food and service.
+            </p>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow">
+            <div class="w-16 h-16 bg-[#F4E297] rounded-full flex items-center justify-center mb-4">
+              <svg class="w-8 h-8 text-[#114C87]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-[#114C87] mb-2">Anniversaries</h3>
+            <p class="text-gray-600">
+              Honor special milestones with a private dining experience.
+            </p>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow">
+            <div class="w-16 h-16 bg-[#F4E297] rounded-full flex items-center justify-center mb-4">
+              <svg class="w-8 h-8 text-[#114C87]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-[#114C87] mb-2">Social Gatherings</h3>
+            <p class="text-gray-600">
+              Holiday parties, reunions, and special occasions with friends and family.
+            </p>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow">
+            <div class="w-16 h-16 bg-[#F4E297] rounded-full flex items-center justify-center mb-4">
+              <svg class="w-8 h-8 text-[#114C87]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-[#114C87] mb-2">Custom Events</h3>
+            <p class="text-gray-600">
+              Whatever your occasion, we'll work with you to make it special.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Amenities -->
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-3xl font-serif font-bold text-[#114C87] mb-8 text-center">
+          What We Offer
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="flex gap-4">
+            <svg class="w-6 h-6 text-[#114C87] flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-1">Customized Menus</h3>
+              <p class="text-gray-600">Work with our chef to create a personalized menu for your event.</p>
+            </div>
+          </div>
+
+          <div class="flex gap-4">
+            <svg class="w-6 h-6 text-[#114C87] flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-1">Private Dining Space</h3>
+              <p class="text-gray-600">Semi-private and full buyout options available.</p>
+            </div>
+          </div>
+
+          <div class="flex gap-4">
+            <svg class="w-6 h-6 text-[#114C87] flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-1">Dedicated Event Coordinator</h3>
+              <p class="text-gray-600">Personal attention to every detail of your event.</p>
+            </div>
+          </div>
+
+          <div class="flex gap-4">
+            <svg class="w-6 h-6 text-[#114C87] flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-1">Beverage Packages</h3>
+              <p class="text-gray-600">Wine pairings, craft cocktails, and custom bar options.</p>
+            </div>
+          </div>
+
+          <div class="flex gap-4">
+            <svg class="w-6 h-6 text-[#114C87] flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-1">Flexible Setup</h3>
+              <p class="text-gray-600">Accommodate various seating arrangements and event styles.</p>
+            </div>
+          </div>
+
+          <div class="flex gap-4">
+            <svg class="w-6 h-6 text-[#114C87] flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <h3 class="font-semibold text-gray-900 mb-1">Audiovisual Support</h3>
+              <p class="text-gray-600">Basic AV equipment available for presentations.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Inquiry Form -->
+  <section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-serif font-bold text-[#114C87] mb-4">
+            Plan Your Event
+          </h2>
+          <p class="text-lg text-gray-700">
+            Fill out the form below and our events coordinator will contact you within 24 hours to discuss your special occasion.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg p-8">
+          <PrivateDiningForm />
+        </div>
+
+        <div class="mt-8 text-center text-gray-600">
+          <p>
+            Prefer to call? Reach us at <a href="tel:+17138620708" class="text-[#114C87] hover:underline font-semibold">(713) 862-0708</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>

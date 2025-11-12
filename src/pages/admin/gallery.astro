@@ -1,0 +1,236 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getUserFromCookie } from '../../lib/auth.js';
+import { getAllImages, updateImage, deleteImage } from '../../lib/gallery.js';
+
+// Check authentication
+const user = getUserFromCookie(Astro.cookies);
+if (!user) {
+  return Astro.redirect('/admin/login');
+}
+
+let message = null;
+
+// Handle form submissions
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const action = formData.get('action');
+
+  if (action === 'update') {
+    const imageId = formData.get('imageId')?.toString();
+    const title = formData.get('title')?.toString();
+    const caption = formData.get('caption')?.toString();
+    const alt = formData.get('alt')?.toString();
+    const featured = formData.get('featured') === 'on';
+
+    if (imageId) {
+      const result = updateImage(imageId, {
+        title,
+        caption,
+        alt,
+        featured
+      });
+
+      if (result) {
+        message = { type: 'success', text: 'Image updated successfully!' };
+      } else {
+        message = { type: 'error', text: 'Failed to update image.' };
+      }
+    }
+  } else if (action === 'delete') {
+    const imageId = formData.get('imageId')?.toString();
+    if (imageId) {
+      const result = deleteImage(imageId);
+      if (result) {
+        message = { type: 'success', text: 'Image deleted successfully!' };
+      } else {
+        message = { type: 'error', text: 'Failed to delete image.' };
+      }
+    }
+  }
+}
+
+// Get all images
+const images = getAllImages();
+---
+
+<AdminLayout pageTitle="Gallery">
+  {message && (
+    <div class={`alert alert-${message.type}`}>
+      {message.text}
+    </div>
+  )}
+
+  <div class="card" style="margin-bottom: 2rem;">
+    <div style="text-align: center; padding: 2rem;">
+      <i data-lucide="upload" style="width: 48px; height: 48px; color: var(--admin-text-tertiary); margin-bottom: 1rem;"></i>
+      <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--admin-text-primary); margin-bottom: 0.5rem;">
+        Upload Images
+      </h3>
+      <p style="color: var(--admin-text-secondary); margin-bottom: 1rem;">
+        Image upload functionality requires file storage configuration.
+      </p>
+      <p style="color: var(--admin-text-tertiary); font-size: 0.875rem;">
+        Please use the API endpoint or configure cloud storage (S3, Cloudinary, etc.)
+      </p>
+    </div>
+  </div>
+
+  {images.length > 0 ? (
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+      {images.map(image => (
+        <div class="card" style="padding: 0; overflow: hidden;">
+          <div style="aspect-ratio: 16/9; background: var(--admin-bg-tertiary); overflow: hidden;">
+            {image.url ? (
+              <img
+                src={image.url}
+                alt={image.alt || image.title}
+                style="width: 100%; height: 100%; object-fit: cover;"
+              />
+            ) : (
+              <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--admin-text-tertiary);">
+                <i data-lucide="image" style="width: 48px; height: 48px;"></i>
+              </div>
+            )}
+          </div>
+
+          <div style="padding: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+              <h4 style="font-weight: 600; color: var(--admin-text-primary); font-size: 0.9375rem;">
+                {image.title || image.filename}
+              </h4>
+              {image.featured && (
+                <span class="badge badge-warning">Featured</span>
+              )}
+            </div>
+
+            {image.caption && (
+              <p style="color: var(--admin-text-secondary); font-size: 0.8125rem; margin-bottom: 1rem; line-height: 1.4;">
+                {image.caption}
+              </p>
+            )}
+
+            <div style="display: flex; gap: 0.5rem; padding-top: 0.75rem; border-top: 1px solid var(--admin-border-subtle);">
+              <button
+                class="btn btn-secondary btn-sm"
+                style="flex: 1;"
+                onclick={`openEditModal('${image.id}', '${image.title || ''}', '${image.caption || ''}', '${image.alt || ''}', ${image.featured})`}
+              >
+                <i data-lucide="edit" style="width: 14px; height: 14px;"></i>
+                Edit
+              </button>
+              <form method="POST" style="flex: 1;" onsubmit="return confirm('Are you sure you want to delete this image?');">
+                <input type="hidden" name="action" value="delete" />
+                <input type="hidden" name="imageId" value={image.id} />
+                <button type="submit" class="btn btn-danger btn-sm" style="width: 100%;">
+                  <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                  Delete
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <div class="card" style="text-align: center; padding: 3rem;">
+      <i data-lucide="image" style="width: 64px; height: 64px; color: var(--admin-text-tertiary); margin: 0 auto 1rem;"></i>
+      <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--admin-text-primary); margin-bottom: 0.5rem;">
+        No Images Yet
+      </h3>
+      <p style="color: var(--admin-text-secondary);">
+        Upload your first image to get started.
+      </p>
+    </div>
+  )}
+
+  <!-- Edit Image Modal -->
+  <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); align-items: center; justify-content: center; z-index: 1000;">
+    <div class="card" style="max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 class="card-title">Edit Image</h3>
+        <button onclick="document.getElementById('editModal').style.display = 'none'" style="background: none; border: none; color: var(--admin-text-secondary); cursor: pointer; font-size: 1.5rem;">
+          ×
+        </button>
+      </div>
+
+      <form method="POST" id="editForm">
+        <input type="hidden" name="action" value="update" />
+        <input type="hidden" name="imageId" id="editImageId" />
+
+        <div class="form-group">
+          <label for="editTitle" class="form-label">Title</label>
+          <input
+            type="text"
+            id="editTitle"
+            name="title"
+            class="form-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="editCaption" class="form-label">Caption</label>
+          <textarea
+            id="editCaption"
+            name="caption"
+            class="form-textarea"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="editAlt" class="form-label">Alt Text (for accessibility)</label>
+          <input
+            type="text"
+            id="editAlt"
+            name="alt"
+            class="form-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+            <input
+              type="checkbox"
+              id="editFeatured"
+              name="featured"
+            />
+            <span class="form-label" style="margin: 0;">Featured Image</span>
+          </label>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('editModal').style.display = 'none'">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">
+            Update Image
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  // Initialize Lucide icons
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+
+  // Function to open edit modal
+  window.openEditModal = function(id, title, caption, alt, featured) {
+    document.getElementById('editImageId').value = id;
+    document.getElementById('editTitle').value = title;
+    document.getElementById('editCaption').value = caption;
+    document.getElementById('editAlt').value = alt;
+    document.getElementById('editFeatured').checked = featured;
+    document.getElementById('editModal').style.display = 'flex';
+  };
+
+  // Close modal on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.getElementById('editModal').style.display = 'none';
+    }
+  });
+</script>

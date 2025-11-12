@@ -1,0 +1,67 @@
+---
+// Menu section component
+interface MenuItem {
+  id: string;
+  name: string;
+  description?: string;
+  price?: string;
+  dietaryTags?: string[];
+  image?: string;
+}
+
+interface Props {
+  title: string;
+  items: MenuItem[];
+}
+
+const { title, items } = Astro.props;
+
+// Dietary tag icons/labels
+const dietaryIcons: Record<string, string> = {
+  vegetarian: 'V',
+  vegan: 'VG',
+  glutenFree: 'GF',
+  dairyFree: 'DF',
+  nutFree: 'NF'
+};
+---
+
+<div class="mb-12">
+  <h2 class="text-3xl font-serif font-bold text-[#114C87] mb-6 border-b-2 border-[#F4E297] pb-2">
+    {title}
+  </h2>
+
+  <div class="space-y-6">
+    {items.map((item) => (
+      <div class="border-b border-gray-200 pb-6 last:border-0">
+        <div class="flex justify-between items-start gap-4">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-2">
+              <h3 class="text-xl font-semibold text-gray-900">{item.name}</h3>
+              {item.dietaryTags && item.dietaryTags.length > 0 && (
+                <div class="flex gap-1">
+                  {item.dietaryTags.map((tag) => (
+                    <span
+                      class="inline-block px-2 py-0.5 text-xs font-semibold bg-green-100 text-green-800 rounded"
+                      title={tag}
+                    >
+                      {dietaryIcons[tag] || tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+            {item.description && (
+              <p class="text-gray-600 text-sm leading-relaxed">{item.description}</p>
+            )}
+          </div>
+          {item.price && (
+            <div class="flex-shrink-0">
+              <span class="text-lg font-semibold text-[#114C87]">{item.price}</span>
+            </div>
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>

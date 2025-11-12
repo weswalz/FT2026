@@ -1,0 +1,296 @@
+---
+import { validateCredentials, createSession } from '../../lib/auth.js';
+import { getClientIp } from '../../lib/auth-middleware.js';
+
+let error = null;
+
+// If already logged in, redirect to dashboard
+const existingSession = Astro.cookies.get('ft_session')?.value;
+if (existingSession) {
+  const { validateSession } = await import('../../lib/auth.js');
+  const user = validateSession(existingSession);
+  if (user) {
+    return Astro.redirect('/admin/dashboard');
+  }
+}
+
+// Handle login form submission
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData();
+    const username = formData.get('username')?.toString();
+    const password = formData.get('password')?.toString();
+    const ipAddress = getClientIp(Astro.request);
+
+    if (!username || !password) {
+      error = 'Please enter both username and password.';
+    } else {
+      const user = await validateCredentials(username, password, ipAddress);
+
+      if (user) {
+        const session = createSession(user.id);
+
+        if (session) {
+          // Set session cookie
+          Astro.cookies.set('ft_session', session.token, {
+            path: '/',
+            httpOnly: true,
+            secure: import.meta.env.PROD,
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 // 24 hours
+          });
+
+          return Astro.redirect('/admin/dashboard');
+        } else {
+          error = 'Failed to create session. Please try again.';
+        }
+      } else {
+        error = 'Invalid username or password. After 5 failed attempts, your account will be locked for 15 minutes.';
+      }
+    }
+  } catch (err) {
+    console.error('Login error:', err);
+    error = 'An error occurred during login. Please try again.';
+  }
+}
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Field & Tides</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0A1929 0%, #114C87 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        radial-gradient(circle at 20% 50%, rgba(244, 226, 151, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(244, 226, 151, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .auth-container {
+      background: rgba(13, 31, 51, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(244, 226, 151, 0.2);
+      padding: 3rem 2.5rem;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(244, 226, 151, 0.1);
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .logo {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, #114C87 0%, #0D3A65 100%);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #F4E297;
+      box-shadow: 0 10px 30px rgba(17, 76, 135, 0.3);
+      border: 2px solid rgba(244, 226, 151, 0.3);
+    }
+
+    .auth-header h1 {
+      color: #FFFFFF;
+      margin-bottom: 0.5rem;
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .auth-header p {
+      color: #A0B4C7;
+      font-size: 0.95rem;
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+    }
+
+    .form-label {
+      font-weight: 500;
+      color: #C5D3E0;
+      font-size: 0.9rem;
+    }
+
+    .form-input {
+      padding: 0.875rem 1rem;
+      background: rgba(17, 38, 61, 0.5);
+      border: 1px solid rgba(244, 226, 151, 0.2);
+      border-radius: 12px;
+      font-size: 1rem;
+      color: #FFFFFF;
+      transition: all 0.3s ease;
+    }
+
+    .form-input::placeholder {
+      color: #7A8E9F;
+    }
+
+    .form-input:focus {
+      outline: none;
+      background: rgba(17, 38, 61, 0.7);
+      border-color: #F4E297;
+      box-shadow: 0 0 0 4px rgba(244, 226, 151, 0.1);
+    }
+
+    .auth-btn {
+      background: linear-gradient(135deg, #F4E297 0%, #D4C472 100%);
+      color: #0D3A65;
+      border: none;
+      padding: 1rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 0.5rem;
+      box-shadow: 0 4px 12px rgba(244, 226, 151, 0.3);
+    }
+
+    .auth-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(244, 226, 151, 0.4);
+      background: linear-gradient(135deg, #F9EDBC 0%, #F4E297 100%);
+    }
+
+    .auth-btn:active {
+      transform: translateY(0);
+    }
+
+    .error-message {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #FCA5A5;
+      padding: 0.875rem 1rem;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      line-height: 1.5;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(244, 226, 151, 0.1);
+    }
+
+    .back-link a {
+      color: #A0B4C7;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .back-link a:hover {
+      color: #F4E297;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-header">
+      <div class="logo">F&T</div>
+      <h1>Admin Login</h1>
+      <p>Enter your credentials to continue</p>
+    </div>
+
+    {error && (
+      <div class="error-message">
+        <span>⚠️</span>
+        <span>{error}</span>
+      </div>
+    )}
+
+    <form method="POST" class="auth-form">
+      <div class="form-group">
+        <label for="username" class="form-label">Username</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          class="form-input"
+          placeholder="Enter your username"
+          required
+          autocomplete="username"
+          autofocus
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="form-input"
+          placeholder="Enter your password"
+          required
+          autocomplete="current-password"
+        />
+      </div>
+
+      <button type="submit" class="auth-btn">
+        Sign In
+      </button>
+    </form>
+
+    <div class="back-link">
+      <a href="/">← Back to Website</a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('username').focus();
+  </script>
+</body>
+</html>

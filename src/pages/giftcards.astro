@@ -1,0 +1,166 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/Hero.astro';
+---
+
+<Layout
+  title="Gift Cards - Field & Tides Restaurant & Bar"
+  description="Give the gift of exceptional dining at Field & Tides. Purchase gift cards online or in person."
+>
+  <Header />
+
+  <Hero
+    title="Gift Cards"
+    subtitle="Share the Field & Tides experience with someone special"
+    image="/images/hero-giftcards.jpg"
+  />
+
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-serif font-bold text-[#114C87] mb-4">
+            The Perfect Gift
+          </h2>
+          <p class="text-lg text-gray-700 leading-relaxed">
+            Give the gift of exceptional coastal cuisine. Field & Tides gift cards are perfect for any occasion - birthdays, anniversaries, holidays, or just because.
+          </p>
+        </div>
+
+        <!-- Gift Card Options -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          <div class="bg-gradient-to-br from-[#114C87] to-[#0d3a67] rounded-lg p-8 text-white shadow-lg">
+            <h3 class="text-2xl font-serif font-bold mb-4">Physical Gift Cards</h3>
+            <p class="mb-6">
+              Beautiful physical gift cards available for purchase at our restaurant. Perfect for gift-giving with a personal touch.
+            </p>
+            <ul class="space-y-2 mb-6">
+              <li class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-[#F4E297]" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                Available in any amount
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-[#F4E297]" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                Beautiful presentation
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-[#F4E297]" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                No expiration date
+              </li>
+            </ul>
+            <p class="text-sm text-[#F4E297]">
+              Visit us to purchase in person
+            </p>
+          </div>
+
+          <div class="bg-gradient-to-br from-[#F4E297] to-[#e5d388] rounded-lg p-8 shadow-lg">
+            <h3 class="text-2xl font-serif font-bold text-[#114C87] mb-4">Digital Gift Cards</h3>
+            <p class="mb-6 text-gray-800">
+              Convenient digital gift cards delivered instantly via email. Perfect for last-minute gifts or sending to loved ones far away.
+            </p>
+            <ul class="space-y-2 mb-6 text-gray-800">
+              <li class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-[#114C87]" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                Instant delivery
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-[#114C87]" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                Custom amounts
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-[#114C87]" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                Easy to redeem
+              </li>
+            </ul>
+            <a
+              href="https://www.toasttab.com/field-and-tides/giftcards"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-block px-6 py-3 bg-[#114C87] text-white font-semibold rounded hover:bg-[#0d3a67] transition-colors"
+            >
+              Buy Digital Gift Card
+            </a>
+          </div>
+        </div>
+
+        <!-- How to Use -->
+        <div class="bg-gray-50 rounded-lg p-8">
+          <h3 class="text-2xl font-serif font-bold text-[#114C87] mb-4">
+            How to Use Your Gift Card
+          </h3>
+          <div class="space-y-3 text-gray-700">
+            <p>
+              Gift cards can be redeemed for food and beverages at Field & Tides. Simply present your physical card or digital code to your server when requesting your check.
+            </p>
+            <p>
+              <strong>Important Information:</strong>
+            </p>
+            <ul class="list-disc list-inside space-y-1 ml-4">
+              <li>Gift cards have no expiration date</li>
+              <li>Can be used for dine-in experiences</li>
+              <li>Cannot be redeemed for cash</li>
+              <li>Not valid for online orders or delivery</li>
+              <li>Can be combined with other forms of payment</li>
+              <li>Lost or stolen cards cannot be replaced</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Check Balance -->
+        <div class="mt-8 p-6 bg-[#F4E297]/20 rounded-lg border border-[#F4E297] text-center">
+          <h3 class="text-xl font-semibold text-[#114C87] mb-2">
+            Check Your Gift Card Balance
+          </h3>
+          <p class="text-gray-700 mb-4">
+            To check your gift card balance, please call us at <a href="tel:+17138620708" class="text-[#114C87] hover:underline font-semibold">(713) 862-0708</a> or visit the restaurant.
+          </p>
+        </div>
+
+        <!-- Contact -->
+        <div class="mt-12 text-center">
+          <p class="text-gray-700">
+            Have questions about gift cards? <a href="/contact" class="text-[#114C87] hover:underline font-semibold">Contact us</a> and we'll be happy to help.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-16 bg-[#114C87] text-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-3xl font-serif font-bold mb-4">
+          Give the Gift of Great Dining
+        </h2>
+        <p class="text-lg mb-8">
+          Share the Field & Tides experience with friends and family.
+        </p>
+        <a
+          href="https://www.toasttab.com/field-and-tides/giftcards"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-block px-8 py-3 bg-[#F4E297] text-[#114C87] font-semibold rounded hover:bg-[#e5d388] transition-colors border border-[#F4E297]"
+        >
+          Purchase Gift Card
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>

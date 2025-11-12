@@ -1,0 +1,48 @@
+---
+// Image gallery component
+interface GalleryImage {
+  id: string;
+  url: string;
+  title?: string;
+  caption?: string;
+  alt?: string;
+}
+
+interface Props {
+  images: GalleryImage[];
+  columns?: number;
+}
+
+const { images, columns = 3 } = Astro.props;
+
+const gridClass = columns === 2 ? 'md:grid-cols-2' : columns === 4 ? 'md:grid-cols-4' : 'md:grid-cols-3';
+---
+
+<div class={`grid grid-cols-1 ${gridClass} gap-4`}>
+  {images.map((image) => (
+    <div class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer">
+      <div class="aspect-square">
+        <img
+          src={image.url}
+          alt={image.alt || image.title || 'Gallery image'}
+          class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+          loading="lazy"
+        />
+      </div>
+      {(image.title || image.caption) && (
+        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+          <div class="text-white">
+            {image.title && <h3 class="font-semibold text-lg mb-1">{image.title}</h3>}
+            {image.caption && <p class="text-sm">{image.caption}</p>}
+          </div>
+        </div>
+      )}
+    </div>
+  ))}
+</div>
+
+{images.length === 0 && (
+  <div class="text-center py-12 text-gray-500">
+    <p>No images available in the gallery.</p>
+  </div>
+)}

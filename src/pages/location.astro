@@ -1,0 +1,159 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/Hero.astro';
+---
+
+<Layout
+  title="Location & Hours - Field & Tides Restaurant & Bar"
+  description="Find Field & Tides in Houston's Heights neighborhood. View our hours, parking information, and directions."
+>
+  <Header />
+
+  <Hero
+    title="Location & Hours"
+    subtitle="Visit us in Houston's historic Heights neighborhood"
+    image="/images/hero-location.jpg"
+  />
+
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <!-- Location Info -->
+          <div>
+            <h2 class="text-3xl font-serif font-bold text-[#114C87] mb-6">
+              Find Us
+            </h2>
+
+            <!-- Address -->
+            <div class="bg-gray-50 p-6 rounded-lg mb-8">
+              <h3 class="text-xl font-semibold text-gray-900 mb-3">Address</h3>
+              <p class="text-gray-700 mb-2">
+                1811 Durham Dr<br />
+                Houston, TX 77007
+              </p>
+              <a
+                href="https://maps.google.com/?q=1811+Durham+Dr+Houston+TX+77007"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-[#114C87] hover:underline inline-flex items-center gap-2"
+              >
+                Get Directions
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                </svg>
+              </a>
+            </div>
+
+            <!-- Hours -->
+            <div class="bg-gray-50 p-6 rounded-lg mb-8">
+              <h3 class="text-xl font-semibold text-gray-900 mb-3">Hours of Operation</h3>
+              <div class="space-y-2 text-gray-700">
+                <div class="flex justify-between border-b border-gray-200 pb-2">
+                  <span class="font-medium">Monday - Thursday</span>
+                  <span>5:00 PM - 10:00 PM</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-200 pb-2">
+                  <span class="font-medium">Friday</span>
+                  <span>5:00 PM - 11:00 PM</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-200 pb-2">
+                  <span class="font-medium">Saturday</span>
+                  <span>10:00 AM - 11:00 PM</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="font-medium">Sunday</span>
+                  <span>10:00 AM - 9:00 PM</span>
+                </div>
+              </div>
+              <p class="text-sm text-gray-600 mt-4">
+                Brunch served Saturday & Sunday: 10:00 AM - 3:00 PM
+              </p>
+            </div>
+
+            <!-- Parking -->
+            <div class="bg-gray-50 p-6 rounded-lg mb-8">
+              <h3 class="text-xl font-semibold text-gray-900 mb-3">Parking</h3>
+              <p class="text-gray-700 mb-3">
+                We offer convenient parking options for our guests:
+              </p>
+              <ul class="list-disc list-inside text-gray-700 space-y-1">
+                <li>Street parking available on Durham Dr</li>
+                <li>Adjacent parking lot (limited spaces)</li>
+                <li>Public parking nearby</li>
+              </ul>
+            </div>
+
+            <!-- Contact -->
+            <div class="bg-gray-50 p-6 rounded-lg">
+              <h3 class="text-xl font-semibold text-gray-900 mb-3">Contact</h3>
+              <p class="text-gray-700 mb-2">
+                <a href="tel:+17138620708" class="hover:text-[#114C87]">
+                  Phone: (713) 862-0708
+                </a>
+              </p>
+              <p class="text-gray-700">
+                <a href="mailto:info@fieldandtides.com" class="hover:text-[#114C87]">
+                  Email: info@fieldandtides.com
+                </a>
+              </p>
+            </div>
+          </div>
+
+          <!-- Map -->
+          <div>
+            <h2 class="text-3xl font-serif font-bold text-[#114C87] mb-6">
+              Map
+            </h2>
+            <div class="bg-gray-100 rounded-lg overflow-hidden shadow-lg h-[600px]">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3463.0!2d-95.4!3d29.78!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjnCsDQ2JzQ4LjAiTiA5NcKwMjQnMDAuMCJX!5e0!3m2!1sen!2sus!4v1234567890"
+                width="100%"
+                height="100%"
+                style="border:0;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                title="Field & Tides Location Map"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-16 bg-[#114C87] text-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-3xl font-serif font-bold mb-4">
+          Plan Your Visit
+        </h2>
+        <p class="text-lg mb-8">
+          Reserve your table today and experience exceptional coastal cuisine.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href="https://www.opentable.com/field-and-tides"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-block px-8 py-3 bg-[#F4E297] text-[#114C87] font-semibold rounded hover:bg-[#e5d388] transition-colors border border-[#F4E297]"
+          >
+            Make a Reservation
+          </a>
+          <a
+            href="/contact"
+            class="inline-block px-8 py-3 bg-transparent text-white font-semibold rounded hover:bg-white/10 transition-colors border border-white"
+          >
+            Contact Us
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>

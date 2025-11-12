@@ -1,0 +1,192 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { getUserFromCookie } from '../../../lib/auth.js';
+import { getPageBySlug, updatePage } from '../../../lib/pages.js';
+
+// Check authentication
+const user = getUserFromCookie(Astro.cookies);
+if (!user) {
+  return Astro.redirect('/admin/login');
+}
+
+const { slug } = Astro.params;
+let message = null;
+
+// Handle form submission
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const title = formData.get('title')?.toString();
+  const newSlug = formData.get('slug')?.toString();
+  const seoTitle = formData.get('seoTitle')?.toString();
+  const seoDescription = formData.get('seoDescription')?.toString();
+  const status = formData.get('status')?.toString();
+  const sectionsJson = formData.get('sections')?.toString();
+
+  if (title && newSlug) {
+    let sections = [];
+    try {
+      sections = sectionsJson ? JSON.parse(sectionsJson) : [];
+    } catch (e) {
+      console.error('Error parsing sections:', e);
+    }
+
+    const page = getPageBySlug(slug);
+    if (page) {
+      const result = updatePage(page.id, {
+        title,
+        slug: newSlug,
+        sections,
+        seoTitle,
+        seoDescription,
+        status: status || 'published',
+        updatedBy: user.username
+      });
+
+      if (result) {
+        message = { type: 'success', text: 'Page updated successfully!' };
+        // If slug changed, redirect to new slug
+        if (newSlug !== slug) {
+          return Astro.redirect(`/admin/pages/${newSlug}`);
+        }
+      } else {
+        message = { type: 'error', text: 'Failed to update page.' };
+      }
+    }
+  } else {
+    message = { type: 'error', text: 'Title and slug are required.' };
+  }
+}
+
+// Get page
+const page = getPageBySlug(slug);
+if (!page) {
+  return Astro.redirect('/admin/pages');
+}
+---
+
+<AdminLayout pageTitle={`Edit Page: ${page.title}`}>
+  <div slot="header-actions">
+    <a href="/admin/pages" class="btn btn-secondary">
+      <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i>
+      Back to Pages
+    </a>
+  </div>
+
+  {message && (
+    <div class={`alert alert-${message.type}`}>
+      {message.text}
+    </div>
+  )}
+
+  <form method="POST">
+    <div style="display: grid; grid-template-columns: 1fr 350px; gap: 1.5rem;">
+      <!-- Main Content -->
+      <div>
+        <div class="card" style="margin-bottom: 1.5rem;">
+          <div class="form-group">
+            <label for="title" class="form-label">Page Title</label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              class="form-input"
+              value={page.title}
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="slug" class="form-label">Slug</label>
+            <input
+              type="text"
+              id="slug"
+              name="slug"
+              class="form-input"
+              value={page.slug}
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Page Content</label>
+            <textarea
+              id="sections"
+              name="sections"
+              class="form-textarea"
+              style="min-height: 400px; font-family: monospace;"
+              placeholder='[{"type": "hero", "title": "Welcome", "content": "..."}, {"type": "text", "content": "..."}]'
+            >{JSON.stringify(page.sections, null, 2)}</textarea>
+            <p class="form-helper">
+              Edit page sections as JSON. Each section should have a "type" field.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div>
+        <!-- Status Card -->
+        <div class="card" style="margin-bottom: 1.5rem;">
+          <h3 style="font-size: 1rem; font-weight: 600; color: var(--admin-text-primary); margin-bottom: 1rem;">
+            Status
+          </h3>
+
+          <div class="form-group">
+            <label for="status" class="form-label">Publish Status</label>
+            <select id="status" name="status" class="form-select">
+              <option value="published" selected={page.status === 'published'}>Published</option>
+              <option value="draft" selected={page.status === 'draft'}>Draft</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            <i data-lucide="save" style="width: 16px; height: 16px;"></i>
+            Update Page
+          </button>
+
+          <a href={`/${page.slug}`} target="_blank" class="btn btn-ghost" style="width: 100%; margin-top: 0.5rem;">
+            <i data-lucide="external-link" style="width: 16px; height: 16px;"></i>
+            View Page
+          </a>
+        </div>
+
+        <!-- SEO Card -->
+        <div class="card">
+          <h3 style="font-size: 1rem; font-weight: 600; color: var(--admin-text-primary); margin-bottom: 1rem;">
+            SEO
+          </h3>
+
+          <div class="form-group">
+            <label for="seoTitle" class="form-label">SEO Title</label>
+            <input
+              type="text"
+              id="seoTitle"
+              name="seoTitle"
+              class="form-input"
+              value={page.seoTitle || ''}
+              placeholder={page.title}
+            />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label for="seoDescription" class="form-label">SEO Description</label>
+            <textarea
+              id="seoDescription"
+              name="seoDescription"
+              class="form-textarea"
+              style="min-height: 100px;"
+              placeholder="Brief description for search engines"
+            >{page.seoDescription || ''}</textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</AdminLayout>
+
+<script>
+  // Initialize Lucide icons
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+</script>

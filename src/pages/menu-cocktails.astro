@@ -1,0 +1,97 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/Hero.astro';
+import MenuSection from '../components/MenuSection.astro';
+import { getMenuWithItems } from '../lib/menus.js';
+
+const menuData = getMenuWithItems('cocktails');
+
+if (!menuData) {
+  return Astro.redirect('/menu');
+}
+---
+
+<Layout
+  title={`${menuData.name} - Field & Tides Restaurant & Bar`}
+  description={menuData.description || 'Explore our craft cocktail menu featuring classic and signature drinks.'}
+>
+  <Header />
+
+  <Hero
+    title={menuData.name}
+    subtitle={menuData.description}
+    image="/images/hero-cocktails.jpg"
+  />
+
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        {/* Render each section */}
+        {Object.entries(menuData.sections).map(([sectionTitle, items]) => (
+          <MenuSection title={sectionTitle} items={items} />
+        ))}
+
+        {Object.keys(menuData.sections).length === 0 && (
+          <div class="text-center py-12">
+            <p class="text-gray-500 text-lg">
+              This menu is currently being updated. Please check back soon.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- Bar Info -->
+  <section class="py-12 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <div class="bg-white p-8 rounded-lg shadow">
+          <h3 class="text-2xl font-serif font-bold text-[#114C87] mb-4">Our Bar</h3>
+          <div class="space-y-4 text-gray-700">
+            <p>
+              Our talented bartenders craft exceptional cocktails using premium spirits, fresh ingredients, and house-made syrups. From timeless classics to innovative signature creations, each drink is made with precision and care.
+            </p>
+            <p>
+              Join us for happy hour or after-dinner drinks and experience our full bar offering, including an extensive selection of craft beers, spirits, and non-alcoholic beverages.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-16 bg-[#114C87] text-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-3xl font-serif font-bold mb-4">
+          Visit Our Bar
+        </h2>
+        <p class="text-lg mb-8">
+          Stop by for exceptional cocktails and a welcoming atmosphere.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href="https://www.opentable.com/field-and-tides"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-block px-8 py-3 bg-[#F4E297] text-[#114C87] font-semibold rounded hover:bg-[#e5d388] transition-colors border border-[#F4E297]"
+          >
+            Make a Reservation
+          </a>
+          <a
+            href="/menu"
+            class="inline-block px-8 py-3 bg-transparent text-white font-semibold rounded hover:bg-white/10 transition-colors border border-white"
+          >
+            View All Menus
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>

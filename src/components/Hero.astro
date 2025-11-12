@@ -1,0 +1,40 @@
+---
+// Hero component with background image
+interface Props {
+  title: string;
+  subtitle?: string;
+  image?: string;
+  height?: string;
+  overlay?: boolean;
+}
+
+const {
+  title,
+  subtitle,
+  image = '/images/hero-default.jpg',
+  height = 'h-96 md:h-[500px]',
+  overlay = true
+} = Astro.props;
+---
+
+<div class={`relative ${height} flex items-center justify-center overflow-hidden`}>
+  <!-- Background Image -->
+  <div class="absolute inset-0">
+    <img
+      src={image}
+      alt={title}
+      class="w-full h-full object-cover"
+    />
+    {overlay && (
+      <div class="absolute inset-0 bg-black/40"></div>
+    )}
+  </div>
+
+  <!-- Content -->
+  <div class="relative z-10 text-center text-white px-4">
+    <h1 class="text-4xl md:text-6xl font-serif font-bold mb-4">{title}</h1>
+    {subtitle && (
+      <p class="text-lg md:text-xl max-w-2xl mx-auto">{subtitle}</p>
+    )}
+  </div>
+</div>

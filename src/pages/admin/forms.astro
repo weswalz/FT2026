@@ -1,0 +1,195 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getUserFromCookie } from '../../lib/auth.js';
+import { getAllSubmissions, updateSubmissionStatus } from '../../lib/forms.js';
+
+// Check authentication
+const user = getUserFromCookie(Astro.cookies);
+if (!user) {
+  return Astro.redirect('/admin/login');
+}
+
+let message = null;
+
+// Handle form submissions
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const action = formData.get('action');
+
+  if (action === 'update-status') {
+    const submissionId = formData.get('submissionId')?.toString();
+    const status = formData.get('status')?.toString();
+
+    if (submissionId && status) {
+      const result = updateSubmissionStatus(submissionId, status);
+      if (result) {
+        message = { type: 'success', text: 'Submission status updated!' };
+      } else {
+        message = { type: 'error', text: 'Failed to update status.' };
+      }
+    }
+  }
+}
+
+// Get filter from query params
+const url = new URL(Astro.request.url);
+const filterType = url.searchParams.get('type') || null;
+const filterStatus = url.searchParams.get('status') || null;
+
+// Get submissions
+const submissions = getAllSubmissions(filterType, filterStatus);
+
+// Count stats
+const stats = {
+  total: submissions.length,
+  new: submissions.filter(s => s.status === 'new').length,
+  contacted: submissions.filter(s => s.status === 'contacted').length,
+  resolved: submissions.filter(s => s.status === 'resolved').length,
+  contact: submissions.filter(s => s.formType === 'contact').length,
+  privateDining: submissions.filter(s => s.formType === 'private-dining').length,
+};
+
+// Format date helper
+function formatDate(dateStr) {
+  if (!dateStr) return 'N/A';
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+---
+
+<AdminLayout pageTitle="Form Submissions">
+  {message && (
+    <div class={`alert alert-${message.type}`}>
+      {message.text}
+    </div>
+  )}
+
+  <!-- Stats Grid -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+    <div class="card" style="padding: 1rem;">
+      <div style="font-size: 0.75rem; color: var(--admin-text-secondary); margin-bottom: 0.25rem;">Total</div>
+      <div style="font-size: 1.75rem; font-weight: 700; color: var(--admin-text-primary);">{stats.total}</div>
+    </div>
+    <div class="card" style="padding: 1rem;">
+      <div style="font-size: 0.75rem; color: var(--admin-text-secondary); margin-bottom: 0.25rem;">New</div>
+      <div style="font-size: 1.75rem; font-weight: 700; color: var(--admin-accent-danger);">{stats.new}</div>
+    </div>
+    <div class="card" style="padding: 1rem;">
+      <div style="font-size: 0.75rem; color: var(--admin-text-secondary); margin-bottom: 0.25rem;">Contacted</div>
+      <div style="font-size: 1.75rem; font-weight: 700; color: var(--admin-accent-warning);">{stats.contacted}</div>
+    </div>
+    <div class="card" style="padding: 1rem;">
+      <div style="font-size: 0.75rem; color: var(--admin-text-secondary); margin-bottom: 0.25rem;">Resolved</div>
+      <div style="font-size: 1.75rem; font-weight: 700; color: var(--admin-accent-success);">{stats.resolved}</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="card" style="margin-bottom: 1.5rem;">
+    <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
+      <div>
+        <span style="color: var(--admin-text-secondary); font-size: 0.875rem; margin-right: 0.5rem;">Filter by type:</span>
+        <div class="btn-group">
+          <a href="/admin/forms" class={!filterType ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm'}>
+            All
+          </a>
+          <a href="/admin/forms?type=contact" class={filterType === 'contact' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm'}>
+            Contact ({stats.contact})
+          </a>
+          <a href="/admin/forms?type=private-dining" class={filterType === 'private-dining' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm'}>
+            Private Dining ({stats.privateDining})
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <span style="color: var(--admin-text-secondary); font-size: 0.875rem; margin-right: 0.5rem;">Filter by status:</span>
+        <div class="btn-group">
+          <a href={`/admin/forms${filterType ? `?type=${filterType}` : ''}`} class={!filterStatus ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm'}>
+            All
+          </a>
+          <a href={`/admin/forms?status=new${filterType ? `&type=${filterType}` : ''}`} class={filterStatus === 'new' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm'}>
+            New
+          </a>
+          <a href={`/admin/forms?status=contacted${filterType ? `&type=${filterType}` : ''}`} class={filterStatus === 'contacted' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm'}>
+            Contacted
+          </a>
+          <a href={`/admin/forms?status=resolved${filterType ? `&type=${filterType}` : ''}`} class={filterStatus === 'resolved' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm'}>
+            Resolved
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Submissions Table -->
+  {submissions.length > 0 ? (
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {submissions.map(submission => (
+            <tr>
+              <td>
+                <span class="badge badge-info">
+                  {submission.formType}
+                </span>
+              </td>
+              <td style="font-weight: 600;">{submission.name || submission.payload?.name || 'N/A'}</td>
+              <td style="color: var(--admin-text-secondary);">{submission.email || submission.payload?.email || 'N/A'}</td>
+              <td>
+                <span class={`badge ${
+                  submission.status === 'new' ? 'badge-danger' :
+                  submission.status === 'contacted' ? 'badge-warning' :
+                  'badge-success'
+                }`}>
+                  {submission.status}
+                </span>
+              </td>
+              <td style="color: var(--admin-text-secondary); font-size: 0.8125rem;">
+                {formatDate(submission.createdAt)}
+              </td>
+              <td>
+                <a href={`/admin/forms/${submission.id}`} class="btn btn-secondary btn-sm">
+                  <i data-lucide="eye" style="width: 14px; height: 14px;"></i>
+                  View
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  ) : (
+    <div class="card" style="text-align: center; padding: 3rem;">
+      <i data-lucide="inbox" style="width: 64px; height: 64px; color: var(--admin-text-tertiary); margin: 0 auto 1rem;"></i>
+      <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--admin-text-primary); margin-bottom: 0.5rem;">
+        No Submissions
+      </h3>
+      <p style="color: var(--admin-text-secondary);">
+        {filterType || filterStatus ? 'No submissions match your filters.' : 'No form submissions yet.'}
+      </p>
+    </div>
+  )}
+</AdminLayout>
+
+<script>
+  // Initialize Lucide icons
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+</script>

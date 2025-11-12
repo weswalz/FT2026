@@ -1,0 +1,100 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/Hero.astro';
+import MenuSection from '../components/MenuSection.astro';
+import { getMenuWithItems } from '../lib/menus.js';
+
+const menuData = getMenuWithItems('wine');
+
+if (!menuData) {
+  return Astro.redirect('/menu');
+}
+---
+
+<Layout
+  title={`${menuData.name} - Field & Tides Restaurant & Bar`}
+  description={menuData.description || 'Explore our curated wine list featuring selections from around the world.'}
+>
+  <Header />
+
+  <Hero
+    title={menuData.name}
+    subtitle={menuData.description}
+    image="/images/hero-wine.jpg"
+  />
+
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        {/* Render each section */}
+        {Object.entries(menuData.sections).map(([sectionTitle, items]) => (
+          <MenuSection title={sectionTitle} items={items} />
+        ))}
+
+        {Object.keys(menuData.sections).length === 0 && (
+          <div class="text-center py-12">
+            <p class="text-gray-500 text-lg">
+              This menu is currently being updated. Please check back soon.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- Wine Service Info -->
+  <section class="py-12 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <div class="bg-white p-8 rounded-lg shadow">
+          <h3 class="text-2xl font-serif font-bold text-[#114C87] mb-4">Wine Service</h3>
+          <div class="space-y-4 text-gray-700">
+            <p>
+              Our sommelier-selected wine list features carefully curated bottles from renowned wine regions around the world. Whether you prefer bold reds, crisp whites, or sparkling wines, we have something for every palate.
+            </p>
+            <p>
+              Not sure what to order? Our knowledgeable staff is happy to make recommendations to complement your meal.
+            </p>
+            <p class="text-sm text-gray-600">
+              Wine availability may vary. Please ask your server about current selections and special bottles.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-16 bg-[#114C87] text-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-3xl font-serif font-bold mb-4">
+          Make a Reservation
+        </h2>
+        <p class="text-lg mb-8">
+          Join us for an exceptional dining and wine experience.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href="https://www.opentable.com/field-and-tides"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-block px-8 py-3 bg-[#F4E297] text-[#114C87] font-semibold rounded hover:bg-[#e5d388] transition-colors border border-[#F4E297]"
+          >
+            Book a Table
+          </a>
+          <a
+            href="/menu"
+            class="inline-block px-8 py-3 bg-transparent text-white font-semibold rounded hover:bg-white/10 transition-colors border border-white"
+          >
+            View All Menus
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>

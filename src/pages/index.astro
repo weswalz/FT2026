@@ -1,0 +1,147 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/Hero.astro';
+import ImageGallery from '../components/ImageGallery.astro';
+import { getAllMenus } from '../lib/menus.js';
+import { getFeaturedImages } from '../lib/gallery.js';
+
+// Load data
+const menus = getAllMenus('published');
+const featuredImages = getFeaturedImages();
+
+// Get first 6 featured images for homepage
+const galleryImages = featuredImages.slice(0, 6);
+---
+
+<Layout
+  title="Field & Tides Restaurant & Bar - Coastal Cuisine in Houston"
+  description="Field & Tides, located in Houston's historic Heights neighborhood features coastal inspired cuisine from Executive Chef Travis Lenig. Fresh, locally sourced ingredients and Gulf seafood."
+>
+  <Header />
+
+  <!-- Hero Section -->
+  <Hero
+    title="Field & Tides"
+    subtitle="Coastal Inspired Cuisine in Houston's Heights Neighborhood"
+    image="/images/hero-home.jpg"
+    height="h-[600px] md:h-[700px]"
+  />
+
+  <!-- Welcome Section -->
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-4xl font-serif font-bold text-[#114C87] mb-6">
+          Welcome to Field & Tides
+        </h2>
+        <p class="text-lg text-gray-700 leading-relaxed mb-6">
+          Located in Houston's historic Heights neighborhood, Field & Tides features an open canvas menu that reflects Executive Chef Travis Lenig's culinary experiences. Chef Lenig's roots stem from his love for many different types of cuisine such as Southern, Italian, French and Asian.
+        </p>
+        <p class="text-lg text-gray-700 leading-relaxed mb-8">
+          "Field" is represented by locally sourced vegetables, pork, poultry, beef and game, while "Tides" is seafood that is locally sourced as well, with an emphasis on the Gulf. The upscale casual restaurant is open for lunch and dinner daily with brunch served on Saturday and Sunday.
+        </p>
+        <a
+          href="/ourstory"
+          class="inline-block px-8 py-3 bg-[#114C87] text-white font-semibold rounded hover:bg-[#0d3a67] transition-colors"
+        >
+          Our Story
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Menus Preview -->
+  <section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-serif font-bold text-[#114C87] mb-4">
+          Our Menus
+        </h2>
+        <p class="text-lg text-gray-600">
+          Explore our seasonal menus featuring fresh, local ingredients
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        {menus.slice(0, 4).map((menu) => (
+          <a
+            href={`/menu-${menu.slug}`}
+            class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow p-6 text-center group"
+          >
+            <h3 class="text-2xl font-serif font-bold text-[#114C87] mb-2 group-hover:text-[#0d3a67]">
+              {menu.name}
+            </h3>
+            {menu.description && (
+              <p class="text-gray-600 text-sm">
+                {menu.description}
+              </p>
+            )}
+          </a>
+        ))}
+      </div>
+
+      <div class="text-center mt-8">
+        <a
+          href="/menu"
+          class="inline-block px-8 py-3 bg-[#F4E297] text-[#114C87] font-semibold rounded hover:bg-[#e5d388] transition-colors border border-[#114C87]"
+        >
+          View All Menus
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery Preview -->
+  {galleryImages.length > 0 && (
+    <section class="py-16 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+          <h2 class="text-4xl font-serif font-bold text-[#114C87] mb-4">
+            Gallery
+          </h2>
+          <p class="text-lg text-gray-600">
+            A glimpse into our restaurant and cuisine
+          </p>
+        </div>
+
+        <div class="max-w-6xl mx-auto">
+          <ImageGallery images={galleryImages} />
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Call to Action -->
+  <section class="py-16 bg-[#114C87] text-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-4xl font-serif font-bold mb-6">
+          Make a Reservation
+        </h2>
+        <p class="text-lg mb-8">
+          Join us for an unforgettable dining experience. Reserve your table today.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href="https://www.opentable.com/field-and-tides"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-block px-8 py-3 bg-[#F4E297] text-[#114C87] font-semibold rounded hover:bg-[#e5d388] transition-colors border border-[#F4E297]"
+          >
+            Book on OpenTable
+          </a>
+          <a
+            href="/contact"
+            class="inline-block px-8 py-3 bg-transparent text-white font-semibold rounded hover:bg-white/10 transition-colors border border-white"
+          >
+            Contact Us
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
