@@ -1,6 +1,6 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import { getUserFromCookie } from '../../lib/auth.js';
+import { getUserFromCookie, validateCSRF } from '../../lib/auth.js';
 import { getSettings, updateSettings } from '../../lib/settings.js';
 
 // Check authentication
@@ -13,6 +13,12 @@ let message = null;
 
 // Handle form submission
 if (Astro.request.method === 'POST') {
+  // Validate CSRF token
+  const isValidCSRF = await validateCSRF(Astro.request, Astro.cookies);
+  if (!isValidCSRF) {
+    return new Response('CSRF token invalid', { status: 403 });
+  }
+
   const formData = await Astro.request.formData();
   const category = formData.get('category')?.toString();
 
@@ -85,6 +91,9 @@ if (Astro.request.method === 'POST') {
 const siteSettings = getSettings('site') || { data: {} };
 const socialSettings = getSettings('social') || { data: {} };
 const hoursSettings = getSettings('hours') || { data: {} };
+
+// Get CSRF token from session
+const csrfToken = user.csrfToken;
 ---
 
 <AdminLayout pageTitle="Settings">
@@ -102,6 +111,7 @@ const hoursSettings = getSettings('hours') || { data: {} };
 
     <form method="POST">
       <input type="hidden" name="category" value="site" />
+      <input type="hidden" name="csrf_token" value={csrfToken} />
 
       <div class="form-group">
         <label for="siteName" class="form-label">Site Name</label>
@@ -174,6 +184,7 @@ const hoursSettings = getSettings('hours') || { data: {} };
 
     <form method="POST">
       <input type="hidden" name="category" value="hours" />
+      <input type="hidden" name="csrf_token" value={csrfToken} />
 
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
         {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => (
@@ -206,6 +217,7 @@ const hoursSettings = getSettings('hours') || { data: {} };
 
     <form method="POST">
       <input type="hidden" name="category" value="social" />
+      <input type="hidden" name="csrf_token" value={csrfToken} />
 
       <div class="form-group">
         <label for="facebook" class="form-label">Facebook URL</label>

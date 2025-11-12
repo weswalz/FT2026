@@ -1,6 +1,6 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
-import { getUserFromCookie } from '../../../lib/auth.js';
+import { getUserFromCookie, validateCSRF } from '../../../lib/auth.js';
 import { getSubmissionById, updateSubmissionStatus } from '../../../lib/forms.js';
 
 // Check authentication
@@ -14,6 +14,12 @@ let message = null;
 
 // Handle form submission
 if (Astro.request.method === 'POST') {
+  // Validate CSRF token
+  const isValidCSRF = await validateCSRF(Astro.request, Astro.cookies);
+  if (!isValidCSRF) {
+    return new Response('CSRF token invalid', { status: 403 });
+  }
+
   const formData = await Astro.request.formData();
   const action = formData.get('action');
 
@@ -52,6 +58,9 @@ function formatDate(dateStr) {
 
 // Format payload for display
 const payload = submission.payload || {};
+
+// Get CSRF token from session
+const csrfToken = user.csrfToken;
 ---
 
 <AdminLayout pageTitle="Form Submission">
@@ -138,6 +147,7 @@ const payload = submission.payload || {};
 
         <form method="POST">
           <input type="hidden" name="action" value="update-status" />
+          <input type="hidden" name="csrf_token" value={csrfToken} />
 
           <div class="form-group">
             <label for="status" class="form-label">Status</label>

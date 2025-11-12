@@ -1,15 +1,18 @@
 ---
-import { getUserFromCookie } from '../lib/auth.js';
+import { getSessionFromCookie } from '../lib/auth.js';
 import '../styles/admin.css';
 
 const { pageTitle = 'Admin' } = Astro.props;
 
-// Check authentication
-const user = getUserFromCookie(Astro.cookies);
+// Check authentication and get session (with CSRF token)
+const session = getSessionFromCookie(Astro.cookies);
 
-if (!user) {
+if (!session) {
   return Astro.redirect('/admin/login');
 }
+
+const user = session;
+const csrfToken = session.csrfToken;
 
 // Get current page for active menu highlighting
 const currentPath = Astro.url.pathname;
@@ -45,7 +48,13 @@ const navItems = [
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content={csrfToken}>
   <title>{pageTitle} - Field & Tides Admin</title>
+
+  <!-- CSRF Token for forms -->
+  <script is:inline define:vars={{ csrfToken }}>
+    window.CSRF_TOKEN = csrfToken;
+  </script>
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest" onload="initializeLucideIcons()"></script>

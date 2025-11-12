@@ -1,6 +1,6 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import { getUserFromCookie } from '../../lib/auth.js';
+import { getUserFromCookie, validateCSRF } from '../../lib/auth.js';
 import { getAllPages, createPage, deletePage } from '../../lib/pages.js';
 
 // Check authentication
@@ -13,6 +13,12 @@ let message = null;
 
 // Handle form submissions
 if (Astro.request.method === 'POST') {
+  // Validate CSRF token
+  const isValidCSRF = await validateCSRF(Astro.request, Astro.cookies);
+  if (!isValidCSRF) {
+    return new Response('CSRF token invalid', { status: 403 });
+  }
+
   const formData = await Astro.request.formData();
   const action = formData.get('action');
 
@@ -62,6 +68,9 @@ function formatDate(dateStr) {
     day: 'numeric'
   });
 }
+
+// Get CSRF token from session
+const csrfToken = user.csrfToken;
 ---
 
 <AdminLayout pageTitle="Pages">
@@ -116,6 +125,7 @@ function formatDate(dateStr) {
                   </a>
                   <form method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this page?');">
                     <input type="hidden" name="action" value="delete" />
+                    <input type="hidden" name="csrf_token" value={csrfToken} />
                     <input type="hidden" name="pageId" value={page.id} />
                     <button type="submit" class="btn btn-danger btn-sm">
                       <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
@@ -156,6 +166,7 @@ function formatDate(dateStr) {
 
       <form method="POST">
         <input type="hidden" name="action" value="create" />
+        <input type="hidden" name="csrf_token" value={csrfToken} />
 
         <div class="form-group">
           <label for="title" class="form-label">Page Title *</label>

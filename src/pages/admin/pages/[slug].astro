@@ -1,6 +1,6 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
-import { getUserFromCookie } from '../../../lib/auth.js';
+import { getUserFromCookie, validateCSRF } from '../../../lib/auth.js';
 import { getPageBySlug, updatePage } from '../../../lib/pages.js';
 
 // Check authentication
@@ -14,6 +14,12 @@ let message = null;
 
 // Handle form submission
 if (Astro.request.method === 'POST') {
+  // Validate CSRF token
+  const isValidCSRF = await validateCSRF(Astro.request, Astro.cookies);
+  if (!isValidCSRF) {
+    return new Response('CSRF token invalid', { status: 403 });
+  }
+
   const formData = await Astro.request.formData();
   const title = formData.get('title')?.toString();
   const newSlug = formData.get('slug')?.toString();
@@ -62,6 +68,9 @@ const page = getPageBySlug(slug);
 if (!page) {
   return Astro.redirect('/admin/pages');
 }
+
+// Get CSRF token from session
+const csrfToken = user.csrfToken;
 ---
 
 <AdminLayout pageTitle={`Edit Page: ${page.title}`}>
@@ -79,6 +88,7 @@ if (!page) {
   )}
 
   <form method="POST">
+    <input type="hidden" name="csrf_token" value={csrfToken} />
     <div style="display: grid; grid-template-columns: 1fr 350px; gap: 1.5rem;">
       <!-- Main Content -->
       <div>

@@ -1,6 +1,6 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import { getUserFromCookie } from '../../lib/auth.js';
+import { getUserFromCookie, validateCSRF } from '../../lib/auth.js';
 import { getAllImages, updateImage, deleteImage } from '../../lib/gallery.js';
 
 // Check authentication
@@ -13,6 +13,12 @@ let message = null;
 
 // Handle form submissions
 if (Astro.request.method === 'POST') {
+  // Validate CSRF token
+  const isValidCSRF = await validateCSRF(Astro.request, Astro.cookies);
+  if (!isValidCSRF) {
+    return new Response('CSRF token invalid', { status: 403 });
+  }
+
   const formData = await Astro.request.formData();
   const action = formData.get('action');
 
@@ -52,6 +58,9 @@ if (Astro.request.method === 'POST') {
 
 // Get all images
 const images = getAllImages();
+
+// Get CSRF token from session
+const csrfToken = user.csrfToken;
 ---
 
 <AdminLayout pageTitle="Gallery">
@@ -125,6 +134,7 @@ const images = getAllImages();
               </button>
               <form method="POST" style="flex: 1;" onsubmit="return confirm('Are you sure you want to delete this image?');">
                 <input type="hidden" name="action" value="delete" />
+                <input type="hidden" name="csrf_token" value={csrfToken} />
                 <input type="hidden" name="imageId" value={image.id} />
                 <button type="submit" class="btn btn-danger btn-sm" style="width: 100%;">
                   <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
@@ -160,6 +170,7 @@ const images = getAllImages();
 
       <form method="POST" id="editForm">
         <input type="hidden" name="action" value="update" />
+        <input type="hidden" name="csrf_token" value={csrfToken} />
         <input type="hidden" name="imageId" id="editImageId" />
 
         <div class="form-group">

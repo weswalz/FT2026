@@ -307,3 +307,54 @@ export function getUserFromCookie(cookies) {
 
   return validateSession(token);
 }
+
+/**
+ * Get session with CSRF token from cookie
+ */
+export function getSessionFromCookie(cookies) {
+  const token = cookies.get('ft_session')?.value;
+  if (!token) return null;
+
+  return validateSession(token);
+}
+
+/**
+ * Validate CSRF token from request
+ * @param {Object} request - Astro request object
+ * @param {Object} cookies - Astro cookies object
+ * @returns {boolean} - True if CSRF token is valid
+ */
+export async function validateCSRF(request, cookies) {
+  const session = getSessionFromCookie(cookies);
+  if (!session) return false;
+
+  // Get CSRF token from request (check headers first, then form data)
+  let csrfToken = request.headers.get('x-csrf-token');
+
+  if (!csrfToken && request.method === 'POST') {
+    try {
+      const formData = await request.clone().formData();
+      csrfToken = formData.get('csrf_token');
+    } catch (error) {
+      // If not form data, try JSON
+      try {
+        const body = await request.clone().json();
+        csrfToken = body.csrf_token;
+      } catch {
+        // Can't parse body
+      }
+    }
+  }
+
+  if (!csrfToken) {
+    console.warn('[AUTH] CSRF token missing from request');
+    return false;
+  }
+
+  const isValid = csrfToken === session.csrfToken;
+  if (!isValid) {
+    console.warn('[AUTH] CSRF token mismatch');
+  }
+
+  return isValid;
+}
