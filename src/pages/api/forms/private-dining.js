@@ -145,8 +145,18 @@ export async function POST({ request }) {
       });
     });
 
-    // TODO: Send email notification (optional)
-    // await sendEmailNotification(submission);
+    // Send email notification (async, don't block response)
+    import('../../../lib/email.js').then(({ sendPrivateDiningNotification }) => {
+      sendPrivateDiningNotification(submission).catch(error => {
+        console.error('[PRIVATE_DINING] Email notification failed:', error);
+        logAudit({
+          action: 'EMAIL_FAILED',
+          entity: 'private-dining-form',
+          entityId: submission.id,
+          details: { error: error.message }
+        });
+      });
+    });
 
     return new Response(JSON.stringify({
       success: true,

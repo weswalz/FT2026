@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS sessions (
   id TEXT PRIMARY KEY,
   userId TEXT NOT NULL,
   token TEXT UNIQUE NOT NULL,
+  csrfToken TEXT NOT NULL,
   expiresAt TEXT NOT NULL,
   createdAt TEXT DEFAULT (datetime('now')),
   FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
@@ -202,12 +203,12 @@ CREATE TABLE IF NOT EXISTS audit_log (
 );
 
 -- Insert default admin user (password: changeme - MUST be changed in production)
--- Password hash for 'changeme' using argon2
+-- Password hash for 'changeme' using Argon2id
 INSERT OR IGNORE INTO users (id, username, password_hash, email, role)
 VALUES (
   'admin-default-001',
   'admin',
-  '$argon2id$v=19$m=65536,t=3,p=4$c29tZXNhbHR2YWx1ZQ$7Y/fGzQYOJ5q8Q+9xJ5q8Q+9xJ5q8Q+9xJ5q8Q+9xJk',
+  '$argon2id$v=19$m=65536,t=3,p=4$NLvs2hixyiDST4BmZHf9Yg$mZiKg435IaPN3Bwzd3oiiLYGKb/5+lgFy12ncYDpqcU',
   'admin@fieldandtides.com',
   'admin'
 );

@@ -106,8 +106,18 @@ export async function POST({ request }) {
       details: { name, email, subject }
     });
 
-    // TODO: Send email notification (optional)
-    // await sendEmailNotification(submission);
+    // Send email notification (async, don't block response)
+    import('../../../lib/email.js').then(({ sendContactFormNotification }) => {
+      sendContactFormNotification(submission).catch(error => {
+        console.error('[CONTACT] Email notification failed:', error);
+        logAudit({
+          action: 'EMAIL_FAILED',
+          entity: 'contact-form',
+          entityId: submission.id,
+          details: { error: error.message }
+        });
+      });
+    });
 
     return new Response(JSON.stringify({
       success: true,

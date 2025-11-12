@@ -133,10 +133,12 @@ const navItems = [
             View Site
           </a>
           <div class="admin-dropdown-divider"></div>
-          <a href="/api/auth/logout" class="admin-dropdown-item danger">
-            <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
-            Logout
-          </a>
+          <form method="POST" action="/api/auth/logout" id="logoutForm" style="margin: 0;">
+            <button type="submit" class="admin-dropdown-item danger" style="width: 100%; text-align: left; border: none; background: none; cursor: pointer; font: inherit;">
+              <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+              Logout
+            </button>
+          </form>
         </div>
       </div>
 

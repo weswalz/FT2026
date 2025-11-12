@@ -112,9 +112,13 @@ const images = getAllImages();
 
             <div style="display: flex; gap: 0.5rem; padding-top: 0.75rem; border-top: 1px solid var(--admin-border-subtle);">
               <button
-                class="btn btn-secondary btn-sm"
+                class="btn btn-secondary btn-sm edit-image-btn"
                 style="flex: 1;"
-                onclick={`openEditModal('${image.id}', '${image.title || ''}', '${image.caption || ''}', '${image.alt || ''}', ${image.featured})`}
+                data-image-id={image.id}
+                data-image-title={image.title || ''}
+                data-image-caption={image.caption || ''}
+                data-image-alt={image.alt || ''}
+                data-image-featured={image.featured}
               >
                 <i data-lucide="edit" style="width: 14px; height: 14px;"></i>
                 Edit
@@ -217,15 +221,23 @@ const images = getAllImages();
     lucide.createIcons();
   }
 
-  // Function to open edit modal
-  window.openEditModal = function(id, title, caption, alt, featured) {
-    document.getElementById('editImageId').value = id;
-    document.getElementById('editTitle').value = title;
-    document.getElementById('editCaption').value = caption;
-    document.getElementById('editAlt').value = alt;
-    document.getElementById('editFeatured').checked = featured;
-    document.getElementById('editModal').style.display = 'flex';
-  };
+  // Bind edit button click handlers
+  document.querySelectorAll('.edit-image-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      const id = this.dataset.imageId;
+      const title = this.dataset.imageTitle;
+      const caption = this.dataset.imageCaption;
+      const alt = this.dataset.imageAlt;
+      const featured = this.dataset.imageFeatured === 'true';
+
+      document.getElementById('editImageId').value = id;
+      document.getElementById('editTitle').value = title;
+      document.getElementById('editCaption').value = caption;
+      document.getElementById('editAlt').value = alt;
+      document.getElementById('editFeatured').checked = featured;
+      document.getElementById('editModal').style.display = 'flex';
+    });
+  });
 
   // Close modal on escape key
   document.addEventListener('keydown', (e) => {
