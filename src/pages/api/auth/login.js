@@ -1,6 +1,6 @@
 // POST /api/auth/login
 import { validateCredentials, createSession } from '../../../lib/auth.js';
-import { getClientIp } from '../../../lib/auth-middleware.js';
+import { getClientIp, getUserAgent, logAudit } from '../../../lib/security.js';
 
 export async function POST({ request, cookies }) {
   try {
@@ -17,13 +17,23 @@ export async function POST({ request, cookies }) {
       });
     }
 
-    // Get client IP
+    // Get client info
     const ipAddress = getClientIp(request);
+    const userAgent = getUserAgent(request);
 
     // Validate credentials
     const user = await validateCredentials(username, password, ipAddress);
 
     if (!user) {
+      logAudit({
+        action: 'LOGIN_FAILED',
+        username,
+        entity: 'auth',
+        ipAddress,
+        userAgent,
+        details: { reason: 'Invalid credentials or account locked' }
+      });
+
       return new Response(JSON.stringify({
         success: false,
         error: 'Invalid credentials or account locked'
@@ -37,6 +47,15 @@ export async function POST({ request, cookies }) {
     const session = createSession(user.id);
 
     if (!session) {
+      logAudit({
+        action: 'SESSION_CREATION_FAILED',
+        userId: user.id,
+        username: user.username,
+        entity: 'auth',
+        ipAddress,
+        userAgent
+      });
+
       return new Response(JSON.stringify({
         success: false,
         error: 'Failed to create session'
@@ -55,6 +74,17 @@ export async function POST({ request, cookies }) {
       expires: session.expiresAt
     });
 
+    // Log successful login
+    logAudit({
+      action: 'LOGIN_SUCCESS',
+      userId: user.id,
+      username: user.username,
+      entity: 'auth',
+      ipAddress,
+      userAgent,
+      details: { sessionId: session.sessionId }
+    });
+
     return new Response(JSON.stringify({
       success: true,
       user: {
@@ -69,6 +99,15 @@ export async function POST({ request, cookies }) {
 
   } catch (error) {
     console.error('[API] Login error:', error);
+
+    logAudit({
+      action: 'LOGIN_ERROR',
+      entity: 'auth',
+      ipAddress: getClientIp(request),
+      userAgent: getUserAgent(request),
+      details: { error: error.message }
+    });
+
     return new Response(JSON.stringify({
       success: false,
       error: 'Internal server error'

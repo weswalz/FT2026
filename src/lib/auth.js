@@ -203,16 +203,17 @@ export async function validateCredentials(username, password, ipAddress = null) 
 export function createSession(userId) {
   const db = getDb();
   const token = randomUUID();
+  const csrfToken = randomUUID();
   const expiresAt = new Date(Date.now() + SESSION_DURATION);
 
   try {
     const sessionId = generateId('session');
     db.prepare(`
-      INSERT INTO sessions (id, userId, token, expiresAt, createdAt)
-      VALUES (?, ?, ?, ?, ?)
-    `).run(sessionId, userId, token, expiresAt.toISOString(), formatDate());
+      INSERT INTO sessions (id, userId, token, csrfToken, expiresAt, createdAt)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(sessionId, userId, token, csrfToken, expiresAt.toISOString(), formatDate());
 
-    return { sessionId, token, expiresAt };
+    return { sessionId, token, csrfToken, expiresAt };
   } catch (error) {
     console.error('[AUTH] Error creating session:', error);
     return null;
@@ -253,7 +254,8 @@ export function validateSession(token) {
       username: session.username,
       email: session.email,
       role: session.role,
-      sessionId: session.id
+      sessionId: session.id,
+      csrfToken: session.csrfToken
     };
   } catch (error) {
     console.error('[AUTH] Error validating session:', error);
